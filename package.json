@@ -10,10 +10,13 @@
     "axios": "^1.13.1",
     "bootstrap": "^5.3.8",
     "react": "^19.2.0",
+    "react-datepicker": "^4.25.0",
     "react-dom": "^19.2.0",
+    "react-flatpickr": "^4.0.11",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.9.5",
     "react-scripts": "5.0.1",
+    "react-toastify": "^9.1.1",
     "reactstrap": "^9.2.3",
     "web-vitals": "^2.1.4"
   },
@@ -21,7 +24,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "precommit-check": "node ./scripts/precommit-check.js",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
