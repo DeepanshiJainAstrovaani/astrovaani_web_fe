@@ -1,0 +1,36 @@
+.admin-sidebar {
+  position: fixed;
+  top: 35px;
+  left: 0;
+  width: 220px;
+  height: calc(100vh - 60px);
+  background: #181818;
+  color: #fff;
+  padding-top: 32px;
+  z-index: 999;
+  border-right: 1px solid #222;
+}
+.admin-sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.admin-sidebar nav ul li {
+  border-bottom: 1px solid #999999;
+}
+.admin-sidebar nav ul li:last-child {
+  border-bottom: none;
+}
+.admin-sidebar nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 10px 24px;
+  display: block;
+  transition: background 0.2s, color 0.2s;
+}
+.admin-sidebar nav ul li a.active,
+.admin-sidebar nav ul li a:hover {
+  background: #ffd600;
+  color: #111;
+}

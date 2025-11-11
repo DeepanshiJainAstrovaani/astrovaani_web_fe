@@ -6,6 +6,7 @@ import Blog from '../pages/Blog';
 import FAQ from '../pages/FAQ';
 import AdminLogin from '../pages/AdminLogin';
 import AdminDashboard from '../pages/AdminDashboard';
+import AdminRoutes from './admin/AdminRoutes';
 
 const AppRoutes = () => (
   <Router>
@@ -16,6 +17,7 @@ const AppRoutes = () => (
       <Route path="/faq" element={<FAQ />} />
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admindashboard/*" element={<AdminRoutes />} />
     </Routes>
   </Router>
 );

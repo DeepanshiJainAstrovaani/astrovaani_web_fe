@@ -1,0 +1,70 @@
+.vendors-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 0 32px 0;
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #999999;
+  border-radius: 6px;
+  padding: 8px 16px;
+  margin: 32px 0 18px 0;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+.search-bar input {
+  border: none;
+  outline: none;
+  font-size: 1.1rem;
+  flex: 1;
+  background: transparent;
+  color: #222;
+  margin-left: 10px;
+}
+.status-filters {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.status-btn {
+  background: #f4f4f4;
+  color: #222;
+  border: none;
+  border-radius: 22px;
+  padding: 8px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.status-btn.active {
+  background: #ffd600;
+  color: #111;
+}
+
+.vendors-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 32px;
+  background: #fff;
+  border: 1px solid #999999;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.vendors-table th {
+  background: #222;
+  color: #fff;
+  font-weight: 600;
+  padding: 16px 12px;
+  text-align: left;
+}
+.vendors-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #999999;
+  font-size: 1.05rem;
+}
+.vendors-table tr:last-child td {
+  border-bottom: none;
+}

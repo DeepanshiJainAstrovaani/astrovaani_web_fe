@@ -1,0 +1,673 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import styles from './AdminTable.module.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Derive community URL from the existing REACT_APP_API_URL only
+const COMMUNITY_BASE_URL = (API_URL.replace(/\/api\/?$/,'') || 'http://localhost:5000') + '/community/';
+
+const GENDERS = ["Male", "Female", "Other"];
+const ACCOUNT_STATUS = ["inreview", "active", "inactive", "inprocess"];
+
+const EditVendor = () => {
+  const { id } = useParams();
+  const [vendor, setVendor] = useState(null);
+  const [photos, setPhotos] = useState([null, null, null, null, null]);
+  const [about, setAbout] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [form, setForm] = useState({
+    gender: '',
+    state: '',
+    city: '',
+    phone: '',
+    whatsapp: '',
+    email: '',
+    pincode: '',
+    accountno: '',
+    ifsc: '',
+    status: '',
+  });
+  const [errors, setErrors] = useState({});
+  const [stateOptions, setStateOptions] = useState([]);
+  const [cityOptions, setCityOptions] = useState([]);
+
+  // Fetch states from API
+  useEffect(() => {
+    console.log('Fetching states from API...');
+    // Use the states endpoint instead of countries endpoint
+    fetch('https://countriesnow.space/api/v0.1/countries/states', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(res => {
+        console.log('States API response status:', res.status);
+        return res.json();
+      })
+      .then(data => {
+        console.log('States API data received');
+        if (data && data.data && Array.isArray(data.data)) {
+          console.log('Total entries in response:', data.data.length);
+          // Find India entry
+          let indiaData = data.data.find(c => c.name === 'India' || c.country === 'India');
+          console.log('India data found:', !!indiaData);
+          if (indiaData) {
+            console.log('India object structure:', Object.keys(indiaData));
+            if (indiaData.states && Array.isArray(indiaData.states)) {
+              const states = indiaData.states.map(s => {
+                // Handle both string and object formats
+                if (typeof s === 'string') return s;
+                if (s.name) return s.name;
+                if (s.state) return s.state;
+                return s;
+              }).filter(s => s && typeof s === 'string').sort();
+              console.log('Extracted states count:', states.length);
+              console.log('First few states:', states.slice(0, 5));
+              setStateOptions(states);
+            } else {
+              console.warn('No states array found in India data');
+            }
+          } else {
+            console.warn('India not found in response');
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching states:', err);
+        // Fallback to countries endpoint if states endpoint fails
+        console.log('Falling back to countries endpoint...');
+        fetch('https://countriesnow.space/api/v0.1/countries', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.data && Array.isArray(data.data)) {
+              let indiaData = data.data.find(c => c.country === 'India');
+              if (indiaData && indiaData.states && Array.isArray(indiaData.states)) {
+                const states = indiaData.states.map(s => {
+                  if (typeof s === 'string') return s;
+                  if (s.name) return s.name;
+                  return s;
+                }).filter(s => s && typeof s === 'string').sort();
+                console.log('Fallback states extracted:', states.length);
+                setStateOptions(states);
+              }
+            }
+          })
+          .catch(fallbackErr => {
+            console.error('Fallback also failed:', fallbackErr);
+            setStateOptions([]);
+          });
+      });
+  }, []);
+
+  useEffect(() => {
+    // Fetch vendor details
+    const fetchVendor = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_URL}/vendors/${id}`);
+        if (!response.ok) throw new Error('Failed to fetch vendor');
+        const data = await response.json();
+        console.log('Vendor data fetched:', data);
+        console.log('Vendor state value:', data.state);
+        console.log('Vendor city value:', data.city);
+        setVendor(data);
+        setPhotos([
+          data.photo || null,
+          data.photo2 || null,
+          data.photo3 || null,
+          data.photo4 || null,
+          data.photo5 || null,
+        ]);
+        setAbout(data.about || '');
+        console.log('Setting form state with vendor data:', {
+          gender: data.gender,
+          state: data.state,
+          city: data.city,
+          phone: data.phone,
+          whatsapp: data.whatsapp,
+          email: data.email,
+          pincode: data.pincode,
+          accountno: data.accountno,
+          ifsc: data.ifsc,
+          status: data.status,
+        });
+        setForm({
+          gender: data.gender || '',
+          state: data.state || '',
+          city: data.city || '',
+          phone: data.phone || '',
+          whatsapp: data.whatsapp || '',
+          email: data.email || '',
+          pincode: data.pincode || '',
+          accountno: data.accountno || '',
+          ifsc: data.ifsc || '',
+          status: data.status || '',
+        });
+        
+        // If vendor has a state, make sure it's in the options and fetch cities
+        if (data.state) {
+          console.log('Vendor has state:', data.state);
+          // If state is not in the options, add it
+          setStateOptions(prevStates => {
+            console.log('prevStates count:', prevStates.length);
+            console.log('prevStates:', prevStates);
+            if (!prevStates.includes(data.state)) {
+              console.log('State not in options, adding it:', data.state);
+              const updatedStates = [...prevStates, data.state].sort();
+              console.log('Updated states count:', updatedStates.length);
+              console.log('Updated states includes vendor state:', updatedStates.includes(data.state));
+              return updatedStates;
+            }
+            console.log('State already in options');
+            return prevStates;
+          });
+          
+          console.log('Fetching cities for state:', data.state);
+          fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ country: 'India', state: data.state })
+          })
+            .then(res => res.json())
+            .then(responseData => {
+              console.log('Cities response:', responseData);
+              if (responseData && responseData.data) {
+                console.log('Cities count:', responseData.data.length);
+                console.log('Cities set:', responseData.data);
+                
+                let finalCities = responseData.data;
+                
+                // If vendor also has a city, ensure it's in the options
+                if (data.city) {
+                  console.log('Vendor has city:', data.city);
+                  if (!responseData.data.includes(data.city)) {
+                    console.log('City not in options, adding it:', data.city);
+                    finalCities = [...responseData.data, data.city].sort();
+                    console.log('Updated cities count:', finalCities.length);
+                    console.log('Updated cities includes vendor city:', finalCities.includes(data.city));
+                  } else {
+                    console.log('City already in options');
+                  }
+                } else {
+                  console.log('No city in vendor data');
+                }
+                
+                // Set cities AFTER ensuring vendor's city is included
+                setCityOptions(finalCities);
+                console.log('City options set with final cities count:', finalCities.length);
+              } else {
+                console.warn('No cities data in response');
+              }
+            })
+            .catch((err) => {
+              console.error('Error fetching cities:', err);
+            });
+        }
+      } catch (err) {
+        console.error('Vendor fetch error:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVendor();
+  }, [id]);
+
+  useEffect(() => {
+    console.log('Form state updated:', form);
+  }, [form]);
+
+  useEffect(() => {
+    console.log('Form state changed:', form.state);
+    if (form.state) {
+      console.log('Fetching cities for form state:', form.state);
+      // Example API: https://countriesnow.space/api/v0.1/countries/state/cities
+      fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ country: 'India', state: form.state })
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log('Cities fetched for state:', data);
+          if (data && data.data) {
+            console.log('Setting city options:', data.data);
+            setCityOptions(data.data);
+          }
+          else setCityOptions([]);
+        })
+        .catch((err) => {
+          console.error('Error fetching cities:', err);
+          setCityOptions([]);
+        });
+    } else {
+      console.log('No state selected, clearing cities');
+      setCityOptions([]);
+    }
+  }, [form.state]);
+
+  // TinyMCE integration
+  useEffect(() => {
+    // Define initialization function
+    const initializeTinyMCE = () => {
+      if (!window.tinymce) {
+        console.error('TinyMCE not available');
+        return;
+      }
+
+      // Check if editor already exists
+      const existingEditor = window.tinymce.get('about-editor');
+      if (existingEditor) {
+        console.log('Editor already exists, setting content');
+        existingEditor.setContent(about || '');
+        return;
+      }
+
+      console.log('Initializing TinyMCE editor with about content:', about);
+      
+      // Initialize TinyMCE
+      window.tinymce.init({
+        selector: '#about-editor',
+        height: 300,
+        menubar: false,
+        plugins: [
+          'link', 'lists', 'table', 'media', 'wordcount'
+        ],
+        toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link',
+        setup: (editor) => {
+          console.log('TinyMCE editor setup called');
+          editor.on('init', () => {
+            console.log('TinyMCE editor initialized, setting initial content');
+            editor.setContent(about || '');
+          });
+          editor.on('change', () => {
+            const content = editor.getContent();
+            console.log('About content changed in TinyMCE:', content);
+            setAbout(content);
+          });
+          editor.on('keyup', () => {
+            const content = editor.getContent();
+            setAbout(content);
+          });
+        },
+      });
+    };
+
+    // Wait a bit to ensure DOM is ready
+    const timer = setTimeout(() => {
+      // Check if TinyMCE script is already loaded
+      if (window.tinymce) {
+        console.log('TinyMCE already loaded globally');
+        initializeTinyMCE();
+        return;
+      }
+
+      // Load TinyMCE script
+      const script = document.createElement('script');
+      script.src = 'https://cdn.tiny.cloud/1/a4ob0c0x3h9xzchnb7nob64s3gqjifkjhirtaap9wp5i26y2/tinymce/8/tinymce.min.js';
+      script.referrerPolicy = 'origin';
+      script.crossOrigin = 'anonymous';
+      script.async = true;
+      
+      script.onload = () => {
+        console.log('TinyMCE script loaded successfully');
+        // Small delay to ensure tinymce is ready
+        setTimeout(() => {
+          initializeTinyMCE();
+        }, 100);
+      };
+
+      script.onerror = () => {
+        console.error('Failed to load TinyMCE script');
+      };
+
+      document.head.appendChild(script);
+    }, 300);
+    
+    return () => {
+      clearTimeout(timer);
+      if (window.tinymce) {
+        const editor = window.tinymce.get('about-editor');
+        if (editor) {
+          editor.remove();
+        }
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Update editor content when about state changes externally
+  useEffect(() => {
+    if (window.tinymce) {
+      const editor = window.tinymce.get('about-editor');
+      if (editor && !editor.isDirty()) {
+        console.log('Updating editor content from state:', about);
+        editor.setContent(about || '');
+      }
+    }
+  }, [about]);
+
+  const handlePhotoChange = (index, file) => {
+    const newPhotos = [...photos];
+    newPhotos[index] = file;
+    setPhotos(newPhotos);
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!/^\d{10}$/.test(form.phone)) newErrors.phone = "Enter valid 10-digit phone number";
+    if (form.whatsapp && !/^\d{10}$/.test(form.whatsapp)) newErrors.whatsapp = "Enter valid 10-digit WhatsApp number";
+    if (!/^\d{6}$/.test(form.pincode)) newErrors.pincode = "Enter valid 6-digit pincode";
+    if (form.accountno && !/^\d{9,18}$/.test(form.accountno)) newErrors.accountno = "Enter valid account number (9-18 digits)";
+    if (!/^([A-Za-z]{4}[A-Za-z0-9]{7})$/.test(form.ifsc)) newErrors.ifsc = "Enter valid IFSC code";
+    if (!/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = "Enter valid email address";
+    console.log('Validation errors:', newErrors);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+    console.log(`Form field changed: ${name} = ${value}`);
+    setForm(f => ({ ...f, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    try {
+      // Create FormData to handle both files and text data
+      const formData = new FormData();
+
+      // Add form fields
+      formData.append('gender', form.gender);
+      formData.append('state', form.state);
+      formData.append('city', form.city);
+      formData.append('phone', form.phone);
+      formData.append('whatsapp', form.whatsapp);
+      formData.append('email', form.email);
+      formData.append('pincode', form.pincode);
+      formData.append('accountno', form.accountno);
+      formData.append('ifsc', form.ifsc);
+      formData.append('status', form.status);
+      formData.append('about', about);
+
+      // Add new photo files (only if they are File objects, not strings from DB)
+      for (let i = 0; i < photos.length; i++) {
+        if (photos[i] && photos[i] instanceof File) {
+          // For photo, photo2-photo5, use appropriate field names
+          const fieldName = i === 0 ? 'photo' : `photo${i + 1}`;
+          formData.append(fieldName, photos[i]);
+          console.log(`Added ${fieldName} to form data:`, photos[i].name);
+        }
+      }
+
+      console.log('Submitting vendor update with data:', {
+        gender: form.gender,
+        state: form.state,
+        city: form.city,
+        phone: form.phone,
+        whatsapp: form.whatsapp,
+        email: form.email,
+        pincode: form.pincode,
+        accountno: form.accountno,
+        ifsc: form.ifsc,
+        status: form.status,
+        about: about,
+        photosCount: photos.filter(p => p instanceof File).length,
+      });
+
+      // Make PUT request to update vendor
+      const response = await fetch(`${API_URL}/vendors/${id}`, {
+        method: 'PUT',
+        body: formData,
+        // Note: Don't set Content-Type header, browser will set it automatically with boundary for FormData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update vendor');
+      }
+
+      const updatedVendor = await response.json();
+      console.log('Vendor updated successfully:', updatedVendor);
+      // Update local UI state so changes reflect immediately
+      setVendor(updatedVendor);
+      setPhotos([
+        updatedVendor.photo || null,
+        updatedVendor.photo2 || null,
+        updatedVendor.photo3 || null,
+        updatedVendor.photo4 || null,
+        updatedVendor.photo5 || null,
+      ]);
+      setForm({
+        gender: updatedVendor.gender || '',
+        state: updatedVendor.state || '',
+        city: updatedVendor.city || '',
+        phone: updatedVendor.phone || '',
+        whatsapp: updatedVendor.whatsapp || '',
+        email: updatedVendor.email || '',
+        pincode: updatedVendor.pincode || '',
+        accountno: updatedVendor.accountno || '',
+        ifsc: updatedVendor.ifsc || '',
+        status: updatedVendor.status || '',
+      });
+      setAbout(updatedVendor.about || '');
+      alert('✅ Vendor updated successfully!');
+      
+      // Optionally refresh the page or navigate back
+      // window.location.reload();
+      // or navigate to vendor list: navigate('/admin/vendors');
+      
+    } catch (error) {
+      console.error('Error updating vendor:', error);
+      alert(`❌ Error updating vendor: ${error.message}`);
+    }
+  };
+
+  if (loading) return <div>Loading vendor...</div>;
+  if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
+  if (!vendor) return <div>Vendor not found.</div>;
+
+  return (
+    <div className={styles['admin-container']} style={{ width: '100%', maxWidth: 1200, margin: '0 auto', padding: '0 16px', boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 32 }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 500, textAlign: 'center' }}>{vendor.name}</h1>
+        <div className="mb-3" style={{ fontSize: '1rem', color: '#222', textAlign: 'center' }}>Admin Dashboard / {vendor.name}</div>
+        <form onSubmit={handleSubmit} style={{ width: '100%', background: '#fff', borderRadius: 18, boxShadow: '0 2px 16px rgba(0,0,0,0.07)', padding: 32, display: 'flex', flexDirection: 'column', gap: 32, boxSizing: 'border-box', overflow: 'hidden' }}>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
+            {/* Profile photo in center, gallery in one row */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 18 }}>
+              <img
+                src={photos[0] ? (typeof photos[0] === 'string' ? `${COMMUNITY_BASE_URL}${photos[0]}` : URL.createObjectURL(photos[0])) : null}
+                alt="Profile"
+                style={{ width: 180, height: 220, objectFit: 'cover', borderRadius: 16, marginBottom: 10, background: '#eee', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+              />
+              <label style={{ fontWeight: 600, marginBottom: 8 }}>
+                Choose profile photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ marginLeft: 8 }}
+                  onChange={e => handlePhotoChange(0, e.target.files[0])}
+                />
+              </label>
+            </div>
+            <div className="row" style={{ width: '100%', margin: '0 auto', justifyContent: 'center' }}>
+              {[1,2,3,4].map(idx => (
+                <div key={idx} className="col-lg-6 col-md-6 col-sm-6 d-flex flex-column align-items-center mb-3">
+                  <img
+                    src={photos[idx] && typeof photos[idx] === 'string' ? `${COMMUNITY_BASE_URL}${photos[idx]}` : (photos[idx] ? URL.createObjectURL(photos[idx]) : null)}
+                    alt=""
+                    style={{ width: 90, height: 110, objectFit: 'cover', borderRadius: 10, marginBottom: 6, background: '#eee', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}
+                  />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ marginLeft: 0 }}
+                    onChange={e => handlePhotoChange(idx, e.target.files[0])}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Personal Details */}
+          <div style={{ background: '#fafafa', padding: 24, borderRadius: 10, marginTop: 0, boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+            <div style={{ fontWeight: 700, fontSize: '1.2rem', background: '#ffd600', padding: '8px 18px', borderRadius: 4, marginBottom: 18, display: 'inline-block' }}>Personal Details</div>
+            <div className="row" style={{}}>
+              <div className="col-md-4 mb-3">
+                <label>Name</label>
+                <input type="text" className="form-control" value={vendor.name || ''} readOnly />
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Category</label>
+                <input type="text" className="form-control" value={vendor.category || ''} readOnly />
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Gender</label>
+                <select name="gender" className="form-control" value={form.gender} onChange={handleChange}>
+                  <option value="">Select</option>
+                  {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+                {errors.gender && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.gender}</div>}
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Phone number</label>
+                <input type="text" name="phone" className="form-control" value={form.phone} onChange={handleChange} />
+                {errors.phone && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.phone}</div>}
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Whatsapp number</label>
+                <input type="text" name="whatsapp" className="form-control" value={form.whatsapp} onChange={handleChange} />
+                {errors.whatsapp && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.whatsapp}</div>}
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Email address</label>
+                <input type="email" name="email" className="form-control" value={form.email} onChange={handleChange} />
+                {errors.email && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.email}</div>}
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Age</label>
+                <input type="number" className="form-control" value={vendor.age || ''} readOnly />
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Your State</label>
+                <select name="state" className="form-control" value={form.state} onChange={handleChange}>
+                  <option value="">Select</option>
+                  {stateOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>City</label>
+                <select name="city" className="form-control" value={form.city} onChange={handleChange} disabled={!form.state}>
+                  <option value="">Select</option>
+                  {cityOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Pincode</label>
+                <input type="text" name="pincode" className="form-control" value={form.pincode} onChange={handleChange} />
+                {errors.pincode && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.pincode}</div>}
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Experience</label>
+                <input type="text" className="form-control" value={vendor.experience || ''} readOnly />
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Skills</label>
+                <input type="text" className="form-control" value={vendor.skills || ''} readOnly />
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Language</label>
+                <input type="text" className="form-control" value={vendor.language || ''} readOnly />
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Availability</label>
+                <input type="text" className="form-control" value={vendor.availability || ''} readOnly />
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Account Status</label>
+                <select name="status" className="form-control" value={form.status} onChange={handleChange}>
+                  <option value="">Select</option>
+                  {ACCOUNT_STATUS.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+          {/* Bank Details */}
+          <div style={{ background: '#fafafa', borderRadius: 10, marginTop: 0, boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+            <div style={{ fontWeight: 700, fontSize: '1.2rem', background: '#ffd600', padding: '8px 18px', borderRadius: 4, marginBottom: 18, display: 'inline-block' }}>Bank Details</div>
+            <div className="row" style={{ }}>
+              <div className="col-md-4 mb-3">
+                <label>Account holder name</label>
+                <input type="text" className="form-control" value={vendor.accountholder || ''} readOnly />
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Account number</label>
+                <input type="text" name="accountno" className="form-control" value={form.accountno} onChange={handleChange} />
+                {errors.accountno && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.accountno}</div>}
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>IFSC</label>
+                <input type="text" name="ifsc" className="form-control" value={form.ifsc} onChange={handleChange} />
+                {errors.ifsc && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.ifsc}</div>}
+              </div>
+            </div>
+          </div>
+          {/* Pricing Details */}
+          <div style={{ background: '#fafafa', borderRadius: 10, marginTop: 0, boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+            <div style={{ fontWeight: 700, fontSize: '1.2rem', background: '#ffd600', padding: '8px 18px', borderRadius: 4, marginBottom: 18, display: 'inline-block' }}>Pricing Details</div>
+            <div className="row" style={{ }}>
+              <div className="col-md-4 mb-3">
+                <label>Pricing Per Minute</label>
+                <input type="text" className="form-control" value={vendor.priceperminute || ''} readOnly />
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>15 min</label>
+                <input type="text" className="form-control" value={vendor['15minrate'] || ''} readOnly />
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>25 min</label>
+                <input type="text" className="form-control" value={vendor['25minrate'] || ''} readOnly />
+              </div>
+              <div className="col-md-3 mb-3">
+                <label>30 min</label>
+                <input type="text" className="form-control" value={vendor['30minrate'] || ''} readOnly />
+              </div>
+              <div className="col-md-3 mb-3">
+                <label>45 min</label>
+                <input type="text" className="form-control" value={vendor['45minrate'] || ''} readOnly />
+              </div>
+              <div className="col-md-3 mb-3">
+                <label>1 hour</label>
+                <input type="text" className="form-control" value={vendor['1hourrate'] || ''} readOnly />
+              </div>
+              <div className="col-md-3 mb-3">
+                <label>90 min</label>
+                <input type="text" className="form-control" value={vendor['90minrate'] || ''} readOnly />
+              </div>
+            </div>
+          </div>
+          {/* About Section with TinyMCE */}
+          <div style={{ marginTop: 24 }}>
+            <label style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 12, display: 'block' }}>About</label>
+            <textarea
+              id="about-editor"
+              defaultValue={about}
+              style={{ width: '100%', minHeight: 300, marginTop: 8, borderRadius: 8, border: '1px solid #ccc', padding: 12, fontSize: '1.05rem', background: '#fff', fontFamily: 'Arial, sans-serif' }}
+            />
+          </div>
+          <button type="submit" style={{ background: '#ffd600', color: '#222', fontWeight: 700, fontSize: '1.2rem', border: 'none', borderRadius: 24, padding: '12px 36px', marginTop: 0, cursor: 'pointer', alignSelf: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}>Update</button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default EditVendor;

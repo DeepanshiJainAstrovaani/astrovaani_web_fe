@@ -1,0 +1,57 @@
+.admin-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #fff;
+  color: #222;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.admin-header__logo-area {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.admin-header__logo-img {
+  height: 35px;
+  object-fit: contain;
+}
+.admin-header__logo-text {
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #222;
+}
+.admin-header__right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.admin-header__welcome {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #222;
+}
+.admin-header__logout {
+  background: #ffd600;
+  color: #222;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 32px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 12px;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.admin-header__logout:hover {
+  background: #d32f2f;
+  color: #fff;
+}
