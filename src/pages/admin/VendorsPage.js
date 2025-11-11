@@ -2,18 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import styles from './AdminTable.module.css';
+import ScheduleModal from './ScheduleModal';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 const COMMUNITY_BASE_URL = 'https://astrovaani.com/community/';
 
 const DEFAULT_PHOTO = 'https://ui-avatars.com/api/?name=Vendor&background=eee&color=222&size=64';
 
-const statusOptions = [
-  { label: 'New', count: 53 },
-  { label: 'In Process', count: 2 },
-  { label: 'Active', count: 242 },
-  { label: 'Inactive', count: 61 },
-];
+const STATUS_LABELS = ['New', 'In Process', 'Active', 'Inactive'];
+
+// Map stored vendor.status value to a human label used by tabs
+const mapStatusToLabel = (status) => {
+  if (!status) return 'New';
+  const s = String(status).toLowerCase();
+  if (s === 'inreview') return 'New';
+  if (s === 'inprocess') return 'In Process';
+  if (s === 'active') return 'Active';
+  if (s === 'inactive') return 'Inactive';
+  // fallback
+  return 'New';
+};
 
 const VendorsPage = () => {
   const [search, setSearch] = useState('');
@@ -21,6 +29,8 @@ const VendorsPage = () => {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [selectedVendor, setSelectedVendor] = useState(null);
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -45,6 +55,19 @@ const VendorsPage = () => {
     v.category.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Apply status filtering based on activeStatus tab
+  const statusFilteredVendors = filteredVendors.filter(v => {
+    if (!activeStatus) return true;
+    return mapStatusToLabel(v.status) === activeStatus;
+  });
+
+  // Compute dynamic counts for each status label
+  const counts = vendors.reduce((acc, v) => {
+    const lbl = mapStatusToLabel(v.status);
+    acc[lbl] = (acc[lbl] || 0) + 1;
+    return acc;
+  }, {});
+
   return (
     <div className={styles['admin-container']}>
       {/* Search Bar */}
@@ -60,17 +83,17 @@ const VendorsPage = () => {
 
       {/* Status Buttons */}
       <div>
-        {statusOptions.map(opt => (
+        {STATUS_LABELS.map(label => (
           <button
-            key={opt.label}
+            key={label}
             className={
-              activeStatus === opt.label
+              activeStatus === label
                 ? `${styles['status-btn']} ${styles['status-btn-active']}`
                 : `${styles['status-btn']} ${styles['status-btn-inactive']}`
             }
-            onClick={() => setActiveStatus(opt.label)}
+            onClick={() => setActiveStatus(label)}
           >
-            {opt.label} ({opt.count})
+            {label} ({counts[label] || 0})
           </button>
         ))}
       </div>
@@ -81,7 +104,14 @@ const VendorsPage = () => {
 
       {/* Vendors Table */}
       {!loading && !error && (
-        <table className={styles['admin-table']}>
+        <table className={styles['admin-table']} style={{ tableLayout: 'fixed' }}>
+          <colgroup>
+            <col style={{ width: 80 }} />
+            <col style={{ width: '40%' }} />
+            <col style={{ width: '25%' }} />
+            <col style={{ width: '15%' }} />
+            <col style={{ width: 220 }} />
+          </colgroup>
           <thead>
             <tr>
               <th>Photo</th>
@@ -92,7 +122,7 @@ const VendorsPage = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredVendors.map((v, i) => {
+            {statusFilteredVendors.map((v, i) => {
               const photoUrl = v.photo ? `${COMMUNITY_BASE_URL}${v.photo}` : DEFAULT_PHOTO;
               let joinedDisplay = '-';
               if (v.joined) {
@@ -115,20 +145,25 @@ const VendorsPage = () => {
                   <td style={{ verticalAlign: 'middle', padding: '8px' }}>{v.name}</td>
                   <td style={{ verticalAlign: 'middle', padding: '8px' }}>{v.category}</td>
                   <td style={{ verticalAlign: 'middle', padding: '8px' }}>{joinedDisplay}</td>
-                  <td style={{ verticalAlign: 'middle', padding: '8px', minWidth: 180 }}>
-                    {v.id && (
-                      <Link to={`/admindashboard/edit-vendor/${v.id}`}>
-                        <button className={styles['action-btn']} title="Edit">Edit</button>
-                      </Link>
-                    )}
-                    <button className={styles['action-btn']} title="Schedule">Schedule</button>
-                    <button className={styles['action-btn-reject']} title="Reject">Reject</button>
+                  <td style={{ verticalAlign: 'middle', padding: '8px', minWidth: 220 }}>
+                    <div style={{ display: 'flex', gap: 12, justifyContent: 'center', alignItems: 'center' }}>
+                      {v.id && (
+                        <Link to={`/admindashboard/edit-vendor/${v.id}`}>
+                          <button className={styles['action-btn']} title="Edit" style={{ margin: 0 }}>Edit</button>
+                        </Link>
+                      )}
+                      <button className={styles['action-btn']} title="Schedule" style={{ margin: 0 }} onClick={() => { setSelectedVendor(v); setShowSchedule(true); }}>Schedule</button>
+                      <button className={styles['action-btn-reject']} title="Reject" style={{ margin: 0 }}>Reject</button>
+                    </div>
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+      )}
+      {showSchedule && selectedVendor && (
+        <ScheduleModal vendor={selectedVendor} onClose={() => { setShowSchedule(false); setSelectedVendor(null); }} onCreated={() => { setShowSchedule(false); setSelectedVendor(null); /* refresh vendors to update counts if needed */ fetch(`${API_URL}/vendors`).then(r => r.json()).then(d => setVendors(d)).catch(()=>{}); }} />
       )}
     </div>
   );

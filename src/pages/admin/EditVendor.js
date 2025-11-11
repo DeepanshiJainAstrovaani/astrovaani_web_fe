@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from './AdminTable.module.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// Lightweight in-component notification to avoid external toast lib incompatibility in dev
+const useNotification = () => {
+  const [notification, setNotification] = React.useState(null);
+  const show = (type, msg) => {
+    setNotification({ type, msg });
+    setTimeout(() => setNotification(null), 3000);
+  };
+  return [notification, show];
+};
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 // Derive community URL from the existing REACT_APP_API_URL only
@@ -12,6 +20,8 @@ const ACCOUNT_STATUS = ["inreview", "active", "inactive", "inprocess"];
 
 const EditVendor = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [notification, showNotification] = useNotification();
   const [vendor, setVendor] = useState(null);
   const [photos, setPhotos] = useState([null, null, null, null, null]);
   const [about, setAbout] = useState('');
@@ -458,7 +468,25 @@ const EditVendor = () => {
         status: updatedVendor.status || '',
       });
       setAbout(updatedVendor.about || '');
-      alert('✅ Vendor updated successfully!');
+      showNotification('success', '✅ Vendor updated successfully!');
+      // Delay navigation so toast is visible, then navigate to vendors list
+      setTimeout(() => {
+        try {
+          navigate('/admindashboard/vendors');
+        } catch (navErr) {
+          console.warn('Navigation failed:', navErr);
+        }
+      }, 800);
+      // Fallback forced redirect a bit later if SPA navigation doesn't occur
+      setTimeout(() => {
+        try {
+          if (typeof window !== 'undefined' && window.location.pathname !== '/admindashboard/vendors') {
+            window.location.href = '/admindashboard/vendors';
+          }
+        } catch (e) {
+          console.warn('Fallback redirect failed:', e);
+        }
+      }, 1600);
       
       // Optionally refresh the page or navigate back
       // window.location.reload();
@@ -466,7 +494,7 @@ const EditVendor = () => {
       
     } catch (error) {
       console.error('Error updating vendor:', error);
-      alert(`❌ Error updating vendor: ${error.message}`);
+      showNotification('error', `❌ Error updating vendor: ${error.message}`);
     }
   };
 
@@ -476,6 +504,13 @@ const EditVendor = () => {
 
   return (
     <div className={styles['admin-container']} style={{ width: '100%', maxWidth: 1200, margin: '0 auto', padding: '0 16px', boxSizing: 'border-box' }}>
+      {notification && (
+        <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 9999 }}>
+          <div style={{ background: notification.type === 'success' ? '#22c55e' : '#ef4444', color: '#fff', padding: '10px 16px', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }}>
+            {notification.msg}
+          </div>
+        </div>
+      )}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 32 }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 500, textAlign: 'center' }}>{vendor.name}</h1>
         <div className="mb-3" style={{ fontSize: '1rem', color: '#222', textAlign: 'center' }}>Admin Dashboard / {vendor.name}</div>
