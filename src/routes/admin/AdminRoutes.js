@@ -12,6 +12,7 @@ import NotificationsPage from '../../pages/admin/NotificationsPage';
 import BlogPage from '../../pages/admin/BlogPage';
 import EnquiriesPage from '../../pages/admin/EnquiriesPage';
 import EditVendor from '../../pages/admin/EditVendor';
+import SchedulePage from '../../pages/admin/SchedulePage';
 
 const RequireAdmin = ({ children }) => {
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
@@ -40,6 +41,7 @@ const AdminRoutes = () => (
       <Route path="blog" element={<BlogPage />} />
       <Route path="enquiries" element={<EnquiriesPage />} />
       <Route path="edit-vendor/:id" element={<EditVendor />} />
+      <Route path="schedule/:vendorId" element={<SchedulePage />} />
       <Route path="*" element={<Navigate to="vendors" />} />
     </Route>
   </Routes>

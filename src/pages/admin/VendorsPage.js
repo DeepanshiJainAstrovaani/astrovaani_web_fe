@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './AdminTable.module.css';
-import ScheduleModal from './ScheduleModal';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 const COMMUNITY_BASE_URL = 'https://astrovaani.com/community/';
@@ -29,8 +28,7 @@ const VendorsPage = () => {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showSchedule, setShowSchedule] = useState(false);
-  const [selectedVendor, setSelectedVendor] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -152,7 +150,7 @@ const VendorsPage = () => {
                           <button className={styles['action-btn']} title="Edit" style={{ margin: 0 }}>Edit</button>
                         </Link>
                       )}
-                      <button className={styles['action-btn']} title="Schedule" style={{ margin: 0 }} onClick={() => { setSelectedVendor(v); setShowSchedule(true); }}>Schedule</button>
+                      <button className={styles['action-btn']} title="Schedule" style={{ margin: 0 }} onClick={() => { navigate(`/admin/schedule/${v._id || v.id}`); }}>Schedule</button>
                       <button className={styles['action-btn-reject']} title="Reject" style={{ margin: 0 }}>Reject</button>
                     </div>
                   </td>
@@ -162,9 +160,7 @@ const VendorsPage = () => {
           </tbody>
         </table>
       )}
-      {showSchedule && selectedVendor && (
-        <ScheduleModal vendor={selectedVendor} onClose={() => { setShowSchedule(false); setSelectedVendor(null); }} onCreated={() => { setShowSchedule(false); setSelectedVendor(null); /* refresh vendors to update counts if needed */ fetch(`${API_URL}/vendors`).then(r => r.json()).then(d => setVendors(d)).catch(()=>{}); }} />
-      )}
+      {/* Scheduling now handled on separate page: /admin/schedule/:vendorId */}
     </div>
   );
 };

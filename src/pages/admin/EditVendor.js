@@ -38,6 +38,7 @@ const EditVendor = () => {
     accountno: '',
     ifsc: '',
     status: '',
+    category: ''
   });
   const [errors, setErrors] = useState({});
   const [stateOptions, setStateOptions] = useState([]);
@@ -144,6 +145,7 @@ const EditVendor = () => {
           accountno: data.accountno,
           ifsc: data.ifsc,
           status: data.status,
+          category: data.category
         });
         setForm({
           gender: data.gender || '',
@@ -156,6 +158,7 @@ const EditVendor = () => {
           accountno: data.accountno || '',
           ifsc: data.ifsc || '',
           status: data.status || '',
+          category: data.category || ''
         });
         
         // If vendor has a state, make sure it's in the options and fetch cities
@@ -395,6 +398,7 @@ const EditVendor = () => {
       const formData = new FormData();
 
       // Add form fields
+      formData.append('category', form.category);
       formData.append('gender', form.gender);
       formData.append('state', form.state);
       formData.append('city', form.city);
@@ -466,6 +470,7 @@ const EditVendor = () => {
         accountno: updatedVendor.accountno || '',
         ifsc: updatedVendor.ifsc || '',
         status: updatedVendor.status || '',
+        category: updatedVendor.category || ''
       });
       setAbout(updatedVendor.about || '');
       showNotification('success', '✅ Vendor updated successfully!');
@@ -562,7 +567,10 @@ const EditVendor = () => {
               </div>
               <div className="col-md-4 mb-3">
                 <label>Category</label>
-                <input type="text" className="form-control" value={vendor.category || ''} readOnly />
+                <select name="category" className="form-control" value={form.category} onChange={handleChange}>
+                  <option value="">Select</option>
+                  {['astrologer','vendor','tarot reader'].map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
               <div className="col-md-4 mb-3">
                 <label>Gender</label>
