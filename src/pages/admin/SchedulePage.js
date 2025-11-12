@@ -15,7 +15,7 @@ const cardBase = {
 const styles = {
   page: { padding: 20, background: '#f3f4f6', minHeight: '100vh' },
   backLink: { color: '#0ea5e9', fontSize: 14, display: 'inline-block', marginBottom: 14 },
-  grid: { display: 'grid', gridTemplateColumns: 'minmax(260px,360px) 1fr minmax(260px,360px)', gap: 20, alignItems: 'start' },
+  grid: { display: 'grid', gridTemplateColumns: 'minmax(240px,320px) minmax(400px,1fr) minmax(240px,300px)', gap: 20, alignItems: 'start' },
   cardTitle: { marginTop: 0, marginBottom: 6, fontSize: 20, fontWeight: 700, color: '#0f172a' },
   vendorSubtitle: { color: '#6b7280', marginBottom: 10, fontSize: 13, lineHeight: 1.3, overflowWrap: 'break-word' },
   label: { marginBottom: 8, color: '#111827', fontSize: 14 },
@@ -122,6 +122,44 @@ const SchedulePage = () => {
     // Remove from frontend state
     setSlots(s => s.filter((_, i) => i !== idx));
     if (errorMessage) setErrorMessage('');
+  };
+
+  const clearAllSlots = async () => {
+    if (!vendorId) return;
+    
+    // Confirm action
+    if (!window.confirm(`Are you sure you want to clear all ${slots.length} slot(s)?`)) {
+      return;
+    }
+    
+    setSaving(true);
+    setErrorMessage('');
+    try {
+      const res = await fetch(`${API_URL}/vendors/${vendorId}/schedules`, {
+        method: 'DELETE'
+      });
+      
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        let errMsg = 'Failed to clear slots';
+        try {
+          const parsed = JSON.parse(text || '{}');
+          errMsg = parsed.message || parsed.error || text || errMsg;
+        } catch (e) {
+          errMsg = text || errMsg;
+        }
+        throw new Error(errMsg);
+      }
+      
+      const data = await res.json();
+      setSlots([]);
+      alert(data.message || 'All slots cleared successfully');
+    } catch (e) {
+      console.error('Clear all slots error:', e);
+      setErrorMessage(e.message || 'Failed to clear slots');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const saveSlots = async () => {
@@ -244,8 +282,26 @@ const SchedulePage = () => {
               </div>
             ))}
 
-            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => saveSlots()} style={styles.btnPrimary}>{saving ? 'Saving...' : 'Save slots'}</button>
+            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+              {slots.length > 0 && (
+                <button 
+                  onClick={clearAllSlots} 
+                  style={{ 
+                    background: '#ef4444', 
+                    color: '#fff', 
+                    border: 'none', 
+                    padding: '10px 16px', 
+                    borderRadius: 10, 
+                    cursor: 'pointer', 
+                    fontSize: 14,
+                    opacity: saving ? 0.65 : 1 
+                  }}
+                  disabled={saving}
+                >
+                  Clear All
+                </button>
+              )}
+              <button onClick={() => saveSlots()} style={{ ...styles.btnPrimary, marginLeft: 'auto' }}>{saving ? 'Saving...' : 'Save slots'}</button>
             </div>
           </div>
         </div>
