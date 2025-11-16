@@ -4,31 +4,53 @@ import Home from '../pages/Home';
 import FreeKundali from '../pages/FreeKundali';
 import Blog from '../pages/Blog';
 import FAQ from '../pages/FAQ';
-import AdminLogin from '../pages/AdminLogin';
-import AdminDashboard from '../pages/AdminDashboard';
+import Login from '../components/Auth/Login';
+import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import AdminRoutes from './admin/AdminRoutes';
 import VendorInterview from '../pages/VendorInterview';
 
 const AdminScheduleRedirect = () => {
   const { vendorId } = useParams();
-  return <Navigate to={`/admindashboard/schedule/${vendorId}`} replace />;
+  return <Navigate to={`/admin/schedule/${vendorId}`} replace />;
 };
 
 const AppRoutes = () => (
   <Router>
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/free-kundali" element={<FreeKundali />} />
       <Route path="/blog" element={<Blog />} />
       <Route path="/faq" element={<FAQ />} />
-      
-      {/* Public vendor interview slot selection page */}
       <Route path="/interview" element={<VendorInterview />} />
       
-      <Route path="/admin" element={<AdminLogin />} />
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      <Route path="/admin/schedule/:vendorId" element={<AdminScheduleRedirect />} />
-      <Route path="/admindashboard/*" element={<AdminRoutes />} />
+      {/* Auth Route */}
+      <Route path="/login" element={<Login />} />
+      
+      {/* Protected Admin Routes */}
+      <Route 
+        path="/admin/*" 
+        element={
+          <ProtectedRoute>
+            <AdminRoutes />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/admin/schedule/:vendorId" 
+        element={
+          <ProtectedRoute>
+            <AdminScheduleRedirect />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Redirect old routes */}
+      <Route path="/admindashboard/*" element={<Navigate to="/admin/vendors" replace />} />
+      
+      {/* Catch all - redirect to login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   </Router>
 );
