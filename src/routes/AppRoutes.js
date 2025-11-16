@@ -7,6 +7,7 @@ import FAQ from '../pages/FAQ';
 import AdminLogin from '../pages/AdminLogin';
 import AdminDashboard from '../pages/AdminDashboard';
 import AdminRoutes from './admin/AdminRoutes';
+import VendorInterview from '../pages/VendorInterview';
 
 const AdminScheduleRedirect = () => {
   const { vendorId } = useParams();
@@ -20,6 +21,10 @@ const AppRoutes = () => (
       <Route path="/free-kundali" element={<FreeKundali />} />
       <Route path="/blog" element={<Blog />} />
       <Route path="/faq" element={<FAQ />} />
+      
+      {/* Public vendor interview slot selection page */}
+      <Route path="/interview" element={<VendorInterview />} />
+      
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/schedule/:vendorId" element={<AdminScheduleRedirect />} />

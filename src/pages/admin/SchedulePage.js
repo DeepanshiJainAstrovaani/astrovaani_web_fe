@@ -206,8 +206,39 @@ const SchedulePage = () => {
     setSaving(true);
     setErrorMessage('');
     try {
+      // First, save the slots to the database
+      console.log('📝 Saving slots before notifying...');
+      const saveRes = await fetch(`${API_URL}/vendors/${vendorId}/schedules`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slots })
+      });
+      
+      if (!saveRes.ok) {
+        const text = await saveRes.text().catch(() => '');
+        let errMsg = 'Failed to save slots';
+        try {
+          const parsed = JSON.parse(text || '{}');
+          errMsg = parsed.message || parsed.error || text || errMsg;
+        } catch (e) {
+          errMsg = text || errMsg;
+        }
+        throw new Error(errMsg);
+      }
+      
+      const saveData = await saveRes.json();
+      console.log('✅ Slots saved successfully');
+      
+      // Update local state with saved slots
+      if (saveData.proposed || saveData.confirmed) {
+        setSlots(saveData.proposed || []);
+        setConfirmed(saveData.confirmed || []);
+      }
+      
+      // Now send the WhatsApp notification
+      console.log('📱 Sending WhatsApp notification...');
       const payload = { slots, vendor: { id: vendorId, name: vendor?.name, email: vendor?.email, whatsapp: vendor?.whatsapp, phone: vendor?.phone } };
-      const res = await fetch(`${API_URL}/vendors/${vendorId}/notify`, {
+      const res = await fetch(`${API_URL}/vendors/${vendorId}/notify-slots`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -233,7 +264,7 @@ const SchedulePage = () => {
   return (
     <div style={styles.page}>
       <div style={{ marginBottom: 12 }}>
-        <a href="/admin" style={styles.backLink} onClick={(e) => { e.preventDefault(); navigate('/admin'); }}>Back to dashboard</a>
+        <a href="/admindashboard" style={styles.backLink} onClick={(e) => { e.preventDefault(); navigate('/admindashboard'); }}>Back to dashboard</a>
       </div>
 
       <div style={styles.grid}>

@@ -13,6 +13,7 @@ import BlogPage from '../../pages/admin/BlogPage';
 import EnquiriesPage from '../../pages/admin/EnquiriesPage';
 import EditVendor from '../../pages/admin/EditVendor';
 import SchedulePage from '../../pages/admin/SchedulePage';
+import InterviewFeedback from '../../pages/admin/InterviewFeedback';
 
 const RequireAdmin = ({ children }) => {
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
@@ -35,6 +36,7 @@ const AdminRoutes = () => (
       <Route path="customers" element={<CustomersPage />} />
       <Route path="bookings" element={<BookingsPage />} />
       <Route path="interviews" element={<InterviewsPage />} />
+      <Route path="interview/:id" element={<InterviewFeedback />} />
       <Route path="payments" element={<PaymentsPage />} />
       <Route path="offers" element={<OffersPage />} />
       <Route path="notifications" element={<NotificationsPage />} />
