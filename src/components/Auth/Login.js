@@ -31,6 +31,11 @@ const Login = () => {
     setLoading(false);
 
     if (result.success) {
+      // TEMPORARY: Log OTP for testing (remove in production)
+      if (result.data?.otp) {
+        console.log('🔐 OTP for testing:', result.data.otp);
+        alert(`Testing Mode: Your OTP is ${result.data.otp}`);
+      }
       setStep(2); // Move to OTP verification step
     } else {
       setError(result.error);
