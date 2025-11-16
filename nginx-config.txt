@@ -1,0 +1,37 @@
+# SSH Commands to Configure Nginx for React App
+
+# 1. Connect to VPS
+ssh root@82.112.236.1
+
+# 2. Find the Nginx config file for astrovaani.com
+ls /usr/local/lsws/conf/vhosts/astrovaani.com/
+
+# 3. Edit the vhost config (use nano or vi)
+nano /usr/local/lsws/conf/vhosts/astrovaani.com/vhost.conf
+
+# 4. Add this block inside the server {} section:
+# (Look for "server {" and add this inside it)
+
+location /admindashboard {
+    alias /home/astrovaani.com/public_html/admindashboard;
+    try_files $uri $uri/ /admindashboard/index.html;
+    index index.html;
+    
+    # CORS headers (if needed)
+    add_header Access-Control-Allow-Origin *;
+}
+
+# 5. Save the file:
+# - In nano: Press Ctrl+X, then Y, then Enter
+# - In vi: Press Esc, type :wq, press Enter
+
+# 6. Test Nginx configuration
+nginx -t
+
+# 7. Restart Nginx
+systemctl restart lsws
+# OR
+systemctl restart nginx
+
+# 8. Exit SSH
+exit
