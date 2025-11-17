@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Login.css';
-import logo from '../../assets/logo.png';
 
 const Login = () => {
   const [step, setStep] = useState(1); // 1: Enter Phone, 2: Verify OTP
@@ -80,9 +79,8 @@ const Login = () => {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <div className="login-logo-icon">
-            <img src={logo} alt="Astrovaani Logo" />
-          </div>
+          <h1>Astrovaani</h1>
+          <p>Admin Panel</p>
         </div>
 
         {step === 1 ? (
@@ -91,9 +89,10 @@ const Login = () => {
             <h2>Login to admin panel</h2>
             <form onSubmit={handlePhoneSubmit}>
               <div className="form-group">
+                <label>Mobile Number</label>
                 <input
                   type="tel"
-                  placeholder="Enter mobile number"
+                  placeholder="Enter 10-digit mobile number"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   maxLength="10"
@@ -119,14 +118,15 @@ const Login = () => {
           <div className="login-step">
             <h2>Verify OTP</h2>
             <p className="otp-sent-message">
-              OTP has been sent on whatsapp
+              OTP has been sent to WhatsApp number ending with ***{phoneNumber.slice(-4)}
             </p>
             
             <form onSubmit={handleOTPSubmit}>
               <div className="form-group">
+                <label>Enter OTP</label>
                 <input
                   type="tel"
-                  placeholder="Enter OTP"
+                  placeholder="Enter 6-digit OTP"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   maxLength="6"
@@ -143,7 +143,7 @@ const Login = () => {
                 className="btn-continue"
                 disabled={loading}
               >
-                {loading ? 'Verifying...' : 'Continue'}
+                {loading ? 'Verifying...' : 'Verify & Login'}
               </button>
 
               <div className="secondary-actions">
