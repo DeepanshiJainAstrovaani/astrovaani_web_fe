@@ -146,7 +146,7 @@ const VendorsPage = () => {
                   <td style={{ verticalAlign: 'middle', padding: '8px', minWidth: 220 }}>
                     <div style={{ display: 'flex', gap: 12, justifyContent: 'center', alignItems: 'center' }}>
                       {v.id && (
-                        <Link to={`/admindashboard/edit-vendor/${v.id}`}>
+                        <Link to={`/admin/edit-vendor/${v.id}`}>
                           <button className={styles['action-btn']} title="Edit" style={{ margin: 0 }}>Edit</button>
                         </Link>
                       )}

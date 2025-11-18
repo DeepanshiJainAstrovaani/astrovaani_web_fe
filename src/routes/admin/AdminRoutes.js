@@ -14,20 +14,13 @@ import EditVendor from '../../pages/admin/EditVendor';
 import SchedulePage from '../../pages/admin/SchedulePage';
 import InterviewFeedback from '../../pages/admin/InterviewFeedback';
 
-const RequireAdmin = ({ children }) => {
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
-  return isAdmin ? children : <Navigate to="/login" />;
-};
-
 const AdminRoutes = () => (
   <Routes>
     <Route
       element={
-        <RequireAdmin>
-          <AdminDashboardLayout>
-            <Outlet />
-          </AdminDashboardLayout>
-        </RequireAdmin>
+        <AdminDashboardLayout>
+          <Outlet />
+        </AdminDashboardLayout>
       }
     >
       <Route path="vendors" element={<VendorsPage />} />

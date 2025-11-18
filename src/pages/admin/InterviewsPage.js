@@ -151,7 +151,7 @@ const InterviewsPage = () => {
       return;
     }
     
-    window.location.href = `/admindashboard/edit-vendor/${vendorId}`;
+    window.location.href = `/admin/edit-vendor/${vendorId}`;
   };
 
   // 3. Send Meeting Link
