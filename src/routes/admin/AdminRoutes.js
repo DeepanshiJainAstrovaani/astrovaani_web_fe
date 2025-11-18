@@ -3,7 +3,6 @@ import { Navigate, Route, Routes, Outlet } from 'react-router-dom';
 import AdminDashboardLayout from '../../components/admin/AdminDashboardLayout';
 import VendorsPage from '../../pages/admin/VendorsPage';
 import CustomersPage from '../../pages/admin/CustomersPage';
-import LoginPage from '../../pages/admin/LoginPage';
 import BookingsPage from '../../pages/admin/BookingsPage';
 import InterviewsPage from '../../pages/admin/InterviewsPage';
 import PaymentsPage from '../../pages/admin/PaymentsPage';
@@ -17,12 +16,11 @@ import InterviewFeedback from '../../pages/admin/InterviewFeedback';
 
 const RequireAdmin = ({ children }) => {
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
-  return isAdmin ? children : <Navigate to="/admin/login" />;
+  return isAdmin ? children : <Navigate to="/login" />;
 };
 
 const AdminRoutes = () => (
   <Routes>
-    <Route path="login" element={<LoginPage />} />
     <Route
       element={
         <RequireAdmin>
