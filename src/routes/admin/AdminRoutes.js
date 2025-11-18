@@ -17,7 +17,7 @@ import InterviewFeedback from '../../pages/admin/InterviewFeedback';
 
 const RequireAdmin = ({ children }) => {
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
-  return isAdmin ? children : <Navigate to="/admindashboard/login" />;
+  return isAdmin ? children : <Navigate to="/admin/login" />;
 };
 
 const AdminRoutes = () => (

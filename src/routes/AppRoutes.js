@@ -46,9 +46,6 @@ const AppRoutes = () => (
         } 
       />
       
-      {/* Redirect old routes */}
-      <Route path="/admindashboard/*" element={<Navigate to="/admin/vendors" replace />} />
-      
       {/* Catch all - redirect to login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
