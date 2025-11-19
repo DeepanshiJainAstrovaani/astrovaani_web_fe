@@ -35,6 +35,7 @@ const EditVendor = () => {
     whatsapp: '',
     email: '',
     pincode: '',
+    accountholder: '',
     accountno: '',
     ifsc: '',
     status: '',
@@ -155,6 +156,7 @@ const EditVendor = () => {
           whatsapp: data.whatsapp || '',
           email: data.email || '',
           pincode: data.pincode || '',
+          accountholder: data.accountholder || '',
           accountno: data.accountno || '',
           ifsc: data.ifsc || '',
           status: data.status || '',
@@ -406,6 +408,7 @@ const EditVendor = () => {
       formData.append('whatsapp', form.whatsapp);
       formData.append('email', form.email);
       formData.append('pincode', form.pincode);
+      formData.append('accountholder', form.accountholder);
       formData.append('accountno', form.accountno);
       formData.append('ifsc', form.ifsc);
       formData.append('status', form.status);
@@ -467,6 +470,7 @@ const EditVendor = () => {
         whatsapp: updatedVendor.whatsapp || '',
         email: updatedVendor.email || '',
         pincode: updatedVendor.pincode || '',
+        accountholder: updatedVendor.accountholder || '',
         accountno: updatedVendor.accountno || '',
         ifsc: updatedVendor.ifsc || '',
         status: updatedVendor.status || '',
@@ -649,7 +653,7 @@ const EditVendor = () => {
             <div className="row" style={{ }}>
               <div className="col-md-4 mb-3">
                 <label>Account holder name</label>
-                <input type="text" className="form-control" value={vendor.accountholder || ''} readOnly />
+                <input type="text" name="accountholder" className="form-control" value={form.accountholder} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
                 <label>Account number</label>
