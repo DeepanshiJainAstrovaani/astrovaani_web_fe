@@ -230,42 +230,28 @@ export default function VendorInterview() {
           <img src={logo} alt="Astrovaani" style={getStyles(isMobile).logo} />
         </div>
         
-        <div style={getStyles(isMobile).card}>
+        <div style={getStyles(isMobile).successCard}>
           <div style={getStyles(isMobile).successBox}>
-            <h1 style={getStyles(isMobile).successTitle}>✅ Interview Scheduled Successfully!</h1>
+            <h1 style={getStyles(isMobile).successTitle}>Your interview has been scheduled successfully</h1>
             <p style={getStyles(isMobile).successMessage}>
-              Your interview has been confirmed. Be prepared and available at the selected time.
+              Be prepared and available on selected time. Good luck!
             </p>
 
             <div style={getStyles(isMobile).confirmedSlotBox}>
               <div style={getStyles(isMobile).infoRow}>
                 <span style={getStyles(isMobile).icon}>👤</span>
                 <div>
-                  <p style={getStyles(isMobile).label}>Vendor Name</p>
-                  <p style={getStyles(isMobile).value}>{interview.vendor.name}</p>
+                  <p style={getStyles(isMobile).value}>{interview.vendor.name} - Interviewer</p>
                 </div>
               </div>
 
               <div style={getStyles(isMobile).infoRow}>
                 <span style={getStyles(isMobile).icon}>🕐</span>
                 <div>
-                  <p style={getStyles(isMobile).label}>Interview Time</p>
                   <p style={getStyles(isMobile).value}>{formatDate(interview.confirmedSlot.scheduledAt)}</p>
                 </div>
               </div>
-
-              <div style={getStyles(isMobile).infoRow}>
-                <span style={getStyles(isMobile).icon}>⏱️</span>
-                <div>
-                  <p style={getStyles(isMobile).label}>Duration</p>
-                  <p style={getStyles(isMobile).value}>{interview.confirmedSlot.duration} minutes</p>
-                </div>
-              </div>
             </div>
-
-            <p style={getStyles(isMobile).note}>
-              Good luck with your interview! 🎉
-            </p>
           </div>
         </div>
       </div>
@@ -561,39 +547,50 @@ const getStyles = (isMobile) => ({
     margin: '16px auto',
     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
   },
+  successCard: {
+    background: '#ffffff',
+    padding: isMobile ? '24px 16px' : '48px 32px',
+    borderRadius: '0',
+    maxWidth: '800px',
+    margin: '0 auto',
+    minHeight: 'calc(100vh - 64px)',
+  },
   successBox: {
-    textAlign: 'center',
+    textAlign: 'left',
+    maxWidth: '600px',
   },
   successTitle: {
-    fontSize: isMobile ? '18px' : '24px',
-    color: '#2e7d32',
-    marginBottom: isMobile ? '12px' : '16px',
+    fontSize: isMobile ? '20px' : '28px',
+    color: '#000000',
+    marginBottom: isMobile ? '8px' : '12px',
     fontWeight: '600',
     lineHeight: '1.3',
   },
   successMessage: {
     fontSize: isMobile ? '14px' : '16px',
-    color: '#666',
+    color: '#666666',
     marginBottom: isMobile ? '24px' : '32px',
     lineHeight: '1.6',
+    fontWeight: '400',
   },
   confirmedSlotBox: {
     backgroundColor: '#e8f5e9',
-    border: '1px solid #81c784',
-    borderRadius: isMobile ? '6px' : '8px',
-    padding: isMobile ? '16px' : '24px',
+    border: '1px solid #a5d6a7',
+    borderRadius: isMobile ? '8px' : '10px',
+    padding: isMobile ? '20px 16px' : '24px 20px',
     marginBottom: isMobile ? '16px' : '24px',
   },
   infoRow: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: isMobile ? '12px' : '16px',
-    marginBottom: isMobile ? '12px' : '16px',
+    marginBottom: isMobile ? '16px' : '20px',
     textAlign: 'left',
   },
   icon: {
-    fontSize: isMobile ? '24px' : '28px',
+    fontSize: isMobile ? '28px' : '32px',
     lineHeight: 1,
+    paddingTop: '2px',
   },
   label: {
     fontSize: isMobile ? '12px' : '14px',
@@ -602,11 +599,11 @@ const getStyles = (isMobile) => ({
     fontWeight: '500',
   },
   value: {
-    fontSize: isMobile ? '14px' : '16px',
-    fontWeight: '600',
-    color: '#222',
-    margin: '4px 0 0 0',
-    lineHeight: '1.4',
+    fontSize: isMobile ? '15px' : '17px',
+    fontWeight: '500',
+    color: '#000000',
+    margin: 0,
+    lineHeight: '1.5',
   },
   note: {
     fontSize: isMobile ? '14px' : '16px',
