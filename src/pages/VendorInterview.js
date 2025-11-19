@@ -42,14 +42,18 @@ export default function VendorInterview() {
         isScheduled: data.isScheduled,
         availableSlots: data.availableSlots?.length,
         confirmedSlot: data.confirmedSlot ? 'Yes' : 'No',
-        onboardingstatus: data.vendor?.onboardingstatus
+        onboardingstatus: data.vendor?.onboardingstatus,
+        fullData: data
       });
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || 'Failed to load interview details');
       }
 
+      // IMPORTANT: Set interview data even if scheduled
+      // The UI will handle showing success page vs slot selection
       setInterview(data);
+      setError(''); // Clear any errors
       setLoading(false);
     } catch (err) {
       console.error('Error fetching interview:', err);

@@ -75,13 +75,23 @@ const SchedulePage = () => {
         if (r2.ok) {
           const d2 = await r2.json();
           console.log('✅ Schedules data received:', d2);
+          console.log('📊 Schedules structure:', JSON.stringify(d2, null, 2));
+          
           // expect { proposed: [], confirmed: [] } or an array
           if (Array.isArray(d2)) {
-            setConfirmed(d2.filter(s => s.status === 'confirmed' || s.status === 'accepted'));
-            setSlots(d2.filter(s => !s.status || s.status === 'proposed'));
+            const confirmedSlots = d2.filter(s => s.status === 'confirmed' || s.status === 'accepted');
+            const proposedSlots = d2.filter(s => !s.status || s.status === 'proposed');
+            console.log('✅ Confirmed slots found:', confirmedSlots.length, confirmedSlots);
+            console.log('✅ Proposed slots found:', proposedSlots.length, proposedSlots);
+            setConfirmed(confirmedSlots);
+            setSlots(proposedSlots);
           } else {
-            setConfirmed(d2.confirmed || []);
-            setSlots(d2.proposed || []);
+            const confirmedSlots = d2.confirmed || [];
+            const proposedSlots = d2.proposed || [];
+            console.log('✅ Confirmed slots from object:', confirmedSlots.length, confirmedSlots);
+            console.log('✅ Proposed slots from object:', proposedSlots.length, proposedSlots);
+            setConfirmed(confirmedSlots);
+            setSlots(proposedSlots);
           }
         } else {
           console.error('❌ Failed to fetch schedules:', r2.status);
