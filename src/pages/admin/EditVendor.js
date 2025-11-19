@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styles from './AdminTable.module.css';
 // Lightweight in-component notification to avoid external toast lib incompatibility in dev
 const useNotification = () => {
@@ -20,7 +20,6 @@ const ACCOUNT_STATUS = ["inreview", "active", "inactive", "inprocess"];
 
 const EditVendor = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [notification, showNotification] = useNotification();
   const [vendor, setVendor] = useState(null);
   const [photos, setPhotos] = useState([null, null, null, null, null]);
@@ -531,28 +530,6 @@ const EditVendor = () => {
       });
       setAbout(updatedVendor.about || '');
       showNotification('success', '✅ Vendor updated successfully!');
-      // Delay navigation so toast is visible, then navigate to vendors list
-      setTimeout(() => {
-        try {
-          navigate('/admindashboard/vendors');
-        } catch (navErr) {
-          console.warn('Navigation failed:', navErr);
-        }
-      }, 800);
-      // Fallback forced redirect a bit later if SPA navigation doesn't occur
-      setTimeout(() => {
-        try {
-          if (typeof window !== 'undefined' && window.location.pathname !== '/admindashboard/vendors') {
-            window.location.href = '/admindashboard/vendors';
-          }
-        } catch (e) {
-          console.warn('Fallback redirect failed:', e);
-        }
-      }, 1600);
-      
-      // Optionally refresh the page or navigate back
-      // window.location.reload();
-      // or navigate to vendor list: navigate('/admin/vendors');
       
     } catch (error) {
       console.error('Error updating vendor:', error);

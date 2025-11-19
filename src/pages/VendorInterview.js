@@ -181,46 +181,55 @@ export default function VendorInterview() {
             <img src={logo} alt="Astrovaani" style={getStyles(isMobile).logo} />
           </div>
           
-          <div style={getStyles(isMobile).card}>
+          <div style={getStyles(isMobile).successCard}>
             <div style={getStyles(isMobile).successBox}>
-              <h1 style={getStyles(isMobile).successTitle}>🎉 Interview Completed!</h1>
+              <h1 style={getStyles(isMobile).successTitle}>Interview Completed!</h1>
               <p style={getStyles(isMobile).successMessage}>
                 Thank you for attending your interview with Astrovaani. Our team has reviewed your profile and interview performance.
               </p>
 
-              <div style={{...getStyles(isMobile).confirmedSlotBox, backgroundColor: '#e3f2fd', borderColor: '#90caf9'}}>
+              <div style={getStyles(isMobile).confirmedSlotBox}>
                 <div style={getStyles(isMobile).infoRow}>
-                  <span style={getStyles(isMobile).icon}>✅</span>
+                  <div style={getStyles(isMobile).iconCircle}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={getStyles(isMobile).iconSvg}>
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
                   <div>
-                    <p style={getStyles(isMobile).label}>Status</p>
                     <p style={getStyles(isMobile).value}>Interview Completed Successfully</p>
                   </div>
                 </div>
 
                 <div style={getStyles(isMobile).infoRow}>
-                  <span style={getStyles(isMobile).icon}>📄</span>
+                  <div style={getStyles(isMobile).iconCircle}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={getStyles(isMobile).iconSvg}>
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
                   <div>
-                    <p style={getStyles(isMobile).label}>Next Steps</p>
                     <p style={getStyles(isMobile).value}>
                       You will receive an agreement document via WhatsApp shortly. Please review and sign it to proceed with the onboarding process.
                     </p>
                   </div>
                 </div>
 
-                <div style={getStyles(isMobile).infoRow}>
-                  <span style={getStyles(isMobile).icon}>📞</span>
+                <div style={{...getStyles(isMobile).infoRow, marginBottom: 0}}>
+                  <div style={getStyles(isMobile).iconCircle}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={getStyles(isMobile).iconSvg}>
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                  </div>
                   <div>
-                    <p style={getStyles(isMobile).label}>Need Help?</p>
                     <p style={getStyles(isMobile).value}>
                       Contact us at support@astrovaani.com for any queries.
                     </p>
                   </div>
                 </div>
               </div>
-
-              <p style={{...getStyles(isMobile).note, color: '#1976d2'}}>
-                We appreciate your patience and look forward to having you on our platform! 🌟
-              </p>
             </div>
           </div>
         </div>
@@ -243,14 +252,24 @@ export default function VendorInterview() {
 
             <div style={getStyles(isMobile).confirmedSlotBox}>
               <div style={getStyles(isMobile).infoRow}>
-                <span style={getStyles(isMobile).icon}>👤</span>
+                <div style={getStyles(isMobile).iconCircle}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={getStyles(isMobile).iconSvg}>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
                 <div>
                   <p style={getStyles(isMobile).value}>{interview.vendor.name} - Interviewer</p>
                 </div>
               </div>
 
-              <div style={getStyles(isMobile).infoRow}>
-                <span style={getStyles(isMobile).icon}>🕐</span>
+              <div style={{...getStyles(isMobile).infoRow, marginBottom: 0}}>
+                <div style={getStyles(isMobile).iconCircle}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={getStyles(isMobile).iconSvg}>
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
                 <div>
                   <p style={getStyles(isMobile).value}>{formatDate(interview.confirmedSlot.scheduledAt)}</p>
                 </div>
@@ -553,18 +572,17 @@ const getStyles = (isMobile) => ({
   },
   successCard: {
     background: '#ffffff',
-    padding: isMobile ? '24px 16px' : '48px 32px',
+    padding: isMobile ? '24px 16px 32px 16px' : '48px 32px 48px 32px',
     borderRadius: '0',
     maxWidth: '800px',
-    margin: '0 auto',
-    minHeight: 'calc(100vh - 64px)',
+    margin: '2rem auto',
+    minHeight: isMobile ? 'auto' : '25rem',
   },
   successBox: {
     textAlign: 'left',
-    maxWidth: '600px',
   },
   successTitle: {
-    fontSize: isMobile ? '20px' : '28px',
+    fontSize: isMobile ? '15px' : '20px',
     color: '#000000',
     marginBottom: isMobile ? '8px' : '12px',
     fontWeight: '600',
@@ -581,20 +599,33 @@ const getStyles = (isMobile) => ({
     backgroundColor: '#e8f5e9',
     border: '1px solid #a5d6a7',
     borderRadius: isMobile ? '8px' : '10px',
-    padding: isMobile ? '20px 16px' : '24px 20px',
-    marginBottom: isMobile ? '16px' : '24px',
+    padding: isMobile ? '20px 16px 28px 16px' : '24px 20px 36px 20px',
+    marginBottom: 0,
   },
   infoRow: {
     display: 'flex',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     gap: isMobile ? '12px' : '16px',
-    marginBottom: isMobile ? '16px' : '20px',
+    marginBottom: isMobile ? '20px' : '24px',
     textAlign: 'left',
+    '&:last-child': {
+      marginBottom: 0,
+    }
   },
-  icon: {
-    fontSize: isMobile ? '28px' : '32px',
-    lineHeight: 1,
-    paddingTop: '2px',
+  iconCircle: {
+    backgroundColor: '#ffd600',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: isMobile ? '48px' : '35px',
+    height: isMobile ? '48px' : '35px',
+    flexShrink: 0,
+  },
+  iconSvg: {
+    width: isMobile ? '24px' : '20px',
+    height: isMobile ? '24px' : '20px',
+    color: '#000',
   },
   label: {
     fontSize: isMobile ? '12px' : '14px',
