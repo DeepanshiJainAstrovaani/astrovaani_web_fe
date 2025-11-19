@@ -28,6 +28,7 @@ const EditVendor = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
+    name: '',
     gender: '',
     state: '',
     city: '',
@@ -35,9 +36,21 @@ const EditVendor = () => {
     whatsapp: '',
     email: '',
     pincode: '',
+    age: '',
+    experience: '',
+    skills: '',
+    language: '',
+    availability: '',
     accountholder: '',
     accountno: '',
     ifsc: '',
+    priceperminute: '',
+    '15minrate': '',
+    '25minrate': '',
+    '30minrate': '',
+    '45minrate': '',
+    '1hourrate': '',
+    '90minrate': '',
     status: '',
     category: ''
   });
@@ -149,6 +162,7 @@ const EditVendor = () => {
           category: data.category
         });
         setForm({
+          name: data.name || '',
           gender: data.gender || '',
           state: data.state || '',
           city: data.city || '',
@@ -156,9 +170,21 @@ const EditVendor = () => {
           whatsapp: data.whatsapp || '',
           email: data.email || '',
           pincode: data.pincode || '',
+          age: data.age || '',
+          experience: data.experience || '',
+          skills: data.skills || '',
+          language: data.language || '',
+          availability: data.availability || '',
           accountholder: data.accountholder || '',
           accountno: data.accountno || '',
           ifsc: data.ifsc || '',
+          priceperminute: data.priceperminute || '',
+          '15minrate': data['15minrate'] || '',
+          '25minrate': data['25minrate'] || '',
+          '30minrate': data['30minrate'] || '',
+          '45minrate': data['45minrate'] || '',
+          '1hourrate': data['1hourrate'] || '',
+          '90minrate': data['90minrate'] || '',
           status: data.status || '',
           category: data.category || ''
         });
@@ -374,12 +400,13 @@ const EditVendor = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!/^\d{10}$/.test(form.phone)) newErrors.phone = "Enter valid 10-digit phone number";
+    // Only validate if fields have values - admin can leave fields empty
+    if (form.phone && !/^\d{10}$/.test(form.phone)) newErrors.phone = "Enter valid 10-digit phone number";
     if (form.whatsapp && !/^\d{10}$/.test(form.whatsapp)) newErrors.whatsapp = "Enter valid 10-digit WhatsApp number";
-    if (!/^\d{6}$/.test(form.pincode)) newErrors.pincode = "Enter valid 6-digit pincode";
+    if (form.pincode && !/^\d{6}$/.test(form.pincode)) newErrors.pincode = "Enter valid 6-digit pincode";
     if (form.accountno && !/^\d{9,18}$/.test(form.accountno)) newErrors.accountno = "Enter valid account number (9-18 digits)";
-    if (!/^([A-Za-z]{4}[A-Za-z0-9]{7})$/.test(form.ifsc)) newErrors.ifsc = "Enter valid IFSC code";
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = "Enter valid email address";
+    if (form.ifsc && !/^([A-Za-z]{4}[A-Za-z0-9]{7})$/.test(form.ifsc)) newErrors.ifsc = "Enter valid IFSC code";
+    if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = "Enter valid email address";
     console.log('Validation errors:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -400,6 +427,7 @@ const EditVendor = () => {
       const formData = new FormData();
 
       // Add form fields
+      formData.append('name', form.name);
       formData.append('category', form.category);
       formData.append('gender', form.gender);
       formData.append('state', form.state);
@@ -408,9 +436,21 @@ const EditVendor = () => {
       formData.append('whatsapp', form.whatsapp);
       formData.append('email', form.email);
       formData.append('pincode', form.pincode);
+      formData.append('age', form.age);
+      formData.append('experience', form.experience);
+      formData.append('skills', form.skills);
+      formData.append('language', form.language);
+      formData.append('availability', form.availability);
       formData.append('accountholder', form.accountholder);
       formData.append('accountno', form.accountno);
       formData.append('ifsc', form.ifsc);
+      formData.append('priceperminute', form.priceperminute);
+      formData.append('15minrate', form['15minrate']);
+      formData.append('25minrate', form['25minrate']);
+      formData.append('30minrate', form['30minrate']);
+      formData.append('45minrate', form['45minrate']);
+      formData.append('1hourrate', form['1hourrate']);
+      formData.append('90minrate', form['90minrate']);
       formData.append('status', form.status);
       formData.append('about', about);
 
@@ -463,6 +503,7 @@ const EditVendor = () => {
         updatedVendor.photo5 || null,
       ]);
       setForm({
+        name: updatedVendor.name || '',
         gender: updatedVendor.gender || '',
         state: updatedVendor.state || '',
         city: updatedVendor.city || '',
@@ -470,9 +511,21 @@ const EditVendor = () => {
         whatsapp: updatedVendor.whatsapp || '',
         email: updatedVendor.email || '',
         pincode: updatedVendor.pincode || '',
+        age: updatedVendor.age || '',
+        experience: updatedVendor.experience || '',
+        skills: updatedVendor.skills || '',
+        language: updatedVendor.language || '',
+        availability: updatedVendor.availability || '',
         accountholder: updatedVendor.accountholder || '',
         accountno: updatedVendor.accountno || '',
         ifsc: updatedVendor.ifsc || '',
+        priceperminute: updatedVendor.priceperminute || '',
+        '15minrate': updatedVendor['15minrate'] || '',
+        '25minrate': updatedVendor['25minrate'] || '',
+        '30minrate': updatedVendor['30minrate'] || '',
+        '45minrate': updatedVendor['45minrate'] || '',
+        '1hourrate': updatedVendor['1hourrate'] || '',
+        '90minrate': updatedVendor['90minrate'] || '',
         status: updatedVendor.status || '',
         category: updatedVendor.category || ''
       });
@@ -567,7 +620,7 @@ const EditVendor = () => {
             <div className="row" style={{}}>
               <div className="col-md-4 mb-3">
                 <label>Name</label>
-                <input type="text" className="form-control" value={vendor.name || ''} readOnly />
+                <input type="text" name="name" className="form-control" value={form.name} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
                 <label>Category</label>
@@ -601,7 +654,7 @@ const EditVendor = () => {
               </div>
               <div className="col-md-4 mb-3">
                 <label>Age</label>
-                <input type="number" className="form-control" value={vendor.age || ''} readOnly />
+                <input type="number" name="age" className="form-control" value={form.age} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
                 <label>Your State</label>
@@ -624,19 +677,19 @@ const EditVendor = () => {
               </div>
               <div className="col-md-4 mb-3">
                 <label>Experience</label>
-                <input type="text" className="form-control" value={vendor.experience || ''} readOnly />
+                <input type="text" name="experience" className="form-control" value={form.experience} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
                 <label>Skills</label>
-                <input type="text" className="form-control" value={vendor.skills || ''} readOnly />
+                <input type="text" name="skills" className="form-control" value={form.skills} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
                 <label>Language</label>
-                <input type="text" className="form-control" value={vendor.language || ''} readOnly />
+                <input type="text" name="language" className="form-control" value={form.language} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
                 <label>Availability</label>
-                <input type="text" className="form-control" value={vendor.availability || ''} readOnly />
+                <input type="text" name="availability" className="form-control" value={form.availability} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
                 <label>Account Status</label>
@@ -673,31 +726,31 @@ const EditVendor = () => {
             <div className="row" style={{ }}>
               <div className="col-md-4 mb-3">
                 <label>Pricing Per Minute</label>
-                <input type="text" className="form-control" value={vendor.priceperminute || ''} readOnly />
+                <input type="number" name="priceperminute" className="form-control" value={form.priceperminute} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
                 <label>15 min</label>
-                <input type="text" className="form-control" value={vendor['15minrate'] || ''} readOnly />
+                <input type="number" name="15minrate" className="form-control" value={form['15minrate']} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
                 <label>25 min</label>
-                <input type="text" className="form-control" value={vendor['25minrate'] || ''} readOnly />
+                <input type="number" name="25minrate" className="form-control" value={form['25minrate']} onChange={handleChange} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>30 min</label>
-                <input type="text" className="form-control" value={vendor['30minrate'] || ''} readOnly />
+                <input type="number" name="30minrate" className="form-control" value={form['30minrate']} onChange={handleChange} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>45 min</label>
-                <input type="text" className="form-control" value={vendor['45minrate'] || ''} readOnly />
+                <input type="number" name="45minrate" className="form-control" value={form['45minrate']} onChange={handleChange} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>1 hour</label>
-                <input type="text" className="form-control" value={vendor['1hourrate'] || ''} readOnly />
+                <input type="number" name="1hourrate" className="form-control" value={form['1hourrate']} onChange={handleChange} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>90 min</label>
-                <input type="text" className="form-control" value={vendor['90minrate'] || ''} readOnly />
+                <input type="number" name="90minrate" className="form-control" value={form['90minrate']} onChange={handleChange} />
               </div>
             </div>
           </div>

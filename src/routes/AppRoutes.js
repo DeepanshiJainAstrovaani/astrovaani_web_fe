@@ -22,9 +22,17 @@ const AppRoutes = () => (
       {/* Auth Route */}
       <Route path="/login" element={<Login />} />
       
-      {/* Protected Admin Routes */}
+      {/* Protected Admin Routes - Support both /admin and /admindashboard paths */}
       <Route 
         path="/admin/*" 
+        element={
+          <ProtectedRoute>
+            <AdminRoutes />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admindashboard/*" 
         element={
           <ProtectedRoute>
             <AdminRoutes />
