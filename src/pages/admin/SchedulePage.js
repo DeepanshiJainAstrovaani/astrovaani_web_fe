@@ -38,25 +38,43 @@ const SchedulePage = () => {
   const [confirmed, setConfirmed] = useState([]); // confirmed slots from backend
   const [errorMessage, setErrorMessage] = useState('');
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!vendorId) return;
+    
+    console.log('🔍 Loading vendor data for ID:', vendorId);
+    console.log('🌐 API URL:', API_URL);
+    
     // fetch vendor details and confirmed slots (if backend exists)
     (async () => {
       try {
+        console.log('📡 Fetching vendor from:', `${API_URL}/vendors/${vendorId}`);
         const res = await fetch(`${API_URL}/vendors/${vendorId}`);
+        console.log('📥 Vendor response status:', res.status);
+        
         if (res.ok) {
           const data = await res.json();
+          console.log('✅ Vendor data received:', data);
           setVendor(data.vendor || data);
+        } else {
+          const errorText = await res.text();
+          console.error('❌ Failed to fetch vendor:', res.status, errorText);
+          setErrorMessage(`Failed to load vendor: ${res.status} ${res.statusText}`);
         }
       } catch (e) {
-        // ignore
+        console.error('❌ Error fetching vendor:', e);
+        setErrorMessage(`Error connecting to server: ${e.message}`);
       }
 
       try {
+        console.log('📡 Fetching schedules from:', `${API_URL}/vendors/${vendorId}/schedules`);
         const r2 = await fetch(`${API_URL}/vendors/${vendorId}/schedules`);
+        console.log('📥 Schedules response status:', r2.status);
+        
         if (r2.ok) {
           const d2 = await r2.json();
+          console.log('✅ Schedules data received:', d2);
           // expect { proposed: [], confirmed: [] } or an array
           if (Array.isArray(d2)) {
             setConfirmed(d2.filter(s => s.status === 'confirmed' || s.status === 'accepted'));
@@ -65,9 +83,13 @@ const SchedulePage = () => {
             setConfirmed(d2.confirmed || []);
             setSlots(d2.proposed || []);
           }
+        } else {
+          console.error('❌ Failed to fetch schedules:', r2.status);
         }
       } catch (e) {
-        // ignore
+        console.error('❌ Error fetching schedules:', e);
+      } finally {
+        setLoading(false);
       }
     })();
   }, [vendorId]);
@@ -267,8 +289,14 @@ const SchedulePage = () => {
         <a href="/admindashboard" style={styles.backLink} onClick={(e) => { e.preventDefault(); navigate('/admindashboard'); }}>Back to dashboard</a>
       </div>
 
-      <div style={styles.grid}>
-        <div style={{ ...cardBase }}>
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: 40, color: '#6b7280' }}>
+          <div style={{ fontSize: 18, marginBottom: 10 }}>Loading vendor data...</div>
+          <div style={{ fontSize: 14 }}>Please wait</div>
+        </div>
+      ) : (
+        <div style={styles.grid}>
+          <div style={{ ...cardBase }}>
           <h3 style={styles.cardTitle}>Scheduling Interview</h3>
           <div style={styles.vendorSubtitle}>{vendor ? `With ${vendor.name || vendor.fullName || vendor.vendorName}` : 'Select a vendor'}</div>
 
@@ -349,7 +377,8 @@ const SchedulePage = () => {
             ))}
           </div>
         </div>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

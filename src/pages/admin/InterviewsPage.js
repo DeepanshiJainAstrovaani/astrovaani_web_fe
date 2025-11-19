@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 import styles from './AdminTable.module.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const InterviewsPage = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [activeStatus, setActiveStatus] = useState('Scheduled');
   const [vendors, setVendors] = useState([]);
@@ -13,13 +15,10 @@ const InterviewsPage = () => {
   const [pendingCount, setPendingCount] = useState(0);
 
   // Modal states
-  const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSendLinkModal, setShowSendLinkModal] = useState(false);
   const [showNotifyModal, setShowNotifyModal] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState(null);
-  const [scheduleSlots, setScheduleSlots] = useState([]);
-  const [newSlot, setNewSlot] = useState({ date: '', time: '' });
   const [meetingLink, setMeetingLink] = useState('');
 
   // Fetch all vendors with interview schedules
@@ -225,62 +224,7 @@ const InterviewsPage = () => {
 
   // 5. Schedule - Opens scheduling modal
   const handleSchedule = (vendor) => {
-    setSelectedVendor(vendor);
-    setScheduleSlots(vendor.schedules || []);
-    setShowScheduleModal(true);
-  };
-
-  const addSlot = () => {
-    if (!newSlot.date || !newSlot.time) {
-      alert('Please select both date and time');
-      return;
-    }
-
-    const dateTimeString = `${newSlot.date}T${newSlot.time}:00`;
-    const newSchedule = {
-      scheduledAt: new Date(dateTimeString),
-      duration: 30, // Default 30 minutes
-      status: 'proposed',
-      tempId: Date.now() // Temporary ID for UI
-    };
-
-    setScheduleSlots([...scheduleSlots, newSchedule]);
-    setNewSlot({ date: '', time: '' });
-  };
-
-  const removeSlot = (index) => {
-    const updated = scheduleSlots.filter((_, i) => i !== index);
-    setScheduleSlots(updated);
-  };
-
-  const saveSchedules = async () => {
-    if (scheduleSlots.length === 0) {
-      alert('Please add at least one time slot');
-      return;
-    }
-
-    try {
-      const vendorId = getVendorId(selectedVendor);
-      const response = await fetch(`${API_URL}/vendors/${vendorId}/schedule`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schedules: scheduleSlots }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        alert('Schedules saved successfully! Interview code generated.');
-        setShowScheduleModal(false);
-        setScheduleSlots([]);
-        fetchVendors();
-      } else {
-        alert(data.message || 'Failed to save schedules');
-      }
-    } catch (error) {
-      console.error('Error saving schedules:', error);
-      alert('Failed to save schedules');
-    }
+    navigate(`/admin/schedule/${vendor._id}`);
   };
 
   // 6. Send Reminder (for pending vendors)
@@ -432,57 +376,6 @@ const InterviewsPage = () => {
             </tbody>
           </table>
         </>
-      )}
-
-      {/* Schedule Modal */}
-      {showScheduleModal && (
-        <div className={styles['modal-overlay']} onClick={() => setShowScheduleModal(false)}>
-          <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
-            <div className={styles['modal-header']}>
-              <h2>Schedule Interview</h2>
-              <p>For {selectedVendor?.name}</p>
-            </div>
-            
-            <div className={styles['modal-body']}>
-              <div className={styles['field-group']}>
-                <label>Date</label>
-                <input
-                  type="date"
-                  value={newSlot.date}
-                  onChange={(e) => setNewSlot({ ...newSlot, date: e.target.value })}
-                  className={styles['input-field']}
-                />
-              </div>
-
-              <div className={styles['field-group']}>
-                <label>Time</label>
-                <input
-                  type="time"
-                  value={newSlot.time}
-                  onChange={(e) => setNewSlot({ ...newSlot, time: e.target.value })}
-                  className={styles['input-field']}
-                />
-              </div>
-
-              <button onClick={addSlot} className={styles['add-btn']}>Add Slot</button>
-
-              <div className={styles['slots-list']}>
-                <h3>Scheduled Slots ({scheduleSlots.length})</h3>
-                {scheduleSlots.map((slot, index) => (
-                  <div key={index} className={styles['slot-item']}>
-                    <span>{new Date(slot.scheduledAt).toLocaleString('en-GB')}</span>
-                    <button onClick={() => removeSlot(index)} className={styles['remove-btn']}>✕</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles['modal-actions']}>
-              <button onClick={() => setShowScheduleModal(false)} className={styles['cancel-btn']}>Close</button>
-              <button onClick={saveSchedules} className={styles['confirm-btn']}>Save & Notify Vendor</button>
-            </div>
-          </div>
-        </div>
       )}
 
       {/* Send Link Modal */}

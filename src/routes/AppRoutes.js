@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useParams, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from '../pages/Home';
 import FreeKundali from '../pages/FreeKundali';
 import Blog from '../pages/Blog';
@@ -8,11 +8,6 @@ import Login from '../components/Auth/Login';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import AdminRoutes from './admin/AdminRoutes';
 import VendorInterview from '../pages/VendorInterview';
-
-const AdminScheduleRedirect = () => {
-  const { vendorId } = useParams();
-  return <Navigate to={`/admin/schedule/${vendorId}`} replace />;
-};
 
 const AppRoutes = () => (
   <Router>
@@ -33,15 +28,6 @@ const AppRoutes = () => (
         element={
           <ProtectedRoute>
             <AdminRoutes />
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/admin/schedule/:vendorId" 
-        element={
-          <ProtectedRoute>
-            <AdminScheduleRedirect />
           </ProtectedRoute>
         } 
       />
