@@ -116,7 +116,7 @@ const VendorsPage = () => {
               <th>Name</th>
               <th>Category</th>
               <th>Joined</th>
-              <th>Actions</th>
+              <th style={{ textAlign: 'center' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -150,7 +150,10 @@ const VendorsPage = () => {
                           <button className={styles['action-btn']} title="Edit" style={{ margin: 0 }}>Edit</button>
                         </Link>
                       )}
-                      <button className={styles['action-btn']} title="Schedule" style={{ margin: 0 }} onClick={() => { navigate(`/admin/schedule/${v._id || v.id}`); }}>Schedule</button>
+                      {/* Only show Schedule button if activeStatus is 'New' */}
+                      {activeStatus === 'New' && (
+                        <button className={styles['action-btn']} title="Schedule" style={{ margin: 0 }} onClick={() => { navigate(`/admin/schedule/${v._id || v.id}`); }}>Schedule</button>
+                      )}
                       <button className={styles['action-btn-reject']} title="Reject" style={{ margin: 0 }}>Reject</button>
                     </div>
                   </td>

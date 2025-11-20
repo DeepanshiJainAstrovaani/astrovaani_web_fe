@@ -751,34 +751,34 @@ const EditVendor = () => {
               </div>
               <div className="col-md-4 mb-3">
                 <label>Pricing Per Minute</label>
-                <input type="number" name="priceperminute" className="form-control" value={form.priceperminute} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
+                <input type="number" name="priceperminute" className="form-control" value={form.priceperminute} onChange={handleChange} />
                 <small style={{ color: '#666', fontSize: '0.85em', display: 'block', marginTop: '4px' }}>
                   💡 Other duration prices will be auto-calculated
                 </small>
               </div>
               <div className="col-md-4 mb-3">
                 <label>15 min</label>
-                <input type="number" name="15minrate" className="form-control" value={form['15minrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
+                <input type="number" name="15minrate" className="form-control" value={form['15minrate']} onChange={handleChange} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>25 min</label>
-                <input type="number" name="25minrate" className="form-control" value={form['25minrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
+                <input type="number" name="25minrate" className="form-control" value={form['25minrate']} onChange={handleChange} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>30 min</label>
-                <input type="number" name="30minrate" className="form-control" value={form['30minrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
+                <input type="number" name="30minrate" className="form-control" value={form['30minrate']} onChange={handleChange} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>45 min</label>
-                <input type="number" name="45minrate" className="form-control" value={form['45minrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
+                <input type="number" name="45minrate" className="form-control" value={form['45minrate']} onChange={handleChange} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>1 hour</label>
-                <input type="number" name="1hourrate" className="form-control" value={form['1hourrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
+                <input type="number" name="1hourrate" className="form-control" value={form['1hourrate']} onChange={handleChange} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>90 min</label>
-                <input type="number" name="90minrate" className="form-control" value={form['90minrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
+                <input type="number" name="90minrate" className="form-control" value={form['90minrate']} onChange={handleChange} />
               </div>
             </div>
           </div>
