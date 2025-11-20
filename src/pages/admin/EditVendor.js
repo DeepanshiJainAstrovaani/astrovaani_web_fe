@@ -51,7 +51,8 @@ const EditVendor = () => {
     '1hourrate': '',
     '90minrate': '',
     status: '',
-    category: ''
+    category: '',
+    pricingtype: 'PAID' // NEW FIELD
   });
   const [errors, setErrors] = useState({});
   const [stateOptions, setStateOptions] = useState([]);
@@ -185,7 +186,8 @@ const EditVendor = () => {
           '1hourrate': data['1hourrate'] || '',
           '90minrate': data['90minrate'] || '',
           status: data.status || '',
-          category: data.category || ''
+          category: data.category || '',
+          pricingtype: data.pricingtype || 'PAID' // NEW FIELD
         });
         
         // If vendor has a state, make sure it's in the options and fetch cities
@@ -414,19 +416,33 @@ const EditVendor = () => {
   const handleChange = e => {
     const { name, value } = e.target;
     console.log(`Form field changed: ${name} = ${value}`);
-    
+    // Pricing type logic
+    if (name === 'pricingtype') {
+      setForm(f => ({
+        ...f,
+        pricingtype: value,
+        priceperminute: value === 'FREE' ? 0 : f.priceperminute,
+        '15minrate': value === 'FREE' ? 0 : f['15minrate'],
+        '25minrate': value === 'FREE' ? 0 : f['25minrate'],
+        '30minrate': value === 'FREE' ? 0 : f['30minrate'],
+        '45minrate': value === 'FREE' ? 0 : f['45minrate'],
+        '1hourrate': value === 'FREE' ? 0 : f['1hourrate'],
+        '90minrate': value === 'FREE' ? 0 : f['90minrate']
+      }));
+      return;
+    }
     // If pricing per minute changes, auto-calculate all duration rates
     if (name === 'priceperminute') {
       const pricePerMin = parseFloat(value) || 0;
       setForm(f => ({ 
         ...f, 
-        [name]: value,
-        '15minrate': pricePerMin > 0 ? pricePerMin * 15 : '',
-        '25minrate': pricePerMin > 0 ? pricePerMin * 25 : '',
-        '30minrate': pricePerMin > 0 ? pricePerMin * 30 : '',
-        '45minrate': pricePerMin > 0 ? pricePerMin * 45 : '',
-        '1hourrate': pricePerMin > 0 ? pricePerMin * 60 : '',
-        '90minrate': pricePerMin > 0 ? pricePerMin * 90 : ''
+        [name]: pricePerMin,
+        '15minrate': pricePerMin > 0 ? pricePerMin * 15 : 0,
+        '25minrate': pricePerMin > 0 ? pricePerMin * 25 : 0,
+        '30minrate': pricePerMin > 0 ? pricePerMin * 30 : 0,
+        '45minrate': pricePerMin > 0 ? pricePerMin * 45 : 0,
+        '1hourrate': pricePerMin > 0 ? pricePerMin * 60 : 0,
+        '90minrate': pricePerMin > 0 ? pricePerMin * 90 : 0
       }));
     } else {
       setForm(f => ({ ...f, [name]: value }));
@@ -459,14 +475,15 @@ const EditVendor = () => {
       formData.append('accountholder', form.accountholder);
       formData.append('accountno', form.accountno);
       formData.append('ifsc', form.ifsc);
-      formData.append('priceperminute', form.priceperminute || '');
-      formData.append('15minrate', form['15minrate'] || '');
-      formData.append('25minrate', form['25minrate'] || '');
-      formData.append('30minrate', form['30minrate'] || '');
-      formData.append('45minrate', form['45minrate'] || '');
-      formData.append('1hourrate', form['1hourrate'] || '');
-      formData.append('90minrate', form['90minrate'] || '');
+      formData.append('priceperminute', form.priceperminute);
+      formData.append('15minrate', form['15minrate']);
+      formData.append('25minrate', form['25minrate']);
+      formData.append('30minrate', form['30minrate']);
+      formData.append('45minrate', form['45minrate']);
+      formData.append('1hourrate', form['1hourrate']);
+      formData.append('90minrate', form['90minrate']);
       formData.append('status', form.status);
+      formData.append('pricingtype', form.pricingtype); // NEW FIELD
       
       // Debug: Log pricing values before submit
       console.log('💰 Pricing values being submitted:', {
@@ -545,15 +562,16 @@ const EditVendor = () => {
         accountholder: updatedVendor.accountholder || '',
         accountno: updatedVendor.accountno || '',
         ifsc: updatedVendor.ifsc || '',
-        priceperminute: updatedVendor.priceperminute || '',
-        '15minrate': updatedVendor['15minrate'] || '',
-        '25minrate': updatedVendor['25minrate'] || '',
-        '30minrate': updatedVendor['30minrate'] || '',
-        '45minrate': updatedVendor['45minrate'] || '',
-        '1hourrate': updatedVendor['1hourrate'] || '',
-        '90minrate': updatedVendor['90minrate'] || '',
+        priceperminute: updatedVendor.priceperminute !== undefined ? updatedVendor.priceperminute : '',
+        '15minrate': updatedVendor['15minrate'] !== undefined ? updatedVendor['15minrate'] : '',
+        '25minrate': updatedVendor['25minrate'] !== undefined ? updatedVendor['25minrate'] : '',
+        '30minrate': updatedVendor['30minrate'] !== undefined ? updatedVendor['30minrate'] : '',
+        '45minrate': updatedVendor['45minrate'] !== undefined ? updatedVendor['45minrate'] : '',
+        '1hourrate': updatedVendor['1hourrate'] !== undefined ? updatedVendor['1hourrate'] : '',
+        '90minrate': updatedVendor['90minrate'] !== undefined ? updatedVendor['90minrate'] : '',
         status: updatedVendor.status || '',
-        category: updatedVendor.category || ''
+        category: updatedVendor.category || '',
+        pricingtype: updatedVendor.pricingtype || 'PAID' // NEW FIELD
       });
       setAbout(updatedVendor.about || '');
       showNotification('success', '✅ Vendor updated successfully!');
@@ -729,35 +747,45 @@ const EditVendor = () => {
             <div style={{ fontWeight: 700, fontSize: '1.2rem', background: '#ffd600', padding: '8px 18px', borderRadius: 4, marginBottom: 18, display: 'inline-block' }}>Pricing Details</div>
             <div className="row" style={{ }}>
               <div className="col-md-4 mb-3">
+                <label>Pricing Type</label>
+                <select name="pricingtype" className="form-control" value={form.pricingtype} onChange={handleChange}>
+                  <option value="PAID">PAID</option>
+                  <option value="FREE">FREE</option>
+                </select>
+                <small style={{ color: '#666', fontSize: '0.85em', display: 'block', marginTop: '4px' }}>
+                  Select FREE to make vendor pricing free after adding offer
+                </small>
+              </div>
+              <div className="col-md-4 mb-3">
                 <label>Pricing Per Minute</label>
-                <input type="number" name="priceperminute" className="form-control" value={form.priceperminute} onChange={handleChange} />
+                <input type="number" name="priceperminute" className="form-control" value={form.priceperminute} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
                 <small style={{ color: '#666', fontSize: '0.85em', display: 'block', marginTop: '4px' }}>
                   💡 Other duration prices will be auto-calculated
                 </small>
               </div>
               <div className="col-md-4 mb-3">
                 <label>15 min</label>
-                <input type="number" name="15minrate" className="form-control" value={form['15minrate']} onChange={handleChange} />
+                <input type="number" name="15minrate" className="form-control" value={form['15minrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
               </div>
-              <div className="col-md-4 mb-3">
+              <div className="col-md-3 mb-3">
                 <label>25 min</label>
-                <input type="number" name="25minrate" className="form-control" value={form['25minrate']} onChange={handleChange} />
+                <input type="number" name="25minrate" className="form-control" value={form['25minrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>30 min</label>
-                <input type="number" name="30minrate" className="form-control" value={form['30minrate']} onChange={handleChange} />
+                <input type="number" name="30minrate" className="form-control" value={form['30minrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>45 min</label>
-                <input type="number" name="45minrate" className="form-control" value={form['45minrate']} onChange={handleChange} />
+                <input type="number" name="45minrate" className="form-control" value={form['45minrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>1 hour</label>
-                <input type="number" name="1hourrate" className="form-control" value={form['1hourrate']} onChange={handleChange} />
+                <input type="number" name="1hourrate" className="form-control" value={form['1hourrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
               </div>
               <div className="col-md-3 mb-3">
                 <label>90 min</label>
-                <input type="number" name="90minrate" className="form-control" value={form['90minrate']} onChange={handleChange} />
+                <input type="number" name="90minrate" className="form-control" value={form['90minrate']} onChange={handleChange} disabled={form.pricingtype === 'FREE'} />
               </div>
             </div>
           </div>
