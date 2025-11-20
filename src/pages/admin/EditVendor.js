@@ -416,18 +416,11 @@ const EditVendor = () => {
   const handleChange = e => {
     const { name, value } = e.target;
     console.log(`Form field changed: ${name} = ${value}`);
-    // Pricing type logic
+    // Pricing type logic REMOVED: pricingtype now only updates its own field
     if (name === 'pricingtype') {
       setForm(f => ({
         ...f,
-        pricingtype: value,
-        priceperminute: value === 'FREE' ? 0 : f.priceperminute,
-        '15minrate': value === 'FREE' ? 0 : f['15minrate'],
-        '25minrate': value === 'FREE' ? 0 : f['25minrate'],
-        '30minrate': value === 'FREE' ? 0 : f['30minrate'],
-        '45minrate': value === 'FREE' ? 0 : f['45minrate'],
-        '1hourrate': value === 'FREE' ? 0 : f['1hourrate'],
-        '90minrate': value === 'FREE' ? 0 : f['90minrate']
+        pricingtype: value
       }));
       return;
     }
