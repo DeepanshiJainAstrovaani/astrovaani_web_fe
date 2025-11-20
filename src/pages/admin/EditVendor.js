@@ -421,12 +421,12 @@ const EditVendor = () => {
       setForm(f => ({ 
         ...f, 
         [name]: value,
-        '15minrate': pricePerMin > 0 ? (pricePerMin * 15).toFixed(2) : '',
-        '25minrate': pricePerMin > 0 ? (pricePerMin * 25).toFixed(2) : '',
-        '30minrate': pricePerMin > 0 ? (pricePerMin * 30).toFixed(2) : '',
-        '45minrate': pricePerMin > 0 ? (pricePerMin * 45).toFixed(2) : '',
-        '1hourrate': pricePerMin > 0 ? (pricePerMin * 60).toFixed(2) : '',
-        '90minrate': pricePerMin > 0 ? (pricePerMin * 90).toFixed(2) : ''
+        '15minrate': pricePerMin > 0 ? pricePerMin * 15 : '',
+        '25minrate': pricePerMin > 0 ? pricePerMin * 25 : '',
+        '30minrate': pricePerMin > 0 ? pricePerMin * 30 : '',
+        '45minrate': pricePerMin > 0 ? pricePerMin * 45 : '',
+        '1hourrate': pricePerMin > 0 ? pricePerMin * 60 : '',
+        '90minrate': pricePerMin > 0 ? pricePerMin * 90 : ''
       }));
     } else {
       setForm(f => ({ ...f, [name]: value }));
