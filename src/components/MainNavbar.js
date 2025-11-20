@@ -10,7 +10,7 @@ const MainNavbar = () => (
       <Nav className="mx-auto" navbar>
         <a href="/horoscope" className="nav-link text-white" style={{ fontFamily: 'Lato', fontWeight: 400 }}>Horoscope</a>
         <a href="/how-to-use" className="nav-link text-white" style={{ fontFamily: 'Lato', fontWeight: 400 }}>How to use</a>
-        <a href="/join" className="nav-link text-white" style={{ fontFamily: 'Lato', fontWeight: 400 }}>Join Astrovaani</a>
+        <a href="/joinus" className="nav-link text-white" style={{ fontFamily: 'Lato', fontWeight: 400 }}>Join Astrovaani</a>
         <a href="/free-kundali" className="nav-link text-white" style={{ fontFamily: 'Lato', fontWeight: 400 }}>Free Kundali</a>
       </Nav>
     </div>

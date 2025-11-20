@@ -8,6 +8,7 @@ import Login from '../components/Auth/Login';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import AdminRoutes from './admin/AdminRoutes';
 import VendorInterview from '../pages/VendorInterview';
+import JoinUs from '../pages/JoinUs';
 
 const AppRoutes = () => (
   <Router>
@@ -18,6 +19,7 @@ const AppRoutes = () => (
       <Route path="/blog" element={<Blog />} />
       <Route path="/faq" element={<FAQ />} />
       <Route path="/interview" element={<VendorInterview />} />
+      <Route path="/joinus" element={<JoinUs />} />
       
       {/* Auth Route */}
       <Route path="/login" element={<Login />} />

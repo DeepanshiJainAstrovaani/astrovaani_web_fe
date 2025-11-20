@@ -1,0 +1,130 @@
+.pageBg {
+  background: #53134d;
+  min-height: 100vh;
+  padding: 0;
+}
+.container {
+  max-width: 1100px;
+  margin: 40px auto;
+  background: #faeaf9;
+  border-radius: 20px;
+  box-shadow: 0 2px 16px rgba(83,19,77,0.07);
+  padding: 32px 24px 48px 24px;
+}
+.title {
+  text-align: center;
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5em;
+}
+.subtitle {
+  text-align: center;
+  font-size: 1.4rem;
+  color: #222;
+  margin-bottom: 2em;
+}
+.stepsRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 36px;
+}
+.stepBox {
+  background: #f8d8f8;
+  border-radius: 50%;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(83,19,77,0.07);
+  padding: 18px;
+}
+.stepImg {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 12px;
+}
+.viewForm {
+  color: #ef4444;
+  font-weight: 600;
+  margin-top: 8px;
+  cursor: pointer;
+}
+.formCard {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba(83,19,77,0.07);
+  padding: 32px 24px;
+  margin-top: 32px;
+}
+.formTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+.formSubtitle {
+  font-size: 1.2rem;
+  color: #222;
+  margin-bottom: 2em;
+  text-align: center;
+}
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px 32px;
+}
+.input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #cec7c7;
+  font-size: 1.05rem;
+  background: #fff;
+  margin-top: 6px;
+  margin-bottom: 2px;
+}
+.error {
+  color: #ef4444;
+  font-size: 0.95em;
+  margin-top: 2px;
+  display: block;
+}
+.submitBtn {
+  background: #ffd600;
+  color: #222;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 36px;
+  margin-top: 0;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(83,19,77,0.07);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 900px) {
+  .stepsRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  .stepBox {
+    width: 180px;
+    height: 180px;
+  }
+  .container {
+    padding: 16px 4px 32px 4px;
+  }
+  .formCard {
+    padding: 18px 6px;
+  }
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 18px 0;
+  }
+}

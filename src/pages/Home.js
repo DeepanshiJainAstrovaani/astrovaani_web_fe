@@ -13,7 +13,7 @@ const Home = () => (
       <div className="menu">
         <a href="/horoscope">Horoscope</a>
         <a href="/how-to-use">How to use</a>
-        <a href="/join">Join Astrovaani</a>
+        <a href="/joinus">Join Astrovaani</a>
         <a href="/free-kundali">Free Kundali</a>
       </div>
     </nav>
