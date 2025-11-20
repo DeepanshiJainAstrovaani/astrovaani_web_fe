@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './AdminTable.module.css';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const initialForm = {
   user: '',
@@ -13,45 +15,45 @@ const initialForm = {
   promoText2: '',
 };
 
-function generateOfferCode(existingOffers) {
-  const nextNum = (existingOffers.length + 1).toString().padStart(4, '0');
-  return `OFF-${nextNum}`;
-}
-
 const phoneRegex = /^[6-9]\d{9}$/;
 
 const OffersPage = () => {
-  const [offers, setOffers] = useState([
-    {
-      offerCode: 'OFF-0001',
-      user: 'Raghuvendra',
-      mobile: '9667356172',
-      chatCall: 'Chat',
-      validFor: '45',
-      expiryDate: '2025-09-27',
-      amount: '35',
-      timing: '09:00',
-      promoText1: 'Promo1',
-      promoText2: 'Promo2',
-    },
-    {
-      offerCode: 'OFF-0002',
-      user: 'Deepika Dayal',
-      mobile: '9667356172',
-      chatCall: 'Call',
-      validFor: '125',
-      expiryDate: '2025-09-27',
-      amount: '105',
-      timing: '18:00',
-      promoText1: 'Promo1',
-      promoText2: 'Promo2',
-    },
-  ]);
+  const [offers, setOffers] = useState([]);
   const [form, setForm] = useState(initialForm);
+  const [editId, setEditId] = useState(null);
   const [editIndex, setEditIndex] = useState(null);
   const [phoneError, setPhoneError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const isFormValid = Object.values(form).every(v => v.trim() !== '') && phoneRegex.test(form.mobile);
+  const isFormValid = Object.values(form).every(v => typeof v === 'string' ? v.trim() !== '' : v !== '' && v !== null && v !== undefined) && phoneRegex.test(form.mobile);
+
+  // Fetch all offers on component mount
+  useEffect(() => {
+    fetchOffers();
+  }, []);
+
+  // Fetch offers from backend
+  const fetchOffers = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await fetch(`${API_URL}/offers`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setOffers(data.data);
+      } else {
+        setError(data.message || 'Failed to fetch offers');
+      }
+    } catch (err) {
+      setError('Failed to connect to server');
+      console.error('Error fetching offers:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -61,32 +63,88 @@ const OffersPage = () => {
     }
   };
 
-  const handleAddOrUpdate = () => {
+  const handleAddOrUpdate = async () => {
     if (!isFormValid) return;
-    if (editIndex !== null) {
-      // Update
-      const updatedOffers = [...offers];
-      updatedOffers[editIndex] = { ...form, offerCode: offers[editIndex].offerCode };
-      setOffers(updatedOffers);
-      setEditIndex(null);
-    } else {
-      // Add
-      const offerCode = generateOfferCode(offers);
-      setOffers([...offers, { ...form, offerCode }]);
+    
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    
+    try {
+      if (editId) {
+        // Update existing offer
+        const response = await fetch(`${API_URL}/offers/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          setSuccess('Offer updated successfully!');
+          fetchOffers(); // Refresh the list
+          setForm(initialForm);
+          setEditId(null);
+          setEditIndex(null);
+          setTimeout(() => setSuccess(''), 3000);
+        } else {
+          setError(data.message || 'Failed to update offer');
+        }
+      } else {
+        // Create new offer
+        const response = await fetch(`${API_URL}/offers`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          setSuccess('Offer created successfully!');
+          fetchOffers(); // Refresh the list
+          setForm(initialForm);
+          setTimeout(() => setSuccess(''), 3000);
+        } else {
+          setError(data.message || 'Failed to create offer');
+        }
+      }
+    } catch (err) {
+      setError('Failed to connect to server');
+      console.error('Error saving offer:', err);
+    } finally {
+      setLoading(false);
     }
-    setForm(initialForm);
+    
     setPhoneError('');
   };
 
-  const handleEdit = idx => {
-    const { offerCode, ...rest } = offers[idx];
+  const handleEdit = (idx) => {
+    const offer = offers[idx];
+    const { _id, offerCode, createdAt, updatedAt, __v, ...rest } = offer;
     setForm(rest);
+    setEditId(_id);
     setEditIndex(idx);
     setPhoneError('');
   };
 
   return (
     <div className={styles['admin-container']}>
+      {/* Success Message */}
+      {success && (
+        <div style={{ background: '#4caf50', color: 'white', padding: 16, borderRadius: 8, marginBottom: 16 }}>
+          {success}
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div style={{ background: '#f44336', color: 'white', padding: 16, borderRadius: 8, marginBottom: 16 }}>
+          {error}
+        </div>
+      )}
+
       <div className="mt-4" style={{ background: '#f7f7f7', padding: 24, borderRadius: 8, marginBottom: 24 }}>
         <h3 style={{ marginBottom: 18 }}>Add new offer</h3>
         <form style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }} onSubmit={e => { e.preventDefault(); handleAddOrUpdate(); }}>
@@ -136,23 +194,37 @@ const OffersPage = () => {
           </tr>
         </thead>
         <tbody>
-          {offers.map((o, idx) => (
-            <tr key={idx}>
-              <td>{o.offerCode}</td>
-              <td>{o.user}</td>
-              <td>{o.mobile}</td>
-              <td>{o.chatCall}</td>
-              <td>{o.validFor}</td>
-              <td>{o.expiryDate}</td>
-              <td>{o.amount}</td>
-              <td>{o.timing}</td>
-              <td>
-                <button type="button" className={styles['action-btn']} onClick={() => handleEdit(idx)}>
-                  Edit
-                </button>
+          {loading ? (
+            <tr>
+              <td colSpan="9" style={{ textAlign: 'center', padding: 24 }}>
+                Loading offers...
               </td>
             </tr>
-          ))}
+          ) : offers.length === 0 ? (
+            <tr>
+              <td colSpan="9" style={{ textAlign: 'center', padding: 24 }}>
+                No offers found. Create your first offer above.
+              </td>
+            </tr>
+          ) : (
+            offers.map((o, idx) => (
+              <tr key={o._id || idx}>
+                <td>{o.offerCode}</td>
+                <td>{o.user}</td>
+                <td>{o.mobile}</td>
+                <td>{o.chatCall}</td>
+                <td>{o.validFor}</td>
+                <td>{o.expiryDate}</td>
+                <td>{o.amount}</td>
+                <td>{o.timing}</td>
+                <td>
+                  <button type="button" className={styles['action-btn']} onClick={() => handleEdit(idx)}>
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
