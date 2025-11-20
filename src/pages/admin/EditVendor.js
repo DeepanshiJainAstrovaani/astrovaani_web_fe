@@ -414,7 +414,23 @@ const EditVendor = () => {
   const handleChange = e => {
     const { name, value } = e.target;
     console.log(`Form field changed: ${name} = ${value}`);
-    setForm(f => ({ ...f, [name]: value }));
+    
+    // If pricing per minute changes, auto-calculate all duration rates
+    if (name === 'priceperminute') {
+      const pricePerMin = parseFloat(value) || 0;
+      setForm(f => ({ 
+        ...f, 
+        [name]: value,
+        '15minrate': pricePerMin > 0 ? (pricePerMin * 15).toFixed(2) : '',
+        '25minrate': pricePerMin > 0 ? (pricePerMin * 25).toFixed(2) : '',
+        '30minrate': pricePerMin > 0 ? (pricePerMin * 30).toFixed(2) : '',
+        '45minrate': pricePerMin > 0 ? (pricePerMin * 45).toFixed(2) : '',
+        '1hourrate': pricePerMin > 0 ? (pricePerMin * 60).toFixed(2) : '',
+        '90minrate': pricePerMin > 0 ? (pricePerMin * 90).toFixed(2) : ''
+      }));
+    } else {
+      setForm(f => ({ ...f, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -443,14 +459,25 @@ const EditVendor = () => {
       formData.append('accountholder', form.accountholder);
       formData.append('accountno', form.accountno);
       formData.append('ifsc', form.ifsc);
-      formData.append('priceperminute', form.priceperminute);
-      formData.append('15minrate', form['15minrate']);
-      formData.append('25minrate', form['25minrate']);
-      formData.append('30minrate', form['30minrate']);
-      formData.append('45minrate', form['45minrate']);
-      formData.append('1hourrate', form['1hourrate']);
-      formData.append('90minrate', form['90minrate']);
+      formData.append('priceperminute', form.priceperminute || '');
+      formData.append('15minrate', form['15minrate'] || '');
+      formData.append('25minrate', form['25minrate'] || '');
+      formData.append('30minrate', form['30minrate'] || '');
+      formData.append('45minrate', form['45minrate'] || '');
+      formData.append('1hourrate', form['1hourrate'] || '');
+      formData.append('90minrate', form['90minrate'] || '');
       formData.append('status', form.status);
+      
+      // Debug: Log pricing values before submit
+      console.log('💰 Pricing values being submitted:', {
+        priceperminute: form.priceperminute,
+        '15minrate': form['15minrate'],
+        '25minrate': form['25minrate'],
+        '30minrate': form['30minrate'],
+        '45minrate': form['45minrate'],
+        '1hourrate': form['1hourrate'],
+        '90minrate': form['90minrate']
+      });
       formData.append('about', about);
 
       // Add new photo files (only if they are File objects, not strings from DB)
@@ -704,6 +731,9 @@ const EditVendor = () => {
               <div className="col-md-4 mb-3">
                 <label>Pricing Per Minute</label>
                 <input type="number" name="priceperminute" className="form-control" value={form.priceperminute} onChange={handleChange} />
+                <small style={{ color: '#666', fontSize: '0.85em', display: 'block', marginTop: '4px' }}>
+                  💡 Other duration prices will be auto-calculated
+                </small>
               </div>
               <div className="col-md-4 mb-3">
                 <label>15 min</label>
