@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './JoinUs.module.css';
+import Header from '../components/Header';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -93,133 +94,149 @@ export default function JoinUs() {
   };
 
   return (
-    <div className={styles.pageBg}>
-      <div className={styles.container}>
-        <h1 className={styles.title}>Join Astrovaani</h1>
-        <p className={styles.subtitle}>As an astrologer, tarot reader or numerologist</p>
-        <div className={styles.stepsRow}>
-          <div className={styles.stepBox}>
-            <img src="/assets/form.png" alt="Fill the Form" className={styles.stepImg} />
-            <h2>Fill the Form</h2>
-            <p>Submit your details for onboarding</p>
-            <span className={styles.viewForm}>view form</span>
+    <>
+      <Header />
+      <div className={styles.pageBg}>
+        <div className={styles.container}>
+          <h1 className={styles.title}>Join Astrovaani</h1>
+          <p className={styles.subtitle}>As an astrologer, tarot reader or numerologist</p>
+          <div className={styles.stepsRow}>
+            {[{
+              img: '/assets/form.png',
+              title: 'Fill the Form',
+              desc: 'Submit your details for onboarding',
+              number: 1,
+              viewForm: true
+            }, {
+              img: '/assets/interview.png',
+              title: 'Live Interview',
+              desc: 'Our team will take your interview to verify your skills',
+              number: 2
+            }, {
+              img: '/assets/customers.png',
+              title: 'Getting Customers',
+              desc: `After onboarding you'll start getting clients`,
+              number: 3
+            }].map((step, idx) => (
+              <div className={styles.stepBox} key={step.title}>
+                <div className={styles.stepCircle}>
+                  <span className={styles.stepNumber}>{step.number}</span>
+                  <img src={step.img} alt={step.title} className={styles.stepImg} />
+                </div>
+                <h2 className={styles.stepTitle}>{step.title}</h2>
+                <p className={styles.stepDesc}>{step.desc}</p>
+                {step.viewForm && <span className={styles.viewForm} onClick={() => {
+                  document.getElementById('joinus-form')?.scrollIntoView({ behavior: 'smooth' });
+                }}>view form</span>}
+              </div>
+            ))}
           </div>
-          <div className={styles.stepBox}>
-            <img src="/assets/interview.png" alt="Live Interview" className={styles.stepImg} />
-            <h2>Live Interview</h2>
-            <p>Our team will take your interview to verify your skills</p>
-          </div>
-          <div className={styles.stepBox}>
-            <img src="/assets/customers.png" alt="Getting Customers" className={styles.stepImg} />
-            <h2>Getting Customers</h2>
-            <p>After onboarding you'll start getting clients</p>
-          </div>
+          <form className={styles.formCard} id="joinus-form" onSubmit={handleSubmit}>
+            <h2 className={styles.formTitle}>Your Joining Form</h2>
+            <p className={styles.formSubtitle}>Fill the details</p>
+            <div className={styles.formGrid}>
+              <div>
+                <label>Your Full Name *</label>
+                <input name="name" value={form.name} onChange={handleChange} placeholder="Enter here" className={styles.input} />
+                {errors.name && <span className={styles.error}>{errors.name}</span>}
+              </div>
+              <div>
+                <label>Whatsapp Number (without +91) *</label>
+                <input name="whatsapp" value={form.whatsapp} onChange={handleChange} placeholder="Enter here" className={styles.input} />
+                {errors.whatsapp && <span className={styles.error}>{errors.whatsapp}</span>}
+              </div>
+              <div>
+                <label>Alternate Mobile no. <span style={{ color: 'red' }}>(Optional)</span></label>
+                <input name="altmobile" value={form.altmobile} onChange={handleChange} placeholder="Enter here" className={styles.input} />
+              </div>
+              <div>
+                <label>Gender *</label>
+                <select name="gender" value={form.gender} onChange={handleChange} className={styles.input}>
+                  <option value="">Select</option>
+                  {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+                {errors.gender && <span className={styles.error}>{errors.gender}</span>}
+              </div>
+              <div>
+                <label>Age *</label>
+                <select name="age" value={form.age} onChange={handleChange} className={styles.input}>
+                  <option value="">Select</option>
+                  {AGES.map(a => <option key={a} value={a}>{a}</option>)}
+                </select>
+                {errors.age && <span className={styles.error}>{errors.age}</span>}
+              </div>
+              <div>
+                <label>Email Address *</label>
+                <input name="email" value={form.email} onChange={handleChange} placeholder="Enter here" className={styles.input} />
+                {errors.email && <span className={styles.error}>{errors.email}</span>}
+              </div>
+              <div>
+                <label>Qualifications *</label>
+                <input name="qualifications" value={form.qualifications} onChange={handleChange} placeholder="Enter here" className={styles.input} />
+                {errors.qualifications && <span className={styles.error}>{errors.qualifications}</span>}
+              </div>
+              <div>
+                <label>Skills (Ex- Astrology, Tarot reading) *</label>
+                <input name="skills" value={form.skills} onChange={handleChange} placeholder="Enter here" className={styles.input} />
+                {errors.skills && <span className={styles.error}>{errors.skills}</span>}
+              </div>
+              <div>
+                <label>Languages You Know *</label>
+                <input name="languages" value={form.languages} onChange={handleChange} placeholder="Enter here" className={styles.input} />
+                {errors.languages && <span className={styles.error}>{errors.languages}</span>}
+              </div>
+              <div>
+                <label>Experience *</label>
+                <select name="experience" value={form.experience} onChange={handleChange} className={styles.input}>
+                  <option value="">Select</option>
+                  {EXPERIENCES.map(e => <option key={e} value={e}>{e}</option>)}
+                </select>
+                {errors.experience && <span className={styles.error}>{errors.experience}</span>}
+              </div>
+              <div>
+                <label>Your State *</label>
+                <input name="state" value={form.state} onChange={handleChange} placeholder="Select" className={styles.input} />
+                {errors.state && <span className={styles.error}>{errors.state}</span>}
+              </div>
+              <div>
+                <label>City *</label>
+                <input name="city" value={form.city} onChange={handleChange} placeholder="Enter here" className={styles.input} />
+                {errors.city && <span className={styles.error}>{errors.city}</span>}
+              </div>
+              <div>
+                <label>Pincode *</label>
+                <input name="pincode" value={form.pincode} onChange={handleChange} placeholder="Enter here" className={styles.input} />
+                {errors.pincode && <span className={styles.error}>{errors.pincode}</span>}
+              </div>
+              <div>
+                <label>Choose your Category *</label>
+                <select name="category" value={form.category} onChange={handleChange} className={styles.input}>
+                  <option value="">Select</option>
+                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+                {errors.category && <span className={styles.error}>{errors.category}</span>}
+              </div>
+              <div>
+                <label>Reason to join Astrovaani *</label>
+                <select name="reason" value={form.reason} onChange={handleChange} className={styles.input}>
+                  <option value="">Select</option>
+                  {REASONS.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+                {errors.reason && <span className={styles.error}>{errors.reason}</span>}
+              </div>
+              <div>
+                <label>Upload your Photo *</label>
+                <input type="file" name="photo" accept="image/*" onChange={handleChange} className={styles.input} />
+                <span style={{ color: 'red', fontSize: '0.95em' }}>Make sure your photo should be clear, you should look professional and the background in photo should be minimal/plain</span>
+                {errors.photo && <span className={styles.error}>{errors.photo}</span>}
+              </div>
+            </div>
+            <button type="submit" className={styles.submitBtn} disabled={submitting} style={{ marginTop: 32 }}>Submit</button>
+            {errors.submit && <div className={styles.error} style={{ marginTop: 12 }}>{errors.submit}</div>}
+            {success && <div style={{ color: '#22c55e', fontWeight: 600, marginTop: 12 }}>Form submitted successfully!</div>}
+          </form>
         </div>
-        <form className={styles.formCard} onSubmit={handleSubmit}>
-          <h2 className={styles.formTitle}>Your Joining Form</h2>
-          <p className={styles.formSubtitle}>Fill the details</p>
-          <div className={styles.formGrid}>
-            <div>
-              <label>Your Full Name *</label>
-              <input name="name" value={form.name} onChange={handleChange} placeholder="Enter here" className={styles.input} />
-              {errors.name && <span className={styles.error}>{errors.name}</span>}
-            </div>
-            <div>
-              <label>Whatsapp Number (without +91) *</label>
-              <input name="whatsapp" value={form.whatsapp} onChange={handleChange} placeholder="Enter here" className={styles.input} />
-              {errors.whatsapp && <span className={styles.error}>{errors.whatsapp}</span>}
-            </div>
-            <div>
-              <label>Alternate Mobile no. <span style={{ color: 'red' }}>(Optional)</span></label>
-              <input name="altmobile" value={form.altmobile} onChange={handleChange} placeholder="Enter here" className={styles.input} />
-            </div>
-            <div>
-              <label>Gender *</label>
-              <select name="gender" value={form.gender} onChange={handleChange} className={styles.input}>
-                <option value="">Select</option>
-                {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
-              </select>
-              {errors.gender && <span className={styles.error}>{errors.gender}</span>}
-            </div>
-            <div>
-              <label>Age *</label>
-              <select name="age" value={form.age} onChange={handleChange} className={styles.input}>
-                <option value="">Select</option>
-                {AGES.map(a => <option key={a} value={a}>{a}</option>)}
-              </select>
-              {errors.age && <span className={styles.error}>{errors.age}</span>}
-            </div>
-            <div>
-              <label>Email Address *</label>
-              <input name="email" value={form.email} onChange={handleChange} placeholder="Enter here" className={styles.input} />
-              {errors.email && <span className={styles.error}>{errors.email}</span>}
-            </div>
-            <div>
-              <label>Qualifications *</label>
-              <input name="qualifications" value={form.qualifications} onChange={handleChange} placeholder="Enter here" className={styles.input} />
-              {errors.qualifications && <span className={styles.error}>{errors.qualifications}</span>}
-            </div>
-            <div>
-              <label>Skills (Ex- Astrology, Tarot reading) *</label>
-              <input name="skills" value={form.skills} onChange={handleChange} placeholder="Enter here" className={styles.input} />
-              {errors.skills && <span className={styles.error}>{errors.skills}</span>}
-            </div>
-            <div>
-              <label>Languages You Know *</label>
-              <input name="languages" value={form.languages} onChange={handleChange} placeholder="Enter here" className={styles.input} />
-              {errors.languages && <span className={styles.error}>{errors.languages}</span>}
-            </div>
-            <div>
-              <label>Experience *</label>
-              <select name="experience" value={form.experience} onChange={handleChange} className={styles.input}>
-                <option value="">Select</option>
-                {EXPERIENCES.map(e => <option key={e} value={e}>{e}</option>)}
-              </select>
-              {errors.experience && <span className={styles.error}>{errors.experience}</span>}
-            </div>
-            <div>
-              <label>Your State *</label>
-              <input name="state" value={form.state} onChange={handleChange} placeholder="Select" className={styles.input} />
-              {errors.state && <span className={styles.error}>{errors.state}</span>}
-            </div>
-            <div>
-              <label>City *</label>
-              <input name="city" value={form.city} onChange={handleChange} placeholder="Enter here" className={styles.input} />
-              {errors.city && <span className={styles.error}>{errors.city}</span>}
-            </div>
-            <div>
-              <label>Pincode *</label>
-              <input name="pincode" value={form.pincode} onChange={handleChange} placeholder="Enter here" className={styles.input} />
-              {errors.pincode && <span className={styles.error}>{errors.pincode}</span>}
-            </div>
-            <div>
-              <label>Choose your Category *</label>
-              <select name="category" value={form.category} onChange={handleChange} className={styles.input}>
-                <option value="">Select</option>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-              {errors.category && <span className={styles.error}>{errors.category}</span>}
-            </div>
-            <div>
-              <label>Reason to join Astrovaani *</label>
-              <select name="reason" value={form.reason} onChange={handleChange} className={styles.input}>
-                <option value="">Select</option>
-                {REASONS.map(r => <option key={r} value={r}>{r}</option>)}
-              </select>
-              {errors.reason && <span className={styles.error}>{errors.reason}</span>}
-            </div>
-            <div>
-              <label>Upload your Photo *</label>
-              <input type="file" name="photo" accept="image/*" onChange={handleChange} className={styles.input} />
-              <span style={{ color: 'red', fontSize: '0.95em' }}>Make sure your photo should be clear, you should look professional and the background in photo should be minimal/plain</span>
-              {errors.photo && <span className={styles.error}>{errors.photo}</span>}
-            </div>
-          </div>
-          <button type="submit" className={styles.submitBtn} disabled={submitting} style={{ marginTop: 32 }}>Submit</button>
-          {errors.submit && <div className={styles.error} style={{ marginTop: 12 }}>{errors.submit}</div>}
-          {success && <div style={{ color: '#22c55e', fontWeight: 600, marginTop: 12 }}>Form submitted successfully!</div>}
-        </form>
       </div>
-    </div>
+    </>
   );
 }
