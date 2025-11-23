@@ -11,10 +11,10 @@ const InterviewFeedback = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState({
-    rating: '',
-    notes: '',
-    interviewStatus: 'completed',
-    onboardingDecision: ''
+    skillsRating: '',
+    communicationRating: '',
+    adaptability: '',
+    notes: ''
   });
 
   useEffect(() => {
@@ -65,30 +65,32 @@ const InterviewFeedback = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!feedback.rating) {
-      alert('Please provide a rating');
+    if (!feedback.skillsRating) {
+      alert('Please provide a Skills Rating');
       return;
     }
-
-    if (!feedback.onboardingDecision) {
-      alert('Please select onboarding decision');
+    if (!feedback.communicationRating) {
+      alert('Please provide a Communication Rating');
       return;
     }
-
+    if (!feedback.adaptability) {
+      alert('Please provide Adaptability');
+      return;
+    }
     try {
       setSubmitting(true);
-      
       // Update vendor with interview feedback
       const response = await fetch(`${API_URL}/vendors/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          interviewRating: feedback.rating,
+          skillsRating: feedback.skillsRating,
+          communicationRating: feedback.communicationRating,
+          adaptability: feedback.adaptability,
           interviewNotes: feedback.notes,
-          interviewStatus: feedback.interviewStatus,
-          onboardingstatus: feedback.onboardingDecision,
-          status: feedback.onboardingDecision, // Also update status field for VendorsPage filtering
+          interviewStatus: 'completed',
+          onboardingstatus: 'inprocess',
+          status: 'inprocess',
           interviewCompletedAt: new Date().toISOString()
         }),
       });
@@ -302,11 +304,11 @@ const InterviewFeedback = () => {
               marginBottom: '8px', 
               color: '#222' 
             }}>
-              Rating <span style={{ color: '#d32f2f' }}>*</span>
+              Skills Rating <span style={{ color: '#d32f2f' }}>*</span>
             </label>
             <select
-              value={feedback.rating}
-              onChange={(e) => setFeedback({ ...feedback, rating: e.target.value })}
+              value={feedback.skillsRating}
+              onChange={(e) => setFeedback({ ...feedback, skillsRating: e.target.value })}
               style={{
                 width: '100%',
                 padding: 'clamp(8px, 2vw, 10px) clamp(10px, 2.5vw, 12px)',
@@ -326,6 +328,72 @@ const InterviewFeedback = () => {
             </select>
           </div>
 
+          {/* Communication Rating */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{
+              display: 'block',
+              fontSize: 'clamp(12px, 3vw, 14px)',
+              fontWeight: '500',
+              marginBottom: '8px',
+              color: '#222'
+            }}>
+              Communication Rating <span style={{ color: '#d32f2f' }}>*</span>
+            </label>
+            <select
+              value={feedback.communicationRating}
+              onChange={(e) => setFeedback({ ...feedback, communicationRating: e.target.value })}
+              style={{
+                width: '100%',
+                padding: 'clamp(8px, 2vw, 10px) clamp(10px, 2.5vw, 12px)',
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                border: '1px solid #ccc',
+                borderRadius: '6px',
+                outline: 'none'
+              }}
+              required
+            >
+              <option value="">Select rating</option>
+              <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+              <option value="4">⭐⭐⭐⭐ Good</option>
+              <option value="3">⭐⭐⭐ Average</option>
+              <option value="2">⭐⭐ Below Average</option>
+              <option value="1">⭐ Poor</option>
+            </select>
+          </div>
+
+          {/* Adaptability */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{
+              display: 'block',
+              fontSize: 'clamp(12px, 3vw, 14px)',
+              fontWeight: '500',
+              marginBottom: '8px',
+              color: '#222'
+            }}>
+              Adaptability <span style={{ color: '#d32f2f' }}>*</span>
+            </label>
+            <select
+              value={feedback.adaptability}
+              onChange={(e) => setFeedback({ ...feedback, adaptability: e.target.value })}
+              style={{
+                width: '100%',
+                padding: 'clamp(8px, 2vw, 10px) clamp(10px, 2.5vw, 12px)',
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                border: '1px solid #ccc',
+                borderRadius: '6px',
+                outline: 'none'
+              }}
+              required
+            >
+              <option value="">Select adaptability</option>
+              <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+              <option value="4">⭐⭐⭐⭐ Good</option>
+              <option value="3">⭐⭐⭐ Average</option>
+              <option value="2">⭐⭐ Below Average</option>
+              <option value="1">⭐ Poor</option>
+            </select>
+          </div>
+
           {/* Notes */}
           <div style={{ marginBottom: '20px' }}>
             <label style={{ 
@@ -335,7 +403,7 @@ const InterviewFeedback = () => {
               marginBottom: '8px', 
               color: '#222' 
             }}>
-              Interview Notes
+              Interview Notes or Review
             </label>
             <textarea
               value={feedback.notes}
@@ -355,65 +423,6 @@ const InterviewFeedback = () => {
             />
           </div>
 
-          {/* Interview Status */}
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ 
-              display: 'block', 
-              fontSize: 'clamp(12px, 3vw, 14px)', 
-              fontWeight: '500', 
-              marginBottom: '8px', 
-              color: '#222' 
-            }}>
-              Interview Status
-            </label>
-            <select
-              value={feedback.interviewStatus}
-              onChange={(e) => setFeedback({ ...feedback, interviewStatus: e.target.value })}
-              style={{
-                width: '100%',
-                padding: 'clamp(8px, 2vw, 10px) clamp(10px, 2.5vw, 12px)',
-                fontSize: 'clamp(12px, 3vw, 14px)',
-                border: '1px solid #ccc',
-                borderRadius: '6px',
-                outline: 'none'
-              }}
-            >
-              <option value="completed">Completed</option>
-              <option value="no-show">No Show</option>
-              <option value="rescheduled">Rescheduled</option>
-            </select>
-          </div>
-
-          {/* Onboarding Decision */}
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ 
-              display: 'block', 
-              fontSize: 'clamp(12px, 3vw, 14px)', 
-              fontWeight: '500', 
-              marginBottom: '8px', 
-              color: '#222' 
-            }}>
-              Onboarding Decision <span style={{ color: '#d32f2f' }}>*</span>
-            </label>
-            <select
-              value={feedback.onboardingDecision}
-              onChange={(e) => setFeedback({ ...feedback, onboardingDecision: e.target.value })}
-              style={{
-                width: '100%',
-                padding: 'clamp(8px, 2vw, 10px) clamp(10px, 2.5vw, 12px)',
-                fontSize: 'clamp(12px, 3vw, 14px)',
-                border: '1px solid #ccc',
-                borderRadius: '6px',
-                outline: 'none'
-              }}
-              required
-            >
-              <option value="">Select decision</option>
-              <option value="inprocess">✅ Approve - Send for Agreement</option>
-              <option value="rejected">❌ Reject - Not Suitable</option>
-              <option value="inreview">🔍 In Review - Pending Decision</option>
-            </select>
-          </div>
 
           {/* Action Buttons */}
           <div style={{ 
@@ -465,30 +474,30 @@ const InterviewFeedback = () => {
             
             <button
               type="submit"
-              disabled={!feedback.rating || !feedback.onboardingDecision || submitting}
+              disabled={!feedback.skillsRating || !feedback.communicationRating || !feedback.adaptability || submitting}
               style={{
                 padding: 'clamp(0.6rem, 2vw, 0.75rem) clamp(1.2rem, 4vw, 2rem)',
-                backgroundColor: (feedback.rating && feedback.onboardingDecision && !submitting) ? '#ffd600' : '#e0e0e0',
-                color: (feedback.rating && feedback.onboardingDecision && !submitting) ? '#000' : '#999',
+                backgroundColor: (feedback.skillsRating && feedback.communicationRating && feedback.adaptability && !submitting) ? '#ffd600' : '#e0e0e0',
+                color: (feedback.skillsRating && feedback.communicationRating && feedback.adaptability && !submitting) ? '#000' : '#999',
                 border: 'none',
                 borderRadius: '8px',
                 fontSize: 'clamp(14px, 3.5vw, 16px)',
                 fontWeight: '600',
-                cursor: (feedback.rating && feedback.onboardingDecision && !submitting) ? 'pointer' : 'not-allowed',
+                cursor: (feedback.skillsRating && feedback.communicationRating && feedback.adaptability && !submitting) ? 'pointer' : 'not-allowed',
                 transition: 'all 0.3s ease',
                 minWidth: 'clamp(140px, 35vw, 160px)',
                 flex: '1 1 auto',
                 maxWidth: '250px'
               }}
               onMouseEnter={(e) => {
-                if (feedback.rating && feedback.onboardingDecision && !submitting) {
+                if (feedback.skillsRating && feedback.communicationRating && feedback.adaptability && !submitting) {
                   e.target.style.backgroundColor = '#ffed4e';
                   e.target.style.transform = 'translateY(-2px)';
                   e.target.style.boxShadow = '0 4px 12px rgba(255, 214, 0, 0.3)';
                 }
               }}
               onMouseLeave={(e) => {
-                if (feedback.rating && feedback.onboardingDecision && !submitting) {
+                if (feedback.skillsRating && feedback.communicationRating && feedback.adaptability && !submitting) {
                   e.target.style.backgroundColor = '#ffd600';
                   e.target.style.transform = 'translateY(0)';
                   e.target.style.boxShadow = 'none';
