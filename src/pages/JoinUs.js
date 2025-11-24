@@ -115,7 +115,7 @@ export default function JoinUs() {
             }, {
               img: require('../assets/customers.png'),
               title: 'Getting Customers',
-              desc: `After onboarding you'll start getting clients`,
+              desc: `After onboarding you'll start getting consultations`,
               number: 3
             }].map((step, idx) => (
               <div className={styles.stepBox} key={step.title}>
@@ -128,6 +128,9 @@ export default function JoinUs() {
               </div>
             ))}
           </div>
+          
+        </div>
+        <div className={styles.container}>
           <form className={styles.formCard} id="joinus-form" onSubmit={handleSubmit}>
             <h2 className={styles.formTitle}>Your Joining Form</h2>
             <p className={styles.formSubtitle}>Fill the details</p>
@@ -221,10 +224,39 @@ export default function JoinUs() {
                 </select>
                 {errors.reason && <span className={styles.error}>{errors.reason}</span>}
               </div>
-              <div>
+              <div className={styles.photoRow} style={{ gridColumn: '1 / -1' }}>
                 <label>Upload your Photo *</label>
-                <input type="file" name="photo" accept="image/*" onChange={handleChange} className={styles.input} />
-                <span style={{ color: 'red', fontSize: '0.95em' }}>Make sure your photo should be clear, you should look professional and the background in photo should be minimal/plain</span>
+                <div className={styles.photoUploadWrap}>
+                  <span style={{ color: 'red', fontSize: '0.95em', display: 'block' }}>
+                  Make sure your photo should be clear, you should look professional and the background in photo should be minimal/plain
+                </span>
+                  <div className={styles.photoPreviewBox}>
+                    {form.photoPreview ? (
+                      <img src={form.photoPreview} alt="Preview" className={styles.photoPreviewImg} />
+                    ) : (
+                      <span className={styles.photoPreviewPlaceholder}>Preview</span>
+                    )}
+                  </div>
+                  <input
+                    type="file"
+                    name="photo"
+                    accept="image/*"
+                    onChange={e => {
+                      handleChange(e);
+                      if (e.target.files && e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = ev => {
+                          setForm(f => ({ ...f, photoPreview: ev.target.result }));
+                        };
+                        reader.readAsDataURL(e.target.files[0]);
+                      } else {
+                        setForm(f => ({ ...f, photoPreview: null }));
+                      }
+                    }}
+                    className={styles.input}
+                  />
+                </div>
+                
                 {errors.photo && <span className={styles.error}>{errors.photo}</span>}
               </div>
             </div>
