@@ -102,27 +102,24 @@ export default function JoinUs() {
           <p className={styles.subtitle}>As an astrologer, tarot reader or numerologist</p>
           <div className={styles.stepsRow}>
             {[{
-              img: '/assets/form.png',
+              img: require('../assets/form.png'),
               title: 'Fill the Form',
               desc: 'Submit your details for onboarding',
               number: 1,
               viewForm: true
             }, {
-              img: '/assets/interview.png',
+              img: require('../assets/interview.png'),
               title: 'Live Interview',
               desc: 'Our team will take your interview to verify your skills',
               number: 2
             }, {
-              img: '/assets/customers.png',
+              img: require('../assets/customers.png'),
               title: 'Getting Customers',
               desc: `After onboarding you'll start getting clients`,
               number: 3
             }].map((step, idx) => (
               <div className={styles.stepBox} key={step.title}>
-                <div className={styles.stepCircle}>
-                  <span className={styles.stepNumber}>{step.number}</span>
-                  <img src={step.img} alt={step.title} className={styles.stepImg} />
-                </div>
+                <img src={step.img} alt={step.title} className={styles.stepImg} />
                 <h2 className={styles.stepTitle}>{step.title}</h2>
                 <p className={styles.stepDesc}>{step.desc}</p>
                 {step.viewForm && <span className={styles.viewForm} onClick={() => {
