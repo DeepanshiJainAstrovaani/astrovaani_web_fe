@@ -1,3 +1,21 @@
+/* Custom Notyf toast styles */
+.custom-notyf-error {
+  border-radius: 12px !important;
+  font-size: 1.08rem !important;
+  color: #fff !important;
+  background: #d32f2f !important;
+  box-shadow: 0 2px 12px rgba(75,24,90,0.10);
+  border: 1px solid #d32f2f;
+  padding: 16px 24px !important;
+}
+.custom-notyf-success {
+  border-radius: 12px !important;
+  font-size: 1.08rem !important;
+  color: #22c55e !important;
+  box-shadow: 0 2px 12px rgba(75,24,90,0.10);
+  border: 1px solid #d8f8d8;
+  padding: 16px 24px !important;
+}
 .photoRow {
   grid-column: 1 / -1;
   margin-top: 12px;

@@ -20,7 +20,8 @@ const initialForm = {
   pincode: '',
   category: '',
   reason: '',
-  photo: null
+  photo: null,
+  photoPreview: null
 };
 
 const GENDERS = ['Male', 'Female', 'Other'];
@@ -46,23 +47,32 @@ export default function JoinUs() {
 
   const validate = () => {
     const newErrors = {};
-    if (!form.name) newErrors.name = 'Required';
-    if (!form.whatsapp || !/^\d{10}$/.test(form.whatsapp)) newErrors.whatsapp = 'Valid 10-digit WhatsApp required';
-    if (!form.gender) newErrors.gender = 'Required';
-    if (!form.age) newErrors.age = 'Required';
-    if (!form.email || !/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = 'Valid email required';
-    if (!form.qualifications) newErrors.qualifications = 'Required';
-    if (!form.skills) newErrors.skills = 'Required';
-    if (!form.languages) newErrors.languages = 'Required';
-    if (!form.experience) newErrors.experience = 'Required';
-    if (!form.state) newErrors.state = 'Required';
-    if (!form.city) newErrors.city = 'Required';
-    if (!form.pincode || !/^\d{6}$/.test(form.pincode)) newErrors.pincode = 'Valid 6-digit pincode required';
-    if (!form.category) newErrors.category = 'Required';
-    if (!form.reason) newErrors.reason = 'Required';
-    if (!form.photo) newErrors.photo = 'Photo required';
+    // Regex patterns
+    const nameRegex = /^[A-Za-z ]{2,}$/;
+    const whatsappRegex = /^\d{10}$/;
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    const pincodeRegex = /^\d{6}$/;
+
+    if (!form.name || !nameRegex.test(form.name)) newErrors.name = 'Please enter your full name (letters only).';
+    if (!form.whatsapp || !whatsappRegex.test(form.whatsapp)) newErrors.whatsapp = 'Please enter a valid 10-digit WhatsApp number.';
+    if (!form.gender) newErrors.gender = 'Please select your gender.';
+    if (!form.age) newErrors.age = 'Please select your age.';
+    if (!form.email || !emailRegex.test(form.email)) newErrors.email = 'Please enter a valid email address.';
+    if (!form.qualifications) newErrors.qualifications = 'Please enter your qualifications.';
+    if (!form.skills) newErrors.skills = 'Please enter your skills.';
+    if (!form.languages) newErrors.languages = 'Please enter the languages you know.';
+    if (!form.experience) newErrors.experience = 'Please select your experience.';
+    if (!form.state) newErrors.state = 'Please enter your state.';
+    if (!form.city) newErrors.city = 'Please enter your city.';
+    if (!form.pincode || !pincodeRegex.test(form.pincode)) newErrors.pincode = 'Please enter a valid 6-digit pincode.';
+    if (!form.category) newErrors.category = 'Please select your category.';
+    if (!form.reason) newErrors.reason = 'Please select your reason to join.';
+    if (!form.photo) newErrors.photo = 'Please upload your photo.';
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (Object.keys(newErrors).length > 0) {
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async e => {
@@ -73,20 +83,24 @@ export default function JoinUs() {
     try {
       const formData = new FormData();
       Object.entries(form).forEach(([key, value]) => {
+        if (key === 'photoPreview') return;
         if (key === 'photo') {
           if (value) formData.append('photo', value);
         } else {
           formData.append(key, value);
         }
       });
-      const res = await fetch(`${API_URL}/joinus`, {
+      formData.append('status', 'inreview');
+      const res = await fetch(`${API_URL}/vendors`, {
         method: 'POST',
         body: formData
       });
       if (!res.ok) throw new Error('Failed to submit');
       setSuccess(true);
+      // Success message can be shown inline if needed
       setForm(initialForm);
     } catch (err) {
+      // Error message can be shown inline if needed
       setErrors({ submit: err.message });
     } finally {
       setSubmitting(false);
