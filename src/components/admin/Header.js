@@ -16,7 +16,13 @@ const Header = () => {
   return (
     <header className="admin-header">
       <div className="admin-header__logo-area">
-        <img src={logo} alt="Astrovaani Logo" className="admin-header__logo-img" />
+        <img
+          src={logo}
+          alt="Astrovaani Logo"
+          className="admin-header__logo-img"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/')}
+        />
       </div>
       <div className="admin-header__right">
         <span className="admin-header__welcome">
