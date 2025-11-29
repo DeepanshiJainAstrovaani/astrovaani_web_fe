@@ -17,6 +17,7 @@ const BookingsPage = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchBookings = async (status) => {
     setLoading(true);
@@ -37,9 +38,32 @@ const BookingsPage = () => {
     fetchBookings(activeStatus);
   }, [activeStatus]);
 
+  // Filter bookings by search term
+  const filteredBookings = bookings.filter(b => {
+    const values = [
+      b._id,
+      b.user_id?.name,
+      b.user_id?.mobile,
+      b.booking_date && new Date(b.booking_date).toLocaleString(),
+      b.total_amount,
+      b.status
+    ];
+    return values.some(val =>
+      val && val.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
   return (
     <div className={styles['admin-container']}>
-      <div className={styles['search-bar']}>Search Bar Placeholder</div>
+      <div className={styles['search-bar']}>
+        <input
+          type="text"
+          placeholder="Search any booking"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          style={{ width: '100%', fontSize: '16px' }}
+        />
+      </div>
       <div>
         {statusOptions.map(opt => (
           <button
@@ -71,12 +95,12 @@ const BookingsPage = () => {
             </tr>
           </thead>
           <tbody>
-            {bookings.length === 0 ? (
+            {filteredBookings.length === 0 ? (
               <tr>
                 <td colSpan={5} style={{ textAlign: 'center' }}>No bookings found.</td>
               </tr>
             ) : (
-              bookings.map(b => (
+              filteredBookings.map(b => (
                 <tr key={b._id}>
                   <td>{b._id}</td>
                   <td>{b.user_id?.name || b.user_id?.mobile || '-'}</td>
