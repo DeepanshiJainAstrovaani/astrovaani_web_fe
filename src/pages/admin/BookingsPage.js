@@ -10,7 +10,7 @@ const statusOptions = [
 ];
 
 
-const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5000/api';
+const API_BASE = process.env.REACT_APP_API_URL;
 
 const BookingsPage = () => {
   const [activeStatus, setActiveStatus] = useState('pending');
