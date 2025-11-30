@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import styles from './JoinUs.module.css';
 import Header from '../components/Header';
@@ -29,10 +29,54 @@ const GENDERS = ['Male', 'Female', 'Other'];
 const CATEGORIES = ['Astrologer', 'Numerologist', 'Tarot Reader'];
 const REASONS = ['Not Getting Enough Clients', 'Want to Grow Professionally', 'Other'];
 const AGES = Array.from({ length: 83 }, (_, i) => i + 18); // 18-100
-const EXPERIENCES = ['<1 year', '1-3 years', '3-5 years', '5+ years'];
+const EXPERIENCES = Array.from({ length: 40 }, (_, i) => `${i + 1} year${i === 0 ? '' : 's'}`);
 
 export default function JoinUs() {
-    // Handle OTP input change
+    const [form, setForm] = useState(initialForm);
+    // State/City dropdown logic using real-time API
+    const [stateOptions, setStateOptions] = useState([]);
+    const [cityOptions, setCityOptions] = useState([]);
+
+    // Fetch states from API on mount
+    useEffect(() => {
+      fetch('https://countriesnow.space/api/v0.1/countries/states', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      })
+        .then(res => res.json())
+        .then(data => {
+          let indiaData = data.data.find(c => c.name === 'India' || c.country === 'India');
+          if (indiaData && indiaData.states && Array.isArray(indiaData.states)) {
+            const states = indiaData.states.map(s => {
+              if (typeof s === 'string') return s;
+              if (s.name) return s.name;
+              if (s.state) return s.state;
+              return s;
+            }).filter(s => s && typeof s === 'string').sort();
+            setStateOptions(states);
+          }
+        });
+    }, []);
+
+    // Fetch cities when state changes
+    useEffect(() => {
+      if (form.state) {
+        fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ country: 'India', state: form.state })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.data) setCityOptions(data.data);
+            else setCityOptions([]);
+          });
+      } else {
+        setCityOptions([]);
+      }
+    }, [form.state]);
+
+    // Sync with form state
     const handleOtpChange = (value, idx) => {
       if (!/^[0-9]?$/.test(value)) return;
       const newOtp = [...otp];
@@ -68,7 +112,6 @@ export default function JoinUs() {
         });
         const data = await res.json();
         if (data.success) {
-          setOtpVerified(true);
           setSuccess(true);
           setShowSuccessModal(true);
           setTimeout(() => {
@@ -83,15 +126,12 @@ export default function JoinUs() {
       }
       setOtpVerifying(false);
     };
-  const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [otpModalOpen, setOtpModalOpen] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
   const [otpVerifying, setOtpVerifying] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
   const [otpError, setOtpError] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
@@ -99,6 +139,10 @@ export default function JoinUs() {
     const { name, value, files } = e.target;
     if (name === 'photo') {
       setForm(f => ({ ...f, photo: files[0] }));
+    } else if (name === 'state') {
+      setForm(f => ({ ...f, state: value, city: '' }));
+    } else if (name === 'city') {
+      setForm(f => ({ ...f, city: value }));
     } else {
       setForm(f => ({ ...f, [name]: value }));
     }
@@ -152,8 +196,6 @@ export default function JoinUs() {
     e.preventDefault();
     if (!validate()) return;
     setOtp(['', '', '', '', '', '']);
-    setOtpSent(false);
-    setOtpVerified(false);
     setOtpError('');
     try {
       // First, check for duplicate before sending OTP
@@ -188,7 +230,7 @@ export default function JoinUs() {
         return;
       }
       // If not duplicate, send OTP using JoinUs template
-      const res = await fetch(`${API_URL}/auth/whatsapp/joinus`, {
+      await fetch(`${API_URL}/auth/whatsapp/joinus`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mobile: form.whatsapp })
@@ -295,18 +337,43 @@ export default function JoinUs() {
                     <label>Experience *</label>
                     <select name="experience" value={form.experience} onChange={handleChange} className={styles.input}>
                       <option value="">Select</option>
-                      {EXPERIENCES.map(e => <option key={e} value={e}>{e}</option>)}
+                      {EXPERIENCES.map((e, idx) => (
+                        <option key={e} value={e}>{e}</option>
+                      ))}
                     </select>
                     {errors.experience && <span className={styles.error}>{errors.experience}</span>}
                   </div>
                   <div>
                     <label>Your State *</label>
-                    <input name="state" value={form.state} onChange={handleChange} placeholder="Select" className={styles.input} />
+                    <select
+                      name="state"
+                      value={form.state}
+                      onChange={handleChange}
+                      className={styles.input}
+                      required
+                    >
+                      <option value="">Select State</option>
+                      {stateOptions.map(state => (
+                        <option key={state} value={state}>{state}</option>
+                      ))}
+                    </select>
                     {errors.state && <span className={styles.error}>{errors.state}</span>}
                   </div>
                   <div>
                     <label>City *</label>
-                    <input name="city" value={form.city} onChange={handleChange} placeholder="Enter here" className={styles.input} />
+                    <select
+                      name="city"
+                      value={form.city}
+                      onChange={handleChange}
+                      className={styles.input}
+                      required
+                      disabled={!form.state}
+                    >
+                      <option value="">Select City</option>
+                      {cityOptions.map(city => (
+                        <option key={city} value={city}>{city}</option>
+                      ))}
+                    </select>
                     {errors.city && <span className={styles.error}>{errors.city}</span>}
                   </div>
                   <div>
