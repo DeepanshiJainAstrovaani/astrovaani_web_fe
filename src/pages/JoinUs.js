@@ -64,11 +64,12 @@ export default function JoinUs() {
         const res = await fetch(`${API_URL}/auth/verify-otp`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ whatsapp: form.whatsapp, otp: enteredOtp })
+          body: JSON.stringify({ mobile: form.whatsapp, otp: enteredOtp })
         });
         const data = await res.json();
         if (data.success) {
           setOtpVerified(true);
+          setSuccess(true);
           setShowSuccessModal(true);
           setTimeout(() => {
             setShowSuccessModal(false);
@@ -365,9 +366,14 @@ export default function JoinUs() {
                   </div>
                 </>
               </div>
-              <button type="submit" className={styles.submitBtn} disabled={submitting} style={{ marginTop: 32 }}>Submit</button>
-              {errors.submit && <div className={styles.error} style={{ marginTop: 12 }}>{errors.submit}</div>}
-              {success && <div style={{ color: '#22c55e', fontWeight: 600, marginTop: 12 }}>Form submitted successfully!</div>}
+                {success ? (
+                  <div style={{ color: '#22c55e', fontWeight: 600, marginTop: 32, fontSize: 18, textAlign: 'center' }}>
+                    🎉 Form submitted successfully! We will contact you soon.
+                  </div>
+                ) : (
+                  <button type="submit" className={styles.submitBtn} disabled={submitting} style={{ marginTop: 32 }}>Submit</button>
+                )}
+                {errors.submit && <div className={styles.error} style={{ marginTop: 12 }}>{errors.submit}</div>}
             </form>
           </div>
         </div>
@@ -375,7 +381,7 @@ export default function JoinUs() {
         <Modal
           isOpen={otpModalOpen}
           onRequestClose={() => setOtpModalOpen(false)}
-          style={{ content: { maxWidth: 400, margin: 'auto', padding: 32, borderRadius: 16, boxShadow: '0 2px 16px #0002' } }}
+          style={{ content: { maxWidth: 400, margin: 'auto', padding: 32, borderRadius: 16, boxShadow: '0 2px 16px #0002', height: '21rem' } }}
           ariaHideApp={false}
         >
           <h2 style={{ textAlign: 'center' }}>OTP Sent</h2>
@@ -444,7 +450,7 @@ export default function JoinUs() {
             ))}
           </div>
           {otpError && <div style={{ color: '#ef4444', textAlign: 'center', marginBottom: 8 }}>{otpError}</div>}
-          <button type="button" onClick={handleVerifyOtpModal} disabled={otpVerifying} style={{ width: '100%', padding: 10, fontSize: 18, borderRadius: 8, background: '#ffd600', fontWeight: 600 }}>
+          <button type="button" onClick={handleVerifyOtpModal} disabled={otpVerifying} style={{ width: '100%', padding: 10, fontSize: 18, borderRadius: 8, background: '#ffd600', fontWeight: 600, border: 'none' }}>
             Verify OTP
           </button>
         </Modal >
