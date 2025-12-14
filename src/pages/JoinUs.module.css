@@ -351,8 +351,8 @@ label {
 @media (max-width: 600px) {
     .container {
         margin: 1rem;
-        padding: 0.5rem 0.2rem;
-        border-radius: 0;
+        padding: 2rem 0.2rem;
+        border-radius: 1rem;
         box-shadow: none;
     }
 
