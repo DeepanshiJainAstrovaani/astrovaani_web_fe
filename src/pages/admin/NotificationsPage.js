@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './AdminTable.module.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
 const initialForm = {
   targetType: 'all', // 'all', 'specific', 'segment'
   targetUsers: [],
@@ -39,7 +41,7 @@ const NotificationsPage = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch('http://localhost:5000/api/notifications/stats', {
+      const response = await fetch(`${API_URL}/notifications/stats`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -90,7 +92,7 @@ const NotificationsPage = () => {
       formData.append('image', file);
 
       const token = localStorage.getItem('adminToken');
-      const response = await fetch('http://localhost:5000/api/notifications/upload-image', {
+      const response = await fetch(`${API_URL}/notifications/upload-image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -159,7 +161,7 @@ const NotificationsPage = () => {
       console.log('📤 Sending notification:', notificationData);
 
       // Send to backend
-      const response = await fetch('http://localhost:5000/api/notifications/send', {
+      const response = await fetch(`${API_URL}/notifications/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -477,7 +479,7 @@ const NotificationsPage = () => {
             <li>Notifications are delivered via Expo Push Service</li>
           </ol>
           <p style={{ color: '#856404', fontSize: 13, marginTop: 12, marginBottom: 0 }}>
-            <strong>Note:</strong> Make sure your backend server is running at <code>http://localhost:5000</code>
+            <strong>Note:</strong> Make sure your backend server is running at <code>{API_URL.replace('/api', '')}</code>
           </p>
         </div>
       </div>
