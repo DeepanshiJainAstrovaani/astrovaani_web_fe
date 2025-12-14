@@ -122,13 +122,21 @@ const VendorsPage = () => {
           <tbody>
             {statusFilteredVendors.map((v, i) => {
               const photoUrl = v.photo ? `${COMMUNITY_BASE_URL}${v.photo}` : DEFAULT_PHOTO;
-              let joinedDisplay = '-';
-              if (v.joined) {
-                // Try to format as date if possible
-                const date = new Date(v.joined);
-                joinedDisplay = isNaN(date.getTime()) ? v.joined : date.toLocaleDateString();
-              } else {
-                joinedDisplay = 'Not available';
+              let joinedDisplay = 'Not available';
+              
+              // The API returns 'joineddate' field (e.g., "07 January 2024")
+              if (v.joineddate) {
+                joinedDisplay = v.joineddate;
+              } else if (v.createdAt || v.updatedAt) {
+                // Fallback to createdAt/updatedAt if joineddate not available
+                const date = new Date(v.createdAt || v.updatedAt);
+                if (!isNaN(date.getTime())) {
+                  joinedDisplay = date.toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                  });
+                }
               }
               return (
                 <tr key={v._id || i}>
@@ -154,7 +162,10 @@ const VendorsPage = () => {
                       {activeStatus === 'New' && (
                         <button className={styles['action-btn']} title="Schedule" style={{ margin: 0 }} onClick={() => { navigate(`/admin/schedule/${v._id || v.id}`); }}>Schedule</button>
                       )}
-                      <button className={styles['action-btn-reject']} title="Reject" style={{ margin: 0 }}>Reject</button>
+                      {/* Only show Reject button if NOT Active/Inactive */}
+                      {activeStatus !== 'Active' && activeStatus !== 'Inactive' && (
+                        <button className={styles['action-btn-reject']} title="Reject" style={{ margin: 0 }}>Reject</button>
+                      )}
                     </div>
                   </td>
                 </tr>
