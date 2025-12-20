@@ -182,6 +182,254 @@ body {
   color: black;
 }
 
+/* Consultation Section */
+.consultation-section {
+  background: #300729;
+  padding: 60px 0 80px 0;
+  text-align: center;
+}
+.consultation-title {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.consultation-subtitle {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.2rem;
+  color: #DADADA;
+  margin-bottom: 48px;
+}
+.steps-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 80px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+.step-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+}
+.step-phone {
+  width: 140px;
+  height: 280px;
+  background: #fff;
+  border-radius: 30px;
+  border: 8px solid #1a1a1a;
+  position: relative;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.step-phone::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 6px;
+  background: #1a1a1a;
+  border-radius: 10px;
+}
+.phone-frame {
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+  border-radius: 22px;
+}
+.step-number {
+  width: 48px;
+  height: 48px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #300729;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.step-text {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+/* Blog Section */
+.blog-section {
+  background: #fff;
+  padding: 60px 0 80px 0;
+  text-align: center;
+}
+.blog-title {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+.blog-subtitle {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.2rem;
+  color: #444;
+  margin-bottom: 48px;
+}
+.blog-grid {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto 48px auto;
+  padding: 0 40px;
+}
+.blog-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  width: 320px;
+  text-align: left;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+.blog-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.blog-image {
+  width: 100%;
+  height: 220px;
+  background: #f0f0f0;
+  overflow: hidden;
+  position: relative;
+}
+.blog-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.blog-card-title {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.4;
+  margin: 20px 20px 12px 20px;
+}
+.blog-date {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 20px 20px 20px;
+}
+.read-more-btn {
+  background: #300729;
+  color: #fff;
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 16px 48px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(48, 7, 41, 0.2);
+}
+.read-more-btn:hover {
+  background: #4a0b3e;
+  transform: scale(1.05);
+}
+
+/* Join Astrovaani Section */
+.join-section {
+  background: #300729;
+  padding: 100px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+.join-title {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.join-subtitle {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.2rem;
+  color: #DADADA;
+  margin-bottom: 40px;
+}
+.join-btn {
+  background: #FFD700;
+  color: #300729;
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 16px 48px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.2s;
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+  display: inline-block;
+}
+.join-btn:hover {
+  background: #FFC700;
+  transform: scale(1.05);
+}
+
+/* Astrology Information Section */
+.info-section {
+  background: #fff;
+  padding: 80px 40px;
+}
+.info-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.info-title {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+  line-height: 1.3;
+}
+.info-subtitle {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  line-height: 1.3;
+}
+.info-text {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #444;
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
 @media (max-width: 1200px) {
   .astro-navbar {
     max-width: 98vw;
@@ -190,6 +438,21 @@ body {
   .horoscope-grid {
     gap: 24px 24px;
     max-width: 98vw;
+  }
+  .steps-container {
+    gap: 48px;
+    padding: 0 20px;
+  }
+  .step-phone {
+    width: 120px;
+    height: 240px;
+  }
+  .blog-grid {
+    gap: 32px;
+    padding: 0 20px;
+  }
+  .blog-card {
+    width: 280px;
   }
 }
 
@@ -261,6 +524,99 @@ body {
   .zodiac-date {
     font-size: 0.7rem;
   }
+  .consultation-section {
+    padding: 40px 0 50px 0;
+  }
+  .consultation-title {
+    font-size: 1.8rem;
+  }
+  .consultation-subtitle {
+    font-size: 1rem;
+    margin-bottom: 36px;
+  }
+  .steps-container {
+    gap: 32px;
+    padding: 0 15px;
+  }
+  .step-card {
+    width: 140px;
+  }
+  .step-phone {
+    width: 100px;
+    height: 200px;
+    border: 6px solid #1a1a1a;
+    border-radius: 22px;
+  }
+  .step-phone::before {
+    width: 40px;
+    height: 5px;
+    top: 8px;
+  }
+  .phone-frame {
+    border-radius: 16px;
+  }
+  .step-number {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+  .step-text {
+    font-size: 0.95rem;
+  }
+  .blog-section {
+    padding: 40px 0 50px 0;
+  }
+  .blog-title {
+    font-size: 1.8rem;
+  }
+  .blog-subtitle {
+    font-size: 1rem;
+    margin-bottom: 36px;
+  }
+  .blog-grid {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    padding: 0 20px;
+    margin-bottom: 36px;
+  }
+  .blog-card {
+    width: 100%;
+    max-width: 400px;
+  }
+  .read-more-btn {
+    font-size: 1rem;
+    padding: 14px 40px;
+  }
+  .join-section {
+    padding: 70px 30px;
+    min-height: 350px;
+  }
+  .join-title {
+    font-size: 2rem;
+  }
+  .join-subtitle {
+    font-size: 1rem;
+    margin-bottom: 32px;
+  }
+  .join-btn {
+    font-size: 1rem;
+    padding: 14px 40px;
+  }
+  .info-section {
+    padding: 60px 30px;
+  }
+  .info-title {
+    font-size: 1.6rem;
+  }
+  .info-subtitle {
+    font-size: 1.2rem;
+    margin-top: 32px;
+  }
+  .info-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
 }
 
 @media (max-width: 600px) {
@@ -314,6 +670,25 @@ body {
   .zodiac-img-wrap img {
     width: 70px;
     height: 70px;
+  }
+  .steps-container {
+    flex-direction: column;
+    gap: 48px;
+    padding: 0 20px;
+  }
+  .step-card {
+    width: 100%;
+    max-width: 280px;
+  }
+  .step-phone {
+    width: 140px;
+    height: 280px;
+  }
+  .blog-card {
+    max-width: 320px;
+  }
+  .blog-image {
+    height: 200px;
   }
 }
 
@@ -392,6 +767,111 @@ body {
   }
   .zodiac-date {
     font-size: 0.5rem;
+  }
+  .consultation-section {
+    padding: 30px 0 40px 0;
+  }
+  .consultation-title {
+    font-size: 1.3rem;
+  }
+  .consultation-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+    padding: 0 10px;
+  }
+  .steps-container {
+    gap: 32px;
+  }
+  .step-phone {
+    width: 110px;
+    height: 220px;
+    border: 5px solid #1a1a1a;
+    border-radius: 18px;
+  }
+  .step-phone::before {
+    width: 35px;
+    height: 4px;
+  }
+  .phone-frame {
+    border-radius: 13px;
+  }
+  .step-number {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+  }
+  .step-text {
+    font-size: 0.85rem;
+  }
+  .blog-section {
+    padding: 30px 0 40px 0;
+  }
+  .blog-title {
+    font-size: 1.3rem;
+  }
+  .blog-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+    padding: 0 10px;
+  }
+  .blog-grid {
+    gap: 24px;
+    padding: 0 15px;
+    margin-bottom: 28px;
+  }
+  .blog-card {
+    max-width: 280px;
+  }
+  .blog-image {
+    height: 180px;
+  }
+  .blog-card-title {
+    font-size: 0.95rem;
+    margin: 16px 16px 10px 16px;
+  }
+  .blog-date {
+    font-size: 0.8rem;
+    margin: 0 16px 16px 16px;
+  }
+  .read-more-btn {
+    font-size: 0.9rem;
+    padding: 12px 32px;
+  }
+  .join-section {
+    padding: 60px 20px;
+    min-height: 300px;
+  }
+  .join-title {
+    font-size: 1.5rem;
+  }
+  .join-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 28px;
+    padding: 0 10px;
+  }
+  .join-btn {
+    font-size: 0.95rem;
+    padding: 12px 36px;
+  }
+  .info-section {
+    padding: 40px 20px;
+  }
+  .info-content {
+    max-width: 100%;
+  }
+  .info-title {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+  .info-subtitle {
+    font-size: 1.1rem;
+    margin-top: 28px;
+    margin-bottom: 16px;
+  }
+  .info-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
   }
 }
 

@@ -1,0 +1,466 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&display=swap');
+
+.kundali-page {
+  font-family: 'Lato', Arial, sans-serif;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* Header */
+.kundali-header {
+  background: #fff;
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  transition: color 0.2s;
+}
+
+.back-btn:hover {
+  color: #300729;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo {
+  height: 40px;
+}
+
+.header-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* Hero Section */
+.kundali-hero {
+  background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+  padding: 32px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 40px;
+  margin-top: 24px;
+  border-radius: 16px 16px 0 0;
+  position: relative;
+  min-height: 140px;
+}
+
+.hero-content {
+  flex: 1;
+}
+
+.hero-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: #333;
+}
+
+.hero-image {
+  position: absolute;
+  right: 60px;
+  bottom: 0;
+  z-index: 10;
+}
+
+.hero-image img {
+  height: 200px;
+  object-fit: contain;
+}
+
+/* Form Section */
+.kundali-form-section {
+  background: #fff;
+  margin: 0 40px;
+  margin-bottom: 32px;
+  padding: 40px;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.kundali-form {
+  max-width: 900px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: 'Lato', Arial, sans-serif;
+  color: #1a1a1a;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #300729;
+}
+
+.form-group input::placeholder,
+.form-group select::placeholder {
+  color: #999;
+}
+
+.form-note {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.generate-btn {
+  background: #FFD700;
+  color: #1a1a1a;
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 14px 48px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.generate-btn:hover {
+  background: #FFC700;
+  transform: scale(1.05);
+}
+
+/* Download App Section */
+.download-app-section {
+  background: #300729;
+  padding: 40px;
+  margin: 60px 40px 0 40px;
+  border-radius: 16px;
+  text-align: center;
+  color: #fff;
+}
+
+.download-title {
+  font-size: 1.8rem;
+  margin-bottom: 32px;
+  max-width: 100%;
+  color: #DADADA;
+}
+
+.download-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.store-btn {
+  background: #fff;
+  color: #1a1a1a;
+  padding: 14px 28px;
+  border-radius: 999px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  min-width: 200px;
+}
+
+.store-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.store-btn svg {
+  flex-shrink: 0;
+}
+
+.store-btn span {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.store-label-small {
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.store-label-large {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+/* Footer Section - Outside purple background */
+.footer-section {
+  text-align: center;
+  padding: 40px;
+}
+
+.footer-links-inline {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.footer-links-inline a {
+  color: #333;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.footer-links-inline a:hover {
+  color: #300729;
+}
+
+.copyright {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .kundali-hero {
+    margin: 0 30px;
+    margin-top: 20px;
+    padding: 28px 32px;
+    min-height: 130px;
+  }
+
+  .hero-image {
+    right: 50px;
+  }
+
+  .hero-image img {
+    height: 180px;
+  }
+
+  .kundali-form-section {
+    margin: 0 30px;
+    margin-bottom: 24px;
+    padding: 32px;
+  }
+}
+
+@media (max-width: 900px) {
+  .kundali-header {
+    padding: 16px 20px;
+  }
+
+  .header-logo {
+    height: 32px;
+  }
+
+  .header-title {
+    font-size: 1.2rem;
+  }
+
+  .kundali-hero {
+    margin: 0 20px;
+    margin-top: 16px;
+    padding: 24px;
+    min-height: 120px;
+  }
+
+  .hero-title {
+    font-size: 1.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .hero-image {
+    right: 40px;
+  }
+
+  .hero-image img {
+    height: 160px;
+  }
+
+  .kundali-form-section {
+    margin: 0 20px;
+    margin-bottom: 20px;
+    padding: 24px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .download-app-section {
+    padding: 48px 20px;
+  }
+
+  .download-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .kundali-hero {
+    padding: 24px 20px;
+    min-height: 110px;
+  }
+
+  .hero-image {
+    right: 20px;
+  }
+
+  .hero-image img {
+    height: 140px;
+  }
+}
+
+@media (max-width: 600px) {
+  .kundali-header {
+    padding: 12px 15px;
+  }
+
+  .header-logo {
+    height: 28px;
+  }
+
+  .header-title {
+    font-size: 1.1rem;
+  }
+
+  .kundali-hero {
+    margin: 0 15px;
+    margin-top: 12px;
+    padding: 20px 16px;
+    min-height: 100px;
+  }
+
+  .hero-title {
+    font-size: 1.3rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .hero-image {
+    right: 10px;
+  }
+
+  .hero-image img {
+    height: 120px;
+  }
+
+  .kundali-form-section {
+    margin: 0 15px;
+    margin-bottom: 16px;
+    padding: 20px;
+  }
+
+  .form-row {
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
+  .form-note {
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  .generate-btn {
+    width: 100%;
+    font-size: 1rem;
+    padding: 12px 32px;
+  }
+
+  .download-app-section {
+    padding: 36px 15px;
+  }
+
+  .download-title {
+    font-size: 1.2rem;
+    margin-bottom: 24px;
+  }
+
+  .download-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .store-btn {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+
+  .footer-links-inline {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links-inline a {
+    font-size: 0.85rem;
+  }
+
+  .copyright {
+    font-size: 0.85rem;
+  }
+}
