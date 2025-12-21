@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
@@ -33,12 +33,7 @@ export default function NotificationHistory() {
     pages: 0
   });
 
-  useEffect(() => {
-    fetchNotifications();
-    fetchStats();
-  }, [filter, pagination.page]);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -74,9 +69,9 @@ export default function NotificationHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, pagination.page, navigate]);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
@@ -94,7 +89,12 @@ export default function NotificationHistory() {
     } catch (err) {
       console.error('Error fetching stats:', err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+    fetchStats();
+  }, [fetchNotifications, fetchStats]);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this notification?')) {
