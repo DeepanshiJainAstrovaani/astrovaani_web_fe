@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Home from '../pages/Home';
 import FreeKundali from '../pages/FreeKundali';
 import Blog from '../pages/Blog';
+import BlogDetail from '../pages/BlogDetail';
 import FAQ from '../pages/FAQ';
 import Login from '../components/Auth/Login';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
@@ -13,12 +14,15 @@ import JoinUs from '../pages/JoinUs';
 const AppRoutes = () => (
   <Router>
     <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<Home />} />
-      <Route path="/free-kundali" element={<FreeKundali />} />
-      <Route path="/blog" element={<Blog />} />
-      <Route path="/faq" element={<FAQ />} />
-      <Route path="/interview" element={<VendorInterview />} />
+      {/* TEMPORARILY DISABLED - Uncomment when ready */}
+      {/* <Route path="/" element={<Home />} /> */}
+      {/* <Route path="/free-kundali" element={<FreeKundali />} /> */}
+      {/* <Route path="/blogs" element={<Blog />} /> */}
+      {/* <Route path="/blog/:id" element={<BlogDetail />} /> */}
+      {/* <Route path="/faq" element={<FAQ />} /> */}
+      {/* <Route path="/interview" element={<VendorInterview />} /> */}
+      
+      {/* ACTIVE ROUTES */}
       <Route path="/joinus" element={<JoinUs />} />
       
       {/* Auth Route */}
@@ -42,8 +46,8 @@ const AppRoutes = () => (
         } 
       />
       
-      {/* Catch all - redirect to login */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* Redirect all other routes to /joinus for now */}
+      <Route path="*" element={<Navigate to="/joinus" replace />} />
     </Routes>
   </Router>
 );

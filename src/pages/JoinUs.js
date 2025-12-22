@@ -112,17 +112,63 @@ export default function JoinUs() {
         });
         const data = await res.json();
         if (data.success) {
+          // OTP verified! Now submit the vendor data
+          await submitVendorData();
+        } else {
+          setOtpError(data.message || 'Invalid OTP.');
+          setOtpVerifying(false);
+        }
+      } catch (err) {
+        setOtpError('Failed to verify OTP.');
+        setOtpVerifying(false);
+      }
+    };
+
+    // Submit vendor data after OTP verification
+    const submitVendorData = async () => {
+      try {
+        const formData = new FormData();
+        formData.append('name', form.name);
+        formData.append('whatsapp', form.whatsapp);
+        formData.append('altmobile', form.altmobile || '');
+        formData.append('gender', form.gender);
+        formData.append('age', form.age);
+        formData.append('email', form.email);
+        formData.append('qualifications', form.qualifications);
+        formData.append('skills', form.skills);
+        formData.append('languages', form.languages);
+        formData.append('experience', form.experience);
+        formData.append('state', form.state);
+        formData.append('city', form.city);
+        formData.append('pincode', form.pincode);
+        formData.append('category', form.category);
+        formData.append('reason', form.reason);
+        if (form.photo) {
+          formData.append('photo', form.photo);
+        }
+
+        const res = await fetch(`${API_URL}/vendors`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (res.ok) {
           setSuccess(true);
           setShowSuccessModal(true);
           setTimeout(() => {
             setShowSuccessModal(false);
             setOtpModalOpen(false);
-          }, 1200);
+            // Reset form
+            setForm(initialForm);
+            setOtp(['', '', '', '', '', '']);
+          }, 2000);
         } else {
-          setOtpError(data.message || 'Invalid OTP.');
+          const errorData = await res.json();
+          setOtpError(errorData.message || 'Failed to submit application. Please try again.');
         }
       } catch (err) {
-        setOtpError('Failed to verify OTP.');
+        console.error('Vendor submission error:', err);
+        setOtpError('Failed to submit application. Please try again.');
       }
       setOtpVerifying(false);
     };
