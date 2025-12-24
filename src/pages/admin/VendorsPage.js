@@ -14,11 +14,11 @@ const STATUS_LABELS = ['New', 'In Process', 'Active', 'Inactive'];
 const mapStatusToLabel = (status) => {
   if (!status) return 'New';
   const s = String(status).toLowerCase();
-  if (s === 'inreview') return 'New';
+  if (s === 'pending' || s === 'inreview') return 'New';
   if (s === 'inprocess') return 'In Process';
   if (s === 'active') return 'Active';
   if (s === 'inactive') return 'Inactive';
-  // fallback
+  // fallback for any unknown status
   return 'New';
 };
 
@@ -35,11 +35,29 @@ const VendorsPage = () => {
       setLoading(true);
       setError(null);
       try {
+        console.log('Fetching vendors from:', `${API_URL}/vendors`);
         const response = await fetch(`${API_URL}/vendors`);
+        console.log('Response status:', response.status);
         if (!response.ok) throw new Error('Failed to fetch vendors');
         const data = await response.json();
-        setVendors(data);
+        console.log('Raw API response:', data);
+        console.log('Type of data:', typeof data, 'Is array:', Array.isArray(data));
+        
+        // Handle different response structures
+        let vendorsArray = [];
+        if (Array.isArray(data)) {
+          vendorsArray = data;
+        } else if (data.vendors && Array.isArray(data.vendors)) {
+          vendorsArray = data.vendors;
+        } else if (data.data && Array.isArray(data.data)) {
+          vendorsArray = data.data;
+        }
+        
+        console.log('Vendors array length:', vendorsArray.length);
+        console.log('First vendor:', vendorsArray[0]);
+        setVendors(vendorsArray);
       } catch (err) {
+        console.error('Error fetching vendors:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -48,16 +66,25 @@ const VendorsPage = () => {
     fetchVendors();
   }, []);
 
-  const filteredVendors = vendors.filter(v =>
-    v.name.toLowerCase().includes(search.toLowerCase()) ||
-    v.category.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredVendors = vendors.filter(v => {
+    const name = v.name || '';
+    const category = v.category || '';
+    return name.toLowerCase().includes(search.toLowerCase()) ||
+           category.toLowerCase().includes(search.toLowerCase());
+  });
 
   // Apply status filtering based on activeStatus tab
   const statusFilteredVendors = filteredVendors.filter(v => {
     if (!activeStatus) return true;
-    return mapStatusToLabel(v.status) === activeStatus;
+    const label = mapStatusToLabel(v.status);
+    console.log(`Vendor "${v.name}" status: ${v.status} → label: ${label}, activeStatus: ${activeStatus}, match: ${label === activeStatus}`);
+    return label === activeStatus;
   });
+
+  console.log('Total vendors:', vendors.length);
+  console.log('After search filter:', filteredVendors.length);
+  console.log('After status filter:', statusFilteredVendors.length);
+  console.log('Active status tab:', activeStatus);
 
   // Compute dynamic counts for each status label
   const counts = vendors.reduce((acc, v) => {
