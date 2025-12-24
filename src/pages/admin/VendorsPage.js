@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from './AdminTable.module.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-const COMMUNITY_BASE_URL = 'https://astrovaani.com/community/';
 
 const DEFAULT_PHOTO = 'https://ui-avatars.com/api/?name=Vendor&background=eee&color=222&size=64';
 
@@ -148,7 +147,7 @@ const VendorsPage = () => {
           </thead>
           <tbody>
             {statusFilteredVendors.map((v, i) => {
-              const photoUrl = v.photo ? `${COMMUNITY_BASE_URL}${v.photo}` : DEFAULT_PHOTO;
+              const photoUrl = v.photo || DEFAULT_PHOTO;
               let joinedDisplay = 'Not available';
               
               // The API returns 'joineddate' field (e.g., "07 January 2024")

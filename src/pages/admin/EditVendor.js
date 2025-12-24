@@ -12,8 +12,6 @@ const useNotification = () => {
 };
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-// Derive community URL from the existing REACT_APP_API_URL only
-const COMMUNITY_BASE_URL = (API_URL.replace(/\/api\/?$/,'') || 'http://localhost:5000') + '/community/';
 
 const GENDERS = ["Male", "Female", "Other"];
 const ACCOUNT_STATUS = ["inreview", "active", "inactive", "inprocess"];
@@ -597,7 +595,7 @@ const EditVendor = () => {
             {/* Profile photo in center, gallery in one row */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 18 }}>
               <img
-                src={photos[0] ? (typeof photos[0] === 'string' ? `${COMMUNITY_BASE_URL}${photos[0]}` : URL.createObjectURL(photos[0])) : null}
+                src={photos[0] ? (typeof photos[0] === 'string' ? photos[0] : URL.createObjectURL(photos[0])) : null}
                 alt="Profile"
                 style={{ width: 180, height: 220, objectFit: 'cover', borderRadius: 16, marginBottom: 10, background: '#eee', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
               />
@@ -615,7 +613,7 @@ const EditVendor = () => {
               {[1,2,3,4].map(idx => (
                 <div key={idx} className="col-lg-6 col-md-6 col-sm-6 d-flex flex-column align-items-center mb-3">
                   <img
-                    src={photos[idx] && typeof photos[idx] === 'string' ? `${COMMUNITY_BASE_URL}${photos[idx]}` : (photos[idx] ? URL.createObjectURL(photos[idx]) : null)}
+                    src={photos[idx] && typeof photos[idx] === 'string' ? photos[idx] : (photos[idx] ? URL.createObjectURL(photos[idx]) : null)}
                     alt=""
                     style={{ width: 90, height: 110, objectFit: 'cover', borderRadius: 10, marginBottom: 6, background: '#eee', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}
                   />
