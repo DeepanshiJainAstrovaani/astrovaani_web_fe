@@ -23,7 +23,7 @@ const AppRoutes = () => (
       {/* <Route path="/interview" element={<VendorInterview />} /> */}
       
       {/* ACTIVE ROUTES */}
-      <Route path="/joinus" element={<JoinUs />} />
+      <Route path="/" element={<JoinUs />} />
       
       {/* Auth Route */}
       <Route path="/login" element={<Login />} />
@@ -46,8 +46,8 @@ const AppRoutes = () => (
         } 
       />
       
-      {/* Redirect all other routes to /joinus for now */}
-      <Route path="*" element={<Navigate to="/joinus" replace />} />
+      {/* Redirect all other routes to / for now */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </Router>
 );
