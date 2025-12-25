@@ -27,6 +27,7 @@ const VendorsPage = () => {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ show: false, vendor: null });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,6 +93,35 @@ const VendorsPage = () => {
     return acc;
   }, {});
 
+  const handleDeleteClick = (vendor) => {
+    setDeleteModal({ show: true, vendor });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const vendorId = deleteModal.vendor?._id || deleteModal.vendor?.id;
+    if (!vendorId) return;
+
+    try {
+      const response = await fetch(`${API_URL}/vendors/${vendorId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete vendor');
+
+      // Remove vendor from local state
+      setVendors(vendors.filter(v => (v._id || v.id) !== vendorId));
+      setDeleteModal({ show: false, vendor: null });
+      alert('Vendor deleted successfully');
+    } catch (err) {
+      console.error('Error deleting vendor:', err);
+      alert('Failed to delete vendor: ' + err.message);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ show: false, vendor: null });
+  };
+
   return (
     <div className={styles['admin-container']}>
       {/* Search Bar */}
@@ -131,10 +161,10 @@ const VendorsPage = () => {
         <table className={styles['admin-table']} style={{ tableLayout: 'fixed' }}>
           <colgroup>
             <col style={{ width: 80 }} />
-            <col style={{ width: '40%' }} />
             <col style={{ width: '25%' }} />
             <col style={{ width: '15%' }} />
-            <col style={{ width: 220 }} />
+            <col style={{ width: '15%' }} />
+            <col style={{ width: 280 }} />
           </colgroup>
           <thead>
             <tr>
@@ -177,8 +207,8 @@ const VendorsPage = () => {
                   <td style={{ verticalAlign: 'middle', padding: '8px' }}>{v.name}</td>
                   <td style={{ verticalAlign: 'middle', padding: '8px' }}>{v.category}</td>
                   <td style={{ verticalAlign: 'middle', padding: '8px' }}>{joinedDisplay}</td>
-                  <td style={{ verticalAlign: 'middle', padding: '8px', minWidth: 220 }}>
-                    <div style={{ display: 'flex', gap: 12, justifyContent: 'center', alignItems: 'center' }}>
+                  <td style={{ verticalAlign: 'middle', padding: '8px', minWidth: 280 }}>
+                    <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
                       {v.id && (
                         <Link to={`/admin/edit-vendor/${v.id}`}>
                           <button className={styles['action-btn']} title="Edit" style={{ margin: 0 }}>Edit</button>
@@ -192,6 +222,17 @@ const VendorsPage = () => {
                       {activeStatus !== 'Active' && activeStatus !== 'Inactive' && (
                         <button className={styles['action-btn-reject']} title="Reject" style={{ margin: 0 }}>Reject</button>
                       )}
+                      {/* Delete button - only show in New tab */}
+                      {activeStatus === 'New' && (
+                        <button 
+                          className={styles['action-btn-delete']} 
+                          title="Delete" 
+                          style={{ margin: 0 }} 
+                          onClick={() => handleDeleteClick(v)}
+                        >
+                          Delete
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -200,6 +241,35 @@ const VendorsPage = () => {
           </tbody>
         </table>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal.show && (
+        <div className={styles['modal-overlay']} onClick={handleDeleteCancel}>
+          <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
+            <h2 className={styles['modal-title']}>Delete Vendor</h2>
+            <p className={styles['modal-message']}>
+              Are you sure you want to delete <strong>{deleteModal.vendor?.name}</strong>?
+              <br />
+              This action cannot be undone.
+            </p>
+            <div className={styles['modal-actions']}>
+              <button 
+                className={styles['modal-btn-cancel']} 
+                onClick={handleDeleteCancel}
+              >
+                Cancel
+              </button>
+              <button 
+                className={styles['modal-btn-confirm']} 
+                onClick={handleDeleteConfirm}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Scheduling now handled on separate page: /admin/schedule/:vendorId */}
     </div>
   );

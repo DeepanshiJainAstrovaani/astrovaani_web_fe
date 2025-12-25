@@ -403,8 +403,7 @@ const EditVendor = () => {
     if (form.phone && !/^\d{10}$/.test(form.phone)) newErrors.phone = "Enter valid 10-digit phone number";
     if (form.whatsapp && !/^\d{10}$/.test(form.whatsapp)) newErrors.whatsapp = "Enter valid 10-digit WhatsApp number";
     if (form.pincode && !/^\d{6}$/.test(form.pincode)) newErrors.pincode = "Enter valid 6-digit pincode";
-    if (form.accountno && !/^\d{9,18}$/.test(form.accountno)) newErrors.accountno = "Enter valid account number (9-18 digits)";
-    if (form.ifsc && !/^([A-Za-z]{4}[A-Za-z0-9]{7})$/.test(form.ifsc)) newErrors.ifsc = "Enter valid IFSC code";
+    // Removed bank details validations (accountno and ifsc)
     if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = "Enter valid email address";
     console.log('Validation errors:', newErrors);
     setErrors(newErrors);
@@ -424,17 +423,30 @@ const EditVendor = () => {
     }
     // If pricing per minute changes, auto-calculate all duration rates
     if (name === 'priceperminute') {
-      const pricePerMin = parseFloat(value) || 0;
-      setForm(f => ({ 
-        ...f, 
-        [name]: pricePerMin,
-        '15minrate': pricePerMin > 0 ? pricePerMin * 15 : 0,
-        '25minrate': pricePerMin > 0 ? pricePerMin * 25 : 0,
-        '30minrate': pricePerMin > 0 ? pricePerMin * 30 : 0,
-        '45minrate': pricePerMin > 0 ? pricePerMin * 45 : 0,
-        '1hourrate': pricePerMin > 0 ? pricePerMin * 60 : 0,
-        '90minrate': pricePerMin > 0 ? pricePerMin * 90 : 0
-      }));
+      const pricePerMin = value === '' ? '' : parseFloat(value);
+      if (value === '' || isNaN(pricePerMin)) {
+        setForm(f => ({ 
+          ...f, 
+          [name]: '',
+          '15minrate': '',
+          '25minrate': '',
+          '30minrate': '',
+          '45minrate': '',
+          '1hourrate': '',
+          '90minrate': ''
+        }));
+      } else {
+        setForm(f => ({ 
+          ...f, 
+          [name]: pricePerMin,
+          '15minrate': pricePerMin * 15,
+          '25minrate': pricePerMin * 25,
+          '30minrate': pricePerMin * 30,
+          '45minrate': pricePerMin * 45,
+          '1hourrate': pricePerMin * 60,
+          '90minrate': pricePerMin * 90
+        }));
+      }
     } else {
       setForm(f => ({ ...f, [name]: value }));
     }
