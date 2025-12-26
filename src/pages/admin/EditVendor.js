@@ -656,7 +656,7 @@ const EditVendor = () => {
                 <label>Category</label>
                 <select name="category" className="form-control" value={form.category} onChange={handleChange}>
                   <option value="">Select</option>
-                  {['ASTROLOGER','NUMEROLOGIST','TAROT READER'].map(c => <option key={c} value={c}>{c}</option>)}
+                  {['Astrologer','Numerologist','Tarot Reader'].map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div className="col-md-4 mb-3">
