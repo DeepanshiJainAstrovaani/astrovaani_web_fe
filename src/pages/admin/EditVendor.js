@@ -398,16 +398,21 @@ const EditVendor = () => {
   };
 
   const validate = () => {
+    // Validations disabled - admin can submit any field values
+    // Uncomment below if validations are needed in future
+    /*
     const newErrors = {};
-    // Only validate if fields have values - admin can leave fields empty
     if (form.phone && !/^\d{10}$/.test(form.phone)) newErrors.phone = "Enter valid 10-digit phone number";
     if (form.whatsapp && !/^\d{10}$/.test(form.whatsapp)) newErrors.whatsapp = "Enter valid 10-digit WhatsApp number";
     if (form.pincode && !/^\d{6}$/.test(form.pincode)) newErrors.pincode = "Enter valid 6-digit pincode";
-    // Removed bank details validations (accountno and ifsc)
+    if (form.accountno && !/^\d{9,18}$/.test(form.accountno)) newErrors.accountno = "Enter valid account number (9-18 digits)";
+    if (form.ifsc && !/^([A-Za-z]{4}[A-Za-z0-9]{7})$/.test(form.ifsc)) newErrors.ifsc = "Enter valid IFSC code";
     if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = "Enter valid email address";
     console.log('Validation errors:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+    */
+    return true;
   };
 
   const handleChange = e => {
@@ -651,7 +656,7 @@ const EditVendor = () => {
                 <label>Category</label>
                 <select name="category" className="form-control" value={form.category} onChange={handleChange}>
                   <option value="">Select</option>
-                  {['astrologer','vendor','tarot reader'].map(c => <option key={c} value={c}>{c}</option>)}
+                  {['ASTROLOGER','NUMEROLOGIST','TAROT READER'].map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div className="col-md-4 mb-3">
@@ -660,22 +665,22 @@ const EditVendor = () => {
                   <option value="">Select</option>
                   {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
-                {errors.gender && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.gender}</div>}
+                {/* {errors.gender && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.gender}</div>} */}
               </div>
               <div className="col-md-4 mb-3">
                 <label>Phone number</label>
                 <input type="text" name="phone" className="form-control" value={form.phone} onChange={handleChange} />
-                {errors.phone && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.phone}</div>}
+                {/* {errors.phone && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.phone}</div>} */}
               </div>
               <div className="col-md-4 mb-3">
                 <label>Whatsapp number</label>
                 <input type="text" name="whatsapp" className="form-control" value={form.whatsapp} onChange={handleChange} />
-                {errors.whatsapp && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.whatsapp}</div>}
+                {/* {errors.whatsapp && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.whatsapp}</div>} */}
               </div>
               <div className="col-md-4 mb-3">
                 <label>Email address</label>
                 <input type="email" name="email" className="form-control" value={form.email} onChange={handleChange} />
-                {errors.email && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.email}</div>}
+                {/* {errors.email && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.email}</div>} */}
               </div>
               <div className="col-md-4 mb-3">
                 <label>Age</label>
@@ -698,7 +703,7 @@ const EditVendor = () => {
               <div className="col-md-4 mb-3">
                 <label>Pincode</label>
                 <input type="text" name="pincode" className="form-control" value={form.pincode} onChange={handleChange} />
-                {errors.pincode && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.pincode}</div>}
+                {/* {errors.pincode && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.pincode}</div>} */}
               </div>
               <div className="col-md-4 mb-3">
                 <label>Experience</label>
@@ -736,12 +741,12 @@ const EditVendor = () => {
               <div className="col-md-4 mb-3">
                 <label>Account number</label>
                 <input type="text" name="accountno" className="form-control" value={form.accountno} onChange={handleChange} />
-                {errors.accountno && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.accountno}</div>}
+                {/* {errors.accountno && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.accountno}</div>} */}
               </div>
               <div className="col-md-4 mb-3">
                 <label>IFSC</label>
                 <input type="text" name="ifsc" className="form-control" value={form.ifsc} onChange={handleChange} />
-                {errors.ifsc && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.ifsc}</div>}
+                {/* {errors.ifsc && <div className="text-danger" style={{ fontSize: '0.95em' }}>{errors.ifsc}</div>} */}
               </div>
             </div>
           </div>
