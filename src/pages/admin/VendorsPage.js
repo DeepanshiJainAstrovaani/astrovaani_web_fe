@@ -28,6 +28,7 @@ const VendorsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ show: false, vendor: null });
+  const [rejectModal, setRejectModal] = useState({ show: false, vendor: null });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -111,7 +112,6 @@ const VendorsPage = () => {
       // Remove vendor from local state
       setVendors(vendors.filter(v => (v._id || v.id) !== vendorId));
       setDeleteModal({ show: false, vendor: null });
-      alert('Vendor deleted successfully');
     } catch (err) {
       console.error('Error deleting vendor:', err);
       alert('Failed to delete vendor: ' + err.message);
@@ -120,6 +120,40 @@ const VendorsPage = () => {
 
   const handleDeleteCancel = () => {
     setDeleteModal({ show: false, vendor: null });
+  };
+
+  const handleRejectClick = (vendor) => {
+    setRejectModal({ show: true, vendor });
+  };
+
+  const handleRejectConfirm = async () => {
+    const vendorId = rejectModal.vendor?._id || rejectModal.vendor?.id;
+    if (!vendorId) return;
+
+    try {
+      const response = await fetch(`${API_URL}/vendors/${vendorId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'inactive' }),
+      });
+
+      if (!response.ok) throw new Error('Failed to reject vendor');
+
+      // Update vendor status in local state
+      setVendors(vendors.map(v => 
+        (v._id || v.id) === vendorId ? { ...v, status: 'inactive' } : v
+      ));
+      setRejectModal({ show: false, vendor: null });
+    } catch (err) {
+      console.error('Error rejecting vendor:', err);
+      alert('Failed to reject vendor: ' + err.message);
+    }
+  };
+
+  const handleRejectCancel = () => {
+    setRejectModal({ show: false, vendor: null });
   };
 
   return (
@@ -220,7 +254,14 @@ const VendorsPage = () => {
                       )}
                       {/* Only show Reject button if NOT Active/Inactive */}
                       {activeStatus !== 'Active' && activeStatus !== 'Inactive' && (
-                        <button className={styles['action-btn-reject']} title="Reject" style={{ margin: 0 }}>Reject</button>
+                        <button 
+                          className={styles['action-btn-reject']} 
+                          title="Reject" 
+                          style={{ margin: 0 }} 
+                          onClick={() => handleRejectClick(v)}
+                        >
+                          Reject
+                        </button>
                       )}
                       {/* Delete button - only show in New tab */}
                       {activeStatus === 'New' && (
@@ -264,6 +305,34 @@ const VendorsPage = () => {
                 onClick={handleDeleteConfirm}
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Confirmation Modal */}
+      {rejectModal.show && (
+        <div className={styles['modal-overlay']} onClick={handleRejectCancel}>
+          <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
+            <h2 className={styles['modal-title']}>Reject Vendor</h2>
+            <p className={styles['modal-message']}>
+              Are you sure you want to reject <strong>{rejectModal.vendor?.name}</strong>?
+              <br />
+              This will move them to the Inactive tab.
+            </p>
+            <div className={styles['modal-actions']}>
+              <button 
+                className={styles['modal-btn-cancel']} 
+                onClick={handleRejectCancel}
+              >
+                Cancel
+              </button>
+              <button 
+                className={styles['modal-btn-confirm']} 
+                onClick={handleRejectConfirm}
+              >
+                Reject
               </button>
             </div>
           </div>
