@@ -170,7 +170,7 @@ const VendorsPage = () => {
           } else {
             // Onboarding rejection template
             templateName = 'vendor_onboarding_rejected';
-            variables = [name, 'Your application does not meet our current criteria'];
+            variables = [name]; // Only vendor name, reason is already in template
             whatsappMessage = JSON.stringify(variables);
           }
           
@@ -186,7 +186,7 @@ const VendorsPage = () => {
               mobile,
               templateName,
               message: whatsappMessage,
-              reason: reason === 'onboarding' ? 'Does not meet criteria' : 'Agreement signature missing'
+              reason: reason === 'onboarding' ? 'Skills/experience mismatch' : 'Agreement signature missing'
             }),
           });
           
