@@ -28,7 +28,7 @@ const VendorsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ show: false, vendor: null });
-  const [rejectModal, setRejectModal] = useState({ show: false, vendor: null });
+  const [rejectModal, setRejectModal] = useState({ show: false, vendor: null, reason: '', customReason: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -123,14 +123,23 @@ const VendorsPage = () => {
   };
 
   const handleRejectClick = (vendor) => {
-    setRejectModal({ show: true, vendor });
+    setRejectModal({ show: true, vendor, reason: '', customReason: '' });
   };
 
   const handleRejectConfirm = async () => {
     const vendorId = rejectModal.vendor?._id || rejectModal.vendor?.id;
+    const { reason } = rejectModal;
+    
     if (!vendorId) return;
+    
+    // Validate reason selection
+    if (!reason) {
+      alert('Please select a rejection reason');
+      return;
+    }
 
     try {
+      // Update vendor status to inactive
       const response = await fetch(`${API_URL}/vendors/${vendorId}`, {
         method: 'PUT',
         headers: {
@@ -141,11 +150,58 @@ const VendorsPage = () => {
 
       if (!response.ok) throw new Error('Failed to reject vendor');
 
+      // Send WhatsApp notification
+      const vendor = rejectModal.vendor;
+      const mobile = vendor.whatsapp || vendor.phone;
+      const name = vendor.name || 'Vendor';
+      
+      if (mobile) {
+        try {
+          // Determine message based on rejection reason
+          let whatsappMessage = '';
+          let templateName = '';
+          let variables = [];
+          
+          if (reason === 'agreement') {
+            // Agreement rejection template
+            templateName = 'vendor_agreement_rejected';
+            variables = [name];
+            whatsappMessage = JSON.stringify(variables);
+          } else {
+            // Onboarding rejection template
+            templateName = 'vendor_onboarding_rejected';
+            variables = [name, 'Your application does not meet our current criteria'];
+            whatsappMessage = JSON.stringify(variables);
+          }
+          
+          console.log('📱 Sending rejection WhatsApp:', { mobile, templateName, variables });
+          
+          // Send WhatsApp via backend
+          await fetch(`${API_URL}/vendors/${vendorId}/reject-notify`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              mobile,
+              templateName,
+              message: whatsappMessage,
+              reason: reason === 'onboarding' ? 'Does not meet criteria' : 'Agreement signature missing'
+            }),
+          });
+          
+          console.log('✅ Rejection notification sent');
+        } catch (whatsappErr) {
+          console.error('⚠️ WhatsApp notification failed:', whatsappErr);
+          // Don't block the rejection if WhatsApp fails
+        }
+      }
+
       // Update vendor status in local state
       setVendors(vendors.map(v => 
         (v._id || v.id) === vendorId ? { ...v, status: 'inactive' } : v
       ));
-      setRejectModal({ show: false, vendor: null });
+      setRejectModal({ show: false, vendor: null, reason: '', customReason: '' });
     } catch (err) {
       console.error('Error rejecting vendor:', err);
       alert('Failed to reject vendor: ' + err.message);
@@ -153,7 +209,7 @@ const VendorsPage = () => {
   };
 
   const handleRejectCancel = () => {
-    setRejectModal({ show: false, vendor: null });
+    setRejectModal({ show: false, vendor: null, reason: '', customReason: '' });
   };
 
   return (
@@ -314,14 +370,49 @@ const VendorsPage = () => {
       {/* Reject Confirmation Modal */}
       {rejectModal.show && (
         <div className={styles['modal-overlay']} onClick={handleRejectCancel}>
-          <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
-            <h2 className={styles['modal-title']}>Reject Vendor</h2>
-            <p className={styles['modal-message']}>
+          <div 
+            className={styles['modal-content']} 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '500px',
+              width: '90%',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              margin: 'auto'
+            }}
+          >
+            <h2 className={styles['modal-title']} style={{ margin: '0 0 16px 0', fontSize: '20px' }}>Reject Vendor</h2>
+            <p className={styles['modal-message']} style={{ margin: '0 0 20px 0', padding: '0 20px', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
               Are you sure you want to reject <strong>{rejectModal.vendor?.name}</strong>?
               <br />
-              This will move them to the Inactive tab.
+              This will move them to the Inactive tab and send them a WhatsApp notification.
             </p>
-            <div className={styles['modal-actions']}>
+            
+            {/* Rejection Reason Selection */}
+            <div style={{ marginTop: '20px', marginBottom: '20px', textAlign: 'left', padding: '0 20px' }}>
+              <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold', color: '#333', fontSize: '14px' }}>
+                Rejection Reason *
+              </label>
+              <select
+                value={rejectModal.reason}
+                onChange={(e) => setRejectModal({ ...rejectModal, reason: e.target.value })}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '6px',
+                  border: '1px solid #ddd',
+                  fontSize: '14px',
+                  marginBottom: '12px',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <option value="">-- Select Reason --</option>
+                <option value="onboarding">Onboarding Rejection</option>
+                <option value="agreement">Agreement Rejection</option>
+              </select>
+            </div>
+            
+            <div className={styles['modal-actions']} style={{ padding: '0 20px 20px 20px', gap: '12px' }}>
               <button 
                 className={styles['modal-btn-cancel']} 
                 onClick={handleRejectCancel}
@@ -331,8 +422,13 @@ const VendorsPage = () => {
               <button 
                 className={styles['modal-btn-confirm']} 
                 onClick={handleRejectConfirm}
+                disabled={!rejectModal.reason}
+                style={{
+                  opacity: !rejectModal.reason ? 0.5 : 1,
+                  cursor: !rejectModal.reason ? 'not-allowed' : 'pointer'
+                }}
               >
-                Reject
+                Reject & Notify
               </button>
             </div>
           </div>
