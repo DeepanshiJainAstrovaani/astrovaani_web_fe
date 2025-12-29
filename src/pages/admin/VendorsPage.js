@@ -165,13 +165,11 @@ const VendorsPage = () => {
           if (reason === 'agreement') {
             // Agreement rejection template
             templateName = 'vendor_agreement_rejected';
-            variables = [name];
-            whatsappMessage = JSON.stringify(variables);
+            whatsappMessage = name; // Send just the name as plain string
           } else {
             // Onboarding rejection template
             templateName = 'vendor_onboarding_rejected';
-            variables = [name]; // Only vendor name, reason is already in template
-            whatsappMessage = JSON.stringify(variables);
+            whatsappMessage = name; // Send just the name as plain string
           }
           
           console.log('📱 Sending rejection WhatsApp:', { mobile, templateName, variables });
