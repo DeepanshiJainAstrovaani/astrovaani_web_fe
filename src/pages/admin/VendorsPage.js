@@ -29,6 +29,8 @@ const VendorsPage = () => {
   const [error, setError] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ show: false, vendor: null });
   const [rejectModal, setRejectModal] = useState({ show: false, vendor: null, reason: '', customReason: '' });
+  const [agreementModal, setAgreementModal] = useState({ show: false, vendor: null, agreementUrl: '' });
+  const [onboardModal, setOnboardModal] = useState({ show: false, vendor: null });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -210,6 +212,93 @@ const VendorsPage = () => {
     setRejectModal({ show: false, vendor: null, reason: '', customReason: '' });
   };
 
+  const handleViewAgreement = (vendor) => {
+    setAgreementModal({ show: true, vendor, agreementUrl: vendor.agreement });
+  };
+
+  const handleAgreementApprove = async () => {
+    const vendorId = agreementModal.vendor?._id || agreementModal.vendor?.id;
+    if (!vendorId) return;
+
+    try {
+      const response = await fetch(`${API_URL}/vendors/${vendorId}/approve-agreement`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to approve agreement');
+
+      // Update vendor in local state
+      setVendors(vendors.map(v => 
+        (v._id || v.id) === vendorId ? { ...v, agreementStatus: 'approved' } : v
+      ));
+      
+      setAgreementModal({ show: false, vendor: null, agreementUrl: '' });
+      alert('Agreement approved! Vendor can now complete bank details and accept terms.');
+    } catch (err) {
+      console.error('Error approving agreement:', err);
+      alert('Failed to approve agreement: ' + err.message);
+    }
+  };
+
+  const handleAgreementModalClose = () => {
+    setAgreementModal({ show: false, vendor: null, agreementUrl: '' });
+  };
+
+  const handleOnboardClick = (vendor) => {
+    // Check if vendor has completed all steps
+    if (!vendor.agreementStatus || vendor.agreementStatus !== 'approved') {
+      alert('Agreement must be approved first');
+      return;
+    }
+    if (!vendor.accountholder || !vendor.accountno || !vendor.ifsc) {
+      alert('Vendor has not completed bank details yet');
+      return;
+    }
+    if (!vendor.agree) {
+      alert('Vendor has not accepted terms yet');
+      return;
+    }
+    setOnboardModal({ show: true, vendor });
+  };
+
+  const handleOnboardConfirm = async () => {
+    const vendorId = onboardModal.vendor?._id || onboardModal.vendor?.id;
+    if (!vendorId) return;
+
+    try {
+      const response = await fetch(`${API_URL}/vendors/${vendorId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          status: 'active',
+          onboardingstatus: 'completed'
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to onboard vendor');
+
+      // Update vendor in local state
+      setVendors(vendors.map(v => 
+        (v._id || v.id) === vendorId ? { ...v, status: 'active', onboardingstatus: 'completed' } : v
+      ));
+      
+      setOnboardModal({ show: false, vendor: null });
+      alert('Vendor onboarded successfully! They can now start taking bookings.');
+    } catch (err) {
+      console.error('Error onboarding vendor:', err);
+      alert('Failed to onboard vendor: ' + err.message);
+    }
+  };
+
+  const handleOnboardCancel = () => {
+    setOnboardModal({ show: false, vendor: null });
+  };
+
   return (
     <div className={styles['admin-container']}>
       {/* Search Bar */}
@@ -297,6 +386,21 @@ const VendorsPage = () => {
                   <td style={{ verticalAlign: 'middle', padding: '8px' }}>{joinedDisplay}</td>
                   <td style={{ verticalAlign: 'middle', padding: '8px', minWidth: 280 }}>
                     <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+                      {/* Eye icon to view agreement - show if agreement uploaded */}
+                      {v.agreement && v.agreement !== '' && (
+                        <button 
+                          className={styles['action-btn']} 
+                          title="View Agreement" 
+                          style={{ margin: 0, padding: '6px 12px', background: '#17a2b8', display: 'flex', alignItems: 'center', gap: '4px' }} 
+                          onClick={() => handleViewAgreement(v)}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                          </svg>
+                          Agreement
+                        </button>
+                      )}
                       {v.id && (
                         <Link to={`/admin/edit-vendor/${v.id}`}>
                           <button className={styles['action-btn']} title="Edit" style={{ margin: 0 }}>Edit</button>
@@ -315,6 +419,20 @@ const VendorsPage = () => {
                           onClick={() => handleRejectClick(v)}
                         >
                           Reject
+                        </button>
+                      )}
+                      {/* Onboard button - only show in In Process tab if all conditions met */}
+                      {activeStatus === 'In Process' && 
+                       v.agreementStatus === 'approved' && 
+                       v.accountholder && v.accountno && v.ifsc && 
+                       v.agree && (
+                        <button 
+                          className={styles['action-btn']} 
+                          title="Onboard Vendor" 
+                          style={{ margin: 0, background: '#28a745' }} 
+                          onClick={() => handleOnboardClick(v)}
+                        >
+                          Onboard
                         </button>
                       )}
                       {/* Delete button - only show in New tab */}
@@ -427,6 +545,139 @@ const VendorsPage = () => {
                 }}
               >
                 Reject & Notify
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Agreement Preview Modal */}
+      {agreementModal.show && (
+        <div className={styles['modal-overlay']} onClick={handleAgreementModalClose}>
+          <div 
+            className={styles['modal-content']} 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '900px',
+              width: '95%',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              margin: 'auto'
+            }}
+          >
+            <h2 className={styles['modal-title']} style={{ margin: '0 0 16px 0', fontSize: '20px' }}>
+              Agreement Preview - {agreementModal.vendor?.name}
+            </h2>
+            
+            {/* Agreement Preview */}
+            <div style={{ 
+              padding: '20px', 
+              background: '#f9f9f9', 
+              borderRadius: '8px', 
+              marginBottom: '20px',
+              maxHeight: '500px',
+              overflow: 'auto'
+            }}>
+              {agreementModal.agreementUrl && agreementModal.agreementUrl.endsWith('.pdf') ? (
+                <iframe 
+                  src={agreementModal.agreementUrl} 
+                  style={{ width: '100%', height: '500px', border: 'none', borderRadius: '4px' }}
+                  title="Agreement PDF"
+                />
+              ) : agreementModal.agreementUrl ? (
+                <img 
+                  src={agreementModal.agreementUrl} 
+                  alt="Agreement" 
+                  style={{ width: '100%', height: 'auto', borderRadius: '4px' }}
+                />
+              ) : (
+                <p style={{ textAlign: 'center', color: '#666' }}>No agreement uploaded yet</p>
+              )}
+            </div>
+
+            {/* Agreement Status */}
+            <div style={{ padding: '0 20px', marginBottom: '20px' }}>
+              <p style={{ margin: '0 0 8px 0', color: '#666', fontSize: '14px' }}>
+                <strong>Upload Date:</strong> {agreementModal.vendor?.agreementuploaddate ? 
+                  new Date(agreementModal.vendor.agreementuploaddate).toLocaleString('en-IN') : 
+                  'Not available'
+                }
+              </p>
+              <p style={{ margin: '0 0 8px 0', color: '#666', fontSize: '14px' }}>
+                <strong>Status:</strong> {agreementModal.vendor?.agreementStatus || 'Pending Review'}
+              </p>
+            </div>
+            
+            <div className={styles['modal-actions']} style={{ padding: '0 20px 20px 20px', gap: '12px' }}>
+              <button 
+                className={styles['modal-btn-cancel']} 
+                onClick={handleAgreementModalClose}
+              >
+                Close
+              </button>
+              {agreementModal.vendor?.agreementStatus !== 'approved' && (
+                <button 
+                  className={styles['modal-btn-confirm']} 
+                  onClick={handleAgreementApprove}
+                  style={{ background: '#28a745' }}
+                >
+                  Approve Agreement
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Onboard Confirmation Modal */}
+      {onboardModal.show && (
+        <div className={styles['modal-overlay']} onClick={handleOnboardCancel}>
+          <div 
+            className={styles['modal-content']} 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '500px',
+              width: '90%',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              margin: 'auto'
+            }}
+          >
+            <h2 className={styles['modal-title']} style={{ margin: '0 0 16px 0', fontSize: '20px' }}>Onboard Vendor</h2>
+            <p className={styles['modal-message']} style={{ margin: '0 0 20px 0', padding: '0 20px', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
+              Are you sure you want to onboard <strong>{onboardModal.vendor?.name}</strong>?
+              <br /><br />
+              This will:
+              <ul style={{ textAlign: 'left', marginTop: '10px' }}>
+                <li>✅ Set vendor status to <strong>Active</strong></li>
+                <li>✅ Allow vendor to start taking bookings</li>
+                <li>✅ Enable vendor in customer app</li>
+              </ul>
+            </p>
+            
+            {/* Verification Checklist */}
+            <div style={{ padding: '0 20px', marginBottom: '20px', textAlign: 'left' }}>
+              <p style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '14px' }}>Verification Checklist:</p>
+              <ul style={{ fontSize: '13px', color: '#666' }}>
+                <li>✅ Agreement Approved</li>
+                <li>✅ Bank Details Submitted</li>
+                <li>✅ Terms Accepted</li>
+              </ul>
+            </div>
+            
+            <div className={styles['modal-actions']} style={{ padding: '0 20px 20px 20px', gap: '12px' }}>
+              <button 
+                className={styles['modal-btn-cancel']} 
+                onClick={handleOnboardCancel}
+              >
+                Cancel
+              </button>
+              <button 
+                className={styles['modal-btn-confirm']} 
+                onClick={handleOnboardConfirm}
+                style={{ background: '#28a745' }}
+              >
+                Onboard Now
               </button>
             </div>
           </div>
