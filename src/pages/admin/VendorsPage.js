@@ -425,21 +425,6 @@ const VendorsPage = () => {
                   <td style={{ verticalAlign: 'middle', padding: '8px' }}>{joinedDisplay}</td>
                   <td style={{ verticalAlign: 'middle', padding: '8px', minWidth: 280 }}>
                     <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
-                      {/* Eye icon to view agreement - show if agreement uploaded */}
-                      {v.agreement && v.agreement !== '' && (
-                        <button 
-                          className={styles['action-btn']} 
-                          title="View Agreement" 
-                          style={{ margin: 0, padding: '6px 12px', background: '#17a2b8', display: 'flex', alignItems: 'center', gap: '4px' }} 
-                          onClick={() => handleViewAgreement(v)}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                          </svg>
-                          Agreement
-                        </button>
-                      )}
                       {v.id && (
                         <Link to={`/admin/edit-vendor/${v.id}`}>
                           <button className={styles['action-btn']} title="Edit" style={{ margin: 0 }}>Edit</button>
@@ -448,6 +433,10 @@ const VendorsPage = () => {
                       {/* Only show Schedule button if activeStatus is 'New' */}
                       {activeStatus === 'New' && (
                         <button className={styles['action-btn']} title="Schedule" style={{ margin: 0 }} onClick={() => { navigate(`/admin/schedule/${v._id || v.id}`); }}>Schedule</button>
+                      )}
+                      {/* Show View Agreement button if agreement uploaded */}
+                      {v.agreement && v.agreement !== '' && (
+                        <button className={styles['action-btn']} title="View Agreement" style={{ margin: 0 }} onClick={() => handleViewAgreement(v)}>View Agreement</button>
                       )}
                       {/* Only show Reject button if NOT Active/Inactive */}
                       {activeStatus !== 'Active' && activeStatus !== 'Inactive' && (
@@ -460,12 +449,17 @@ const VendorsPage = () => {
                           Reject
                         </button>
                       )}
-                      {/* Show Onboard button if status is 'In Process' */}
-                      {activeStatus === 'In Process' && (
+                      {/* Show Onboard button if status is 'In Process' and all conditions met */}
+                      {activeStatus === 'In Process' && 
+                       v.agreementStatus === 'approved' && 
+                       v.accountholder && 
+                       v.accountno && 
+                       v.ifsc && 
+                       v.agree && (
                         <button 
                           className={styles['action-btn']} 
                           title="Onboard" 
-                          style={{ margin: 0, background: '#28a745' }} 
+                          style={{ margin: 0, background: '#28a745', color: 'white' }} 
                           onClick={() => handleOnboardClick(v)}
                         >
                           Onboard
@@ -577,49 +571,53 @@ const VendorsPage = () => {
               maxWidth: '900px',
               width: '95%',
               maxHeight: '90vh',
-              overflow: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
               margin: 'auto'
             }}
           >
             {/* Modal Title */}
-            <h2 className={styles['modal-title']} style={{ margin: '0 0 20px 0', fontSize: '22px', textAlign: 'center', padding: '0 20px' }}>
+            <h2 className={styles['modal-title']} style={{ margin: '0 0 20px 0', fontSize: '22px', textAlign: 'center', padding: '20px 20px 0 20px', flexShrink: 0 }}>
               Agreement Preview - {agreementModal.vendor?.name}
             </h2>
 
-            {/* Agreement Document Preview */}
-            <div style={{ padding: '0 20px', marginBottom: '20px' }}>
-              {agreementModal.agreementUrl && agreementModal.agreementUrl.toLowerCase().endsWith('.pdf') ? (
-                <iframe 
-                  src={agreementModal.agreementUrl} 
-                  style={{ width: '100%', height: '500px', border: 'none', borderRadius: '4px' }}
-                  title="Agreement PDF"
-                />
-              ) : agreementModal.agreementUrl ? (
-                <img 
-                  src={agreementModal.agreementUrl} 
-                  alt="Agreement" 
-                  style={{ width: '100%', height: 'auto', borderRadius: '4px' }}
-                />
-              ) : (
-                <p style={{ textAlign: 'center', color: '#666' }}>No agreement uploaded yet</p>
-              )}
-            </div>
+            {/* Scrollable Content Area */}
+            <div style={{ overflowY: 'auto', flex: 1, padding: '0 20px' }}>
+              {/* Agreement Document Preview */}
+              <div style={{ marginBottom: '20px' }}>
+                {agreementModal.agreementUrl && agreementModal.agreementUrl.toLowerCase().endsWith('.pdf') ? (
+                  <iframe 
+                    src={agreementModal.agreementUrl} 
+                    style={{ width: '100%', height: '500px', border: 'none', borderRadius: '4px' }}
+                    title="Agreement PDF"
+                  />
+                ) : agreementModal.agreementUrl ? (
+                  <img 
+                    src={agreementModal.agreementUrl} 
+                    alt="Agreement" 
+                    style={{ width: '100%', height: 'auto', borderRadius: '4px' }}
+                  />
+                ) : (
+                  <p style={{ textAlign: 'center', color: '#666' }}>No agreement uploaded yet</p>
+                )}
+              </div>
 
-            {/* Agreement Status */}
-            <div style={{ padding: '0 20px', marginBottom: '20px' }}>
-              <p style={{ margin: '0 0 8px 0', color: '#666', fontSize: '14px' }}>
-                <strong>Upload Date:</strong> {agreementModal.vendor?.agreementuploaddate ? 
-                  new Date(agreementModal.vendor.agreementuploaddate).toLocaleString('en-IN') : 
-                  'Not available'
-                }
-              </p>
-              <p style={{ margin: '0 0 8px 0', color: '#666', fontSize: '14px' }}>
-                <strong>Status:</strong> {agreementModal.vendor?.agreementStatus || 'Pending Review'}
-              </p>
+              {/* Agreement Status */}
+              <div style={{ marginBottom: '20px' }}>
+                <p style={{ margin: '0 0 8px 0', color: '#666', fontSize: '14px' }}>
+                  <strong>Upload Date:</strong> {agreementModal.vendor?.agreementuploaddate ? 
+                    new Date(agreementModal.vendor.agreementuploaddate).toLocaleString('en-IN') : 
+                    'Not available'
+                  }
+                </p>
+                <p style={{ margin: '0 0 8px 0', color: '#666', fontSize: '14px' }}>
+                  <strong>Status:</strong> {agreementModal.vendor?.agreementStatus || 'Pending Review'}
+                </p>
+              </div>
             </div>
             
-            {/* Action Buttons */}
-            <div className={styles['modal-actions']} style={{ padding: '0 20px 20px 20px', gap: '12px', justifyContent: 'space-between' }}>
+            {/* Fixed Action Buttons at Bottom */}
+            <div className={styles['modal-actions']} style={{ padding: '20px', gap: '12px', justifyContent: 'space-between', borderTop: '1px solid #eee', flexShrink: 0 }}>
               <button 
                 className={styles['modal-btn-cancel']} 
                 onClick={handleAgreementModalClose}
