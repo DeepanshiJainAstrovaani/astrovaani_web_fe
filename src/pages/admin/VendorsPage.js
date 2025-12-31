@@ -28,7 +28,7 @@ const VendorsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ show: false, vendor: null });
-  const [rejectModal, setRejectModal] = useState({ show: false, vendor: null, reason: '', customReason: '' });
+  const [rejectModal, setRejectModal] = useState({ show: false, vendor: null });
   const [agreementModal, setAgreementModal] = useState({ show: false, vendor: null, agreementUrl: '' });
   const [onboardModal, setOnboardModal] = useState({ show: false, vendor: null });
   const navigate = useNavigate();
@@ -125,56 +125,23 @@ const VendorsPage = () => {
   };
 
   const handleRejectClick = (vendor) => {
-    setRejectModal({ show: true, vendor, reason: '', customReason: '' });
+    setRejectModal({ show: true, vendor });
   };
 
   const handleRejectConfirm = async () => {
     const vendorId = rejectModal.vendor?._id || rejectModal.vendor?.id;
-    const { reason } = rejectModal;
     
     if (!vendorId) return;
-    
-    // Validate reason selection
-    if (!reason) {
-      alert('Please select a rejection reason');
-      return;
-    }
 
     try {
-      // Update vendor status to inactive
-      const response = await fetch(`${API_URL}/vendors/${vendorId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: 'inactive' }),
-      });
-
-      if (!response.ok) throw new Error('Failed to reject vendor');
-
-      // Send WhatsApp notification
+      // Send WhatsApp notification for onboarding rejection
       const vendor = rejectModal.vendor;
       const mobile = vendor.whatsapp || vendor.phone;
       const name = vendor.name || 'Vendor';
       
       if (mobile) {
         try {
-          // Determine message based on rejection reason
-          let whatsappMessage = '';
-          let templateName = '';
-          let variables = [];
-          
-          if (reason === 'agreement') {
-            // Agreement rejection template
-            templateName = 'vendor_agreement_rejected';
-            whatsappMessage = name; // Send just the name as plain string
-          } else {
-            // Onboarding rejection template
-            templateName = 'vendor_onboarding_rejected';
-            whatsappMessage = name; // Send just the name as plain string
-          }
-          
-          console.log('📱 Sending rejection WhatsApp:', { mobile, templateName, variables });
+          console.log('📱 Sending onboarding rejection WhatsApp:', { mobile, name });
           
           // Send WhatsApp via backend
           await fetch(`${API_URL}/vendors/${vendorId}/reject-notify`, {
@@ -184,32 +151,36 @@ const VendorsPage = () => {
             },
             body: JSON.stringify({
               mobile,
-              templateName,
-              message: whatsappMessage,
-              reason: reason === 'onboarding' ? 'Skills/experience mismatch' : 'Agreement signature missing'
+              templateName: 'vendor_onboarding_rejected',
+              message: name,
+              reason: 'Onboarding Rejection'
             }),
           });
           
           console.log('✅ Rejection notification sent');
         } catch (whatsappErr) {
           console.error('⚠️ WhatsApp notification failed:', whatsappErr);
-          // Don't block the rejection if WhatsApp fails
         }
       }
 
-      // Update vendor status in local state
-      setVendors(vendors.map(v => 
-        (v._id || v.id) === vendorId ? { ...v, status: 'inactive' } : v
-      ));
-      setRejectModal({ show: false, vendor: null, reason: '', customReason: '' });
+      // Delete vendor from database
+      const response = await fetch(`${API_URL}/vendors/${vendorId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to delete vendor');
+
+      // Remove vendor from local state
+      setVendors(vendors.filter(v => (v._id || v.id) !== vendorId));
+      setRejectModal({ show: false, vendor: null });
+      alert('Vendor rejected and deleted successfully. Notification sent via WhatsApp.');
     } catch (err) {
       console.error('Error rejecting vendor:', err);
       alert('Failed to reject vendor: ' + err.message);
     }
-  };
-
-  const handleRejectCancel = () => {
-    setRejectModal({ show: false, vendor: null, reason: '', customReason: '' });
   };
 
   const handleViewAgreement = (vendor) => {
@@ -243,8 +214,76 @@ const VendorsPage = () => {
     }
   };
 
+  const handleRejectCancel = () => {
+    setRejectModal({ show: false, vendor: null });
+  };
+
   const handleAgreementModalClose = () => {
     setAgreementModal({ show: false, vendor: null, agreementUrl: '' });
+  };
+
+  const handleAgreementReject = async () => {
+    const vendorId = agreementModal.vendor?._id || agreementModal.vendor?.id;
+    if (!vendorId) return;
+
+    if (!window.confirm(`Are you sure you want to reject the agreement for ${agreementModal.vendor?.name}?`)) {
+      return;
+    }
+
+    try {
+      // Send WhatsApp notification for agreement rejection
+      const vendor = agreementModal.vendor;
+      const mobile = vendor.whatsapp || vendor.phone;
+      const name = vendor.name || 'Vendor';
+      
+      if (mobile) {
+        try {
+          console.log('📱 Sending agreement rejection WhatsApp:', { mobile, name });
+          
+          await fetch(`${API_URL}/vendors/${vendorId}/reject-notify`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              mobile,
+              templateName: 'vendor_agreement_rejected',
+              message: name,
+              reason: 'Agreement Rejection'
+            }),
+          });
+          
+          console.log('✅ Agreement rejection notification sent');
+        } catch (whatsappErr) {
+          console.error('⚠️ WhatsApp notification failed:', whatsappErr);
+        }
+      }
+
+      // Update agreement status to rejected
+      const response = await fetch(`${API_URL}/vendors/${vendorId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          agreementStatus: 'rejected',
+          agreementRejectedAt: new Date().toISOString()
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to reject agreement');
+
+      // Update vendor in local state
+      setVendors(vendors.map(v => 
+        (v._id || v.id) === vendorId ? { ...v, agreementStatus: 'rejected' } : v
+      ));
+      
+      setAgreementModal({ show: false, vendor: null, agreementUrl: '' });
+      alert('Agreement rejected successfully. Notification sent via WhatsApp.');
+    } catch (err) {
+      console.error('Error rejecting agreement:', err);
+      alert('Failed to reject agreement: ' + err.message);
+    }
   };
 
   const handleOnboardClick = (vendor) => {
@@ -421,31 +460,18 @@ const VendorsPage = () => {
                           Reject
                         </button>
                       )}
-                      {/* Onboard button - only show in In Process tab if all conditions met */}
-                      {activeStatus === 'In Process' && 
-                       v.agreementStatus === 'approved' && 
-                       v.accountholder && v.accountno && v.ifsc && 
-                       v.agree && (
+                      {/* Show Onboard button if status is 'In Process' */}
+                      {activeStatus === 'In Process' && (
                         <button 
                           className={styles['action-btn']} 
-                          title="Onboard Vendor" 
+                          title="Onboard" 
                           style={{ margin: 0, background: '#28a745' }} 
                           onClick={() => handleOnboardClick(v)}
                         >
                           Onboard
                         </button>
                       )}
-                      {/* Delete button - only show in New tab */}
-                      {activeStatus === 'New' && (
-                        <button 
-                          className={styles['action-btn-delete']} 
-                          title="Delete" 
-                          style={{ margin: 0 }} 
-                          onClick={() => handleDeleteClick(v)}
-                        >
-                          Delete
-                        </button>
-                      )}
+                      <button className={styles['action-btn-delete']} title="Delete" style={{ margin: 0 }} onClick={() => handleDeleteClick(v)}>Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -458,14 +484,25 @@ const VendorsPage = () => {
       {/* Delete Confirmation Modal */}
       {deleteModal.show && (
         <div className={styles['modal-overlay']} onClick={handleDeleteCancel}>
-          <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
-            <h2 className={styles['modal-title']}>Delete Vendor</h2>
-            <p className={styles['modal-message']}>
+          <div 
+            className={styles['modal-content']} 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '500px',
+              width: '90%',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              margin: 'auto'
+            }}
+          >
+            <h2 className={styles['modal-title']} style={{ margin: '0 0 16px 0', fontSize: '20px' }}>Delete Vendor</h2>
+            <p className={styles['modal-message']} style={{ margin: '0 0 20px 0', padding: '0 20px', color: '#666', fontSize: '14px' }}>
               Are you sure you want to delete <strong>{deleteModal.vendor?.name}</strong>?
               <br />
               This action cannot be undone.
             </p>
-            <div className={styles['modal-actions']}>
+            
+            <div className={styles['modal-actions']} style={{ padding: '0 20px 20px 20px', gap: '12px' }}>
               <button 
                 className={styles['modal-btn-cancel']} 
                 onClick={handleDeleteCancel}
@@ -497,36 +534,19 @@ const VendorsPage = () => {
               margin: 'auto'
             }}
           >
-            <h2 className={styles['modal-title']} style={{ margin: '0 0 16px 0', fontSize: '20px' }}>Reject Vendor</h2>
+            <h2 className={styles['modal-title']} style={{ margin: '0 0 16px 0', fontSize: '20px', color: '#dc3545' }}>⚠️ Reject Vendor</h2>
             <p className={styles['modal-message']} style={{ margin: '0 0 20px 0', padding: '0 20px', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
               Are you sure you want to reject <strong>{rejectModal.vendor?.name}</strong>?
-              <br />
-              This will move them to the Inactive tab and send them a WhatsApp notification.
+              <br /><br />
+              <strong style={{ color: '#dc3545' }}>This action cannot be undone!</strong>
+              <br /><br />
+              This will:
+              <ul style={{ textAlign: 'left', marginTop: '10px', color: '#dc3545' }}>
+                <li>❌ Permanently delete the vendor from database</li>
+                <li>📱 Send onboarding rejection notification via WhatsApp</li>
+                <li>🚫 Remove all vendor data from the system</li>
+              </ul>
             </p>
-            
-            {/* Rejection Reason Selection */}
-            <div style={{ marginTop: '20px', marginBottom: '20px', textAlign: 'left', padding: '0 20px' }}>
-              <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold', color: '#333', fontSize: '14px' }}>
-                Rejection Reason *
-              </label>
-              <select
-                value={rejectModal.reason}
-                onChange={(e) => setRejectModal({ ...rejectModal, reason: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  borderRadius: '6px',
-                  border: '1px solid #ddd',
-                  fontSize: '14px',
-                  marginBottom: '12px',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <option value="">-- Select Reason --</option>
-                <option value="onboarding">Onboarding Rejection</option>
-                <option value="agreement">Agreement Rejection</option>
-              </select>
-            </div>
             
             <div className={styles['modal-actions']} style={{ padding: '0 20px 20px 20px', gap: '12px' }}>
               <button 
@@ -538,13 +558,9 @@ const VendorsPage = () => {
               <button 
                 className={styles['modal-btn-confirm']} 
                 onClick={handleRejectConfirm}
-                disabled={!rejectModal.reason}
-                style={{
-                  opacity: !rejectModal.reason ? 0.5 : 1,
-                  cursor: !rejectModal.reason ? 'not-allowed' : 'pointer'
-                }}
+                style={{ background: '#dc3545' }}
               >
-                Reject & Notify
+                Reject & Delete
               </button>
             </div>
           </div>
@@ -565,20 +581,14 @@ const VendorsPage = () => {
               margin: 'auto'
             }}
           >
-            <h2 className={styles['modal-title']} style={{ margin: '0 0 16px 0', fontSize: '20px' }}>
+            {/* Modal Title */}
+            <h2 className={styles['modal-title']} style={{ margin: '0 0 20px 0', fontSize: '22px', textAlign: 'center', padding: '0 20px' }}>
               Agreement Preview - {agreementModal.vendor?.name}
             </h2>
-            
-            {/* Agreement Preview */}
-            <div style={{ 
-              padding: '20px', 
-              background: '#f9f9f9', 
-              borderRadius: '8px', 
-              marginBottom: '20px',
-              maxHeight: '500px',
-              overflow: 'auto'
-            }}>
-              {agreementModal.agreementUrl && agreementModal.agreementUrl.endsWith('.pdf') ? (
+
+            {/* Agreement Document Preview */}
+            <div style={{ padding: '0 20px', marginBottom: '20px' }}>
+              {agreementModal.agreementUrl && agreementModal.agreementUrl.toLowerCase().endsWith('.pdf') ? (
                 <iframe 
                   src={agreementModal.agreementUrl} 
                   style={{ width: '100%', height: '500px', border: 'none', borderRadius: '4px' }}
@@ -608,7 +618,8 @@ const VendorsPage = () => {
               </p>
             </div>
             
-            <div className={styles['modal-actions']} style={{ padding: '0 20px 20px 20px', gap: '12px' }}>
+            {/* Action Buttons */}
+            <div className={styles['modal-actions']} style={{ padding: '0 20px 20px 20px', gap: '12px', justifyContent: 'space-between' }}>
               <button 
                 className={styles['modal-btn-cancel']} 
                 onClick={handleAgreementModalClose}
@@ -616,13 +627,22 @@ const VendorsPage = () => {
                 Close
               </button>
               {agreementModal.vendor?.agreementStatus !== 'approved' && (
-                <button 
-                  className={styles['modal-btn-confirm']} 
-                  onClick={handleAgreementApprove}
-                  style={{ background: '#28a745' }}
-                >
-                  Approve Agreement
-                </button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button 
+                    className={styles['modal-btn-confirm']} 
+                    onClick={handleAgreementReject}
+                    style={{ background: '#dc3545' }}
+                  >
+                    Reject Agreement
+                  </button>
+                  <button 
+                    className={styles['modal-btn-confirm']} 
+                    onClick={handleAgreementApprove}
+                    style={{ background: '#28a745' }}
+                  >
+                    Approve Agreement
+                  </button>
+                </div>
               )}
             </div>
           </div>
