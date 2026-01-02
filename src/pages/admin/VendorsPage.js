@@ -588,54 +588,63 @@ const VendorsPage = () => {
               {/* Agreement Document Preview */}
               <div style={{ marginBottom: '20px' }}>
                 {/* Debug: Show URL */}
-                <div style={{ marginBottom: '10px', padding: '10px', background: '#f0f0f0', borderRadius: '4px', fontSize: '12px', wordBreak: 'break-all' }}>
+                <div style={{ marginBottom: '10px', padding: '10px', background: '#f0f0f0', borderRadius: '4px', fontSize: '11px', wordBreak: 'break-all' }}>
                   <strong>Agreement URL:</strong> {agreementModal.agreementUrl || 'No URL provided'}
                 </div>
                 
                 {agreementModal.agreementUrl ? (
-                  <>
-                    {/* If it's a Cloudinary or direct image/PDF URL, show it */}
-                    {agreementModal.agreementUrl.includes('cloudinary') || agreementModal.agreementUrl.includes('res.cloudinary.com') ? (
-                      agreementModal.agreementUrl.toLowerCase().endsWith('.pdf') ? (
+                  <div style={{ textAlign: 'center' }}>
+                    {/* Always show Open in New Tab button */}
+                    <a 
+                      href={agreementModal.agreementUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{ 
+                        display: 'inline-block',
+                        padding: '12px 24px', 
+                        background: '#007bff', 
+                        color: 'white', 
+                        textDecoration: 'none', 
+                        borderRadius: '6px',
+                        fontWeight: 'bold',
+                        marginBottom: '20px',
+                        fontSize: '14px'
+                      }}
+                    >
+                      📥 Open Agreement in New Tab
+                    </a>
+                    
+                    {/* Try to show preview */}
+                    <div style={{ marginTop: '20px', border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}>
+                      {agreementModal.agreementUrl.toLowerCase().includes('.pdf') ? (
                         <iframe 
                           src={agreementModal.agreementUrl} 
-                          style={{ width: '100%', height: '500px', border: '1px solid #ddd', borderRadius: '4px' }}
-                          title="Agreement PDF"
+                          style={{ width: '100%', height: '600px', border: 'none' }}
+                          title="Agreement PDF Preview"
+                          onError={(e) => {
+                            console.error('PDF iframe failed to load');
+                            e.target.style.display = 'none';
+                          }}
                         />
                       ) : (
                         <img 
                           src={agreementModal.agreementUrl} 
-                          alt="Agreement" 
-                          style={{ width: '100%', height: 'auto', borderRadius: '4px', border: '1px solid #ddd' }}
-                        />
-                      )
-                    ) : (
-                      /* If it's a backend URL or other, provide download link */
-                      <div style={{ textAlign: 'center', padding: '40px', background: '#f9f9f9', borderRadius: '4px' }}>
-                        <p style={{ marginBottom: '20px', color: '#666' }}>
-                          Agreement document is stored on the server.
-                        </p>
-                        <a 
-                          href={agreementModal.agreementUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          style={{ 
-                            display: 'inline-block',
-                            padding: '12px 24px', 
-                            background: '#007bff', 
-                            color: 'white', 
-                            textDecoration: 'none', 
-                            borderRadius: '4px',
-                            fontWeight: 'bold'
+                          alt="Agreement Document" 
+                          style={{ width: '100%', height: 'auto', display: 'block' }}
+                          onError={(e) => {
+                            console.error('Image failed to load');
+                            e.target.style.display = 'none';
                           }}
-                        >
-                          📥 Open Agreement in New Tab
-                        </a>
-                      </div>
-                    )}
-                  </>
+                        />
+                      )}
+                    </div>
+                    
+                    <p style={{ marginTop: '10px', fontSize: '12px', color: '#999' }}>
+                      If preview doesn't load, click the button above to open in new tab
+                    </p>
+                  </div>
                 ) : (
-                  <p style={{ textAlign: 'center', color: '#666' }}>No agreement uploaded yet</p>
+                  <p style={{ textAlign: 'center', color: '#666', padding: '40px' }}>No agreement uploaded yet</p>
                 )}
               </div>
 
