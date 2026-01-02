@@ -184,6 +184,8 @@ const VendorsPage = () => {
   };
 
   const handleViewAgreement = (vendor) => {
+    console.log('📄 Agreement URL:', vendor.agreement);
+    console.log('📄 Vendor data:', vendor);
     setAgreementModal({ show: true, vendor, agreementUrl: vendor.agreement });
   };
 
@@ -585,18 +587,53 @@ const VendorsPage = () => {
             <div style={{ overflowY: 'auto', flex: 1, padding: '0 20px' }}>
               {/* Agreement Document Preview */}
               <div style={{ marginBottom: '20px' }}>
-                {agreementModal.agreementUrl && agreementModal.agreementUrl.toLowerCase().endsWith('.pdf') ? (
-                  <iframe 
-                    src={agreementModal.agreementUrl} 
-                    style={{ width: '100%', height: '500px', border: 'none', borderRadius: '4px' }}
-                    title="Agreement PDF"
-                  />
-                ) : agreementModal.agreementUrl ? (
-                  <img 
-                    src={agreementModal.agreementUrl} 
-                    alt="Agreement" 
-                    style={{ width: '100%', height: 'auto', borderRadius: '4px' }}
-                  />
+                {/* Debug: Show URL */}
+                <div style={{ marginBottom: '10px', padding: '10px', background: '#f0f0f0', borderRadius: '4px', fontSize: '12px', wordBreak: 'break-all' }}>
+                  <strong>Agreement URL:</strong> {agreementModal.agreementUrl || 'No URL provided'}
+                </div>
+                
+                {agreementModal.agreementUrl ? (
+                  <>
+                    {/* If it's a Cloudinary or direct image/PDF URL, show it */}
+                    {agreementModal.agreementUrl.includes('cloudinary') || agreementModal.agreementUrl.includes('res.cloudinary.com') ? (
+                      agreementModal.agreementUrl.toLowerCase().endsWith('.pdf') ? (
+                        <iframe 
+                          src={agreementModal.agreementUrl} 
+                          style={{ width: '100%', height: '500px', border: '1px solid #ddd', borderRadius: '4px' }}
+                          title="Agreement PDF"
+                        />
+                      ) : (
+                        <img 
+                          src={agreementModal.agreementUrl} 
+                          alt="Agreement" 
+                          style={{ width: '100%', height: 'auto', borderRadius: '4px', border: '1px solid #ddd' }}
+                        />
+                      )
+                    ) : (
+                      /* If it's a backend URL or other, provide download link */
+                      <div style={{ textAlign: 'center', padding: '40px', background: '#f9f9f9', borderRadius: '4px' }}>
+                        <p style={{ marginBottom: '20px', color: '#666' }}>
+                          Agreement document is stored on the server.
+                        </p>
+                        <a 
+                          href={agreementModal.agreementUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          style={{ 
+                            display: 'inline-block',
+                            padding: '12px 24px', 
+                            background: '#007bff', 
+                            color: 'white', 
+                            textDecoration: 'none', 
+                            borderRadius: '4px',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          📥 Open Agreement in New Tab
+                        </a>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <p style={{ textAlign: 'center', color: '#666' }}>No agreement uploaded yet</p>
                 )}
