@@ -597,60 +597,28 @@ const VendorsPage = () => {
             <div style={{ overflowY: 'auto', flex: 1, padding: '0 20px' }}>
               {/* Agreement Document Preview */}
               <div style={{ marginBottom: '20px' }}>
-                {/* Debug: Show URL */}
-                <div style={{ marginBottom: '10px', padding: '10px', background: '#f0f0f0', borderRadius: '4px', fontSize: '11px', wordBreak: 'break-all' }}>
-                  <strong>Agreement URL:</strong> {agreementModal.agreementUrl || 'No URL provided'}
-                </div>
-                
                 {agreementModal.agreementUrl ? (
-                  <div style={{ textAlign: 'center' }}>
-                    {/* Always show Open in New Tab button */}
+                  <div style={{ textAlign: 'center', padding: '40px' }}>
                     <a 
                       href={agreementModal.agreementUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       style={{ 
                         display: 'inline-block',
-                        padding: '12px 24px', 
+                        padding: '16px 32px', 
                         background: '#007bff', 
                         color: 'white', 
                         textDecoration: 'none', 
-                        borderRadius: '6px',
+                        borderRadius: '8px',
                         fontWeight: 'bold',
-                        marginBottom: '20px',
-                        fontSize: '14px'
+                        fontSize: '16px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                       }}
                     >
                       📥 Open Agreement in New Tab
                     </a>
-                    
-                    {/* Try to show preview */}
-                    <div style={{ marginTop: '20px', border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}>
-                      {agreementModal.agreementUrl.toLowerCase().includes('.pdf') ? (
-                        <iframe 
-                          src={agreementModal.agreementUrl} 
-                          style={{ width: '100%', height: '600px', border: 'none' }}
-                          title="Agreement PDF Preview"
-                          onError={(e) => {
-                            console.error('PDF iframe failed to load');
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <img 
-                          src={agreementModal.agreementUrl} 
-                          alt="Agreement Document" 
-                          style={{ width: '100%', height: 'auto', display: 'block' }}
-                          onError={(e) => {
-                            console.error('Image failed to load');
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                      )}
-                    </div>
-                    
-                    <p style={{ marginTop: '10px', fontSize: '12px', color: '#999' }}>
-                      If preview doesn't load, click the button above to open in new tab
+                    <p style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
+                      Click the button above to view the agreement document
                     </p>
                   </div>
                 ) : (
@@ -673,28 +641,29 @@ const VendorsPage = () => {
             </div>
             
             {/* Fixed Action Buttons at Bottom */}
-            <div className={styles['modal-actions']} style={{ padding: '20px', gap: '12px', justifyContent: 'space-between', borderTop: '1px solid #eee', flexShrink: 0 }}>
+            <div className={styles['modal-actions']} style={{ padding: '16px 20px', gap: '10px', justifyContent: 'space-between', borderTop: '1px solid #eee', flexShrink: 0 }}>
               <button 
                 className={styles['modal-btn-cancel']} 
                 onClick={handleAgreementModalClose}
+                style={{ padding: '8px 16px', fontSize: '14px', whiteSpace: 'nowrap' }}
               >
                 Close
               </button>
               {agreementModal.vendor?.agreementStatus !== 'approved' && (
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ display: 'flex', gap: '10px' }}>
                   <button 
                     className={styles['modal-btn-confirm']} 
                     onClick={handleAgreementReject}
-                    style={{ background: '#dc3545' }}
+                    style={{ background: '#dc3545', padding: '8px 16px', fontSize: '14px', whiteSpace: 'nowrap' }}
                   >
-                    Reject Agreement
+                    Reject
                   </button>
                   <button 
                     className={styles['modal-btn-confirm']} 
                     onClick={handleAgreementApprove}
-                    style={{ background: '#28a745' }}
+                    style={{ background: '#28a745', padding: '8px 16px', fontSize: '14px', whiteSpace: 'nowrap' }}
                   >
-                    Approve Agreement
+                    Approve
                   </button>
                 </div>
               )}
