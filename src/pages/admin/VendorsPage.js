@@ -186,7 +186,17 @@ const VendorsPage = () => {
   const handleViewAgreement = (vendor) => {
     console.log('📄 Agreement URL:', vendor.agreement);
     console.log('📄 Vendor data:', vendor);
-    setAgreementModal({ show: true, vendor, agreementUrl: vendor.agreement });
+    
+    // Clean up URL - convert filename to Cloudinary URL if needed
+    let cleanUrl = vendor.agreement;
+    if (cleanUrl && !cleanUrl.startsWith('http')) {
+      // It's just a filename, construct Cloudinary URL
+      const filename = cleanUrl.replace(/\s+/g, '').trim();
+      cleanUrl = `https://res.cloudinary.com/df8sx5hv4/raw/upload/vendor_agreements/${filename}`;
+      console.log('🔧 Constructed Cloudinary URL:', cleanUrl);
+    }
+    
+    setAgreementModal({ show: true, vendor, agreementUrl: cleanUrl });
   };
 
   const handleAgreementApprove = async () => {
