@@ -341,29 +341,36 @@ const VendorsPage = () => {
         if (!vendorId) return;
 
         try {
-          const response = await fetch(`${API_URL}/vendors/${vendorId}`, {
-            method: 'PUT',
+          // Call the new onboard endpoint
+          const response = await fetch(`${API_URL}/vendors/${vendorId}/onboard`, {
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              status: 'active',
-              onboardingstatus: 'completed'
-            }),
           });
 
-          if (!response.ok) throw new Error('Failed to onboard vendor');
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || 'Failed to onboard vendor');
+          }
 
           // Update vendor in local state
           setVendors(vendors.map(v =>
-            (v._id || v.id) === vendorId ? { ...v, status: 'active', onboardingstatus: 'completed' } : v
+            (v._id || v.id) === vendorId ? { 
+              ...v, 
+              status: 'active', 
+              onboardingstatus: 'completed',
+              onboardedAt: data.data?.onboardedAt 
+            } : v
           ));
 
           setOnboardModal({ show: false, vendor: null });
-          alert('Vendor onboarded successfully! They can now start taking bookings.');
+          showToast('Vendor onboarded successfully! WhatsApp notification sent.', 'success');
+          fetchVendors(); // Refresh to update tabs
         } catch (err) {
           console.error('Error onboarding vendor:', err);
-          alert('Failed to onboard vendor: ' + err.message);
+          showToast('Failed to onboard vendor: ' + err.message, 'error');
         }
       };
 
