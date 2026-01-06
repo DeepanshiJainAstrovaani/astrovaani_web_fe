@@ -38,6 +38,8 @@ const EditVendor = () => {
     skills: '',
     language: '',
     availability: '',
+    chatstatus: 'offline',
+    callstatus: 'offline',
     accountholder: '',
     accountno: '',
     ifsc: '',
@@ -173,6 +175,8 @@ const EditVendor = () => {
           skills: data.skills || '',
           language: data.language || '',
           availability: data.availability || '',
+          chatstatus: data.chatstatus || 'offline',
+          callstatus: data.callstatus || 'offline',
           accountholder: data.accountholder || '',
           accountno: data.accountno || '',
           ifsc: data.ifsc || '',
@@ -475,10 +479,12 @@ const EditVendor = () => {
       formData.append('whatsapp', form.whatsapp);
       formData.append('email', form.email);
       formData.append('pincode', form.pincode);
-      formData.append('age', form.age);
-      formData.append('experience', form.experience);
       formData.append('skills', form.skills);
       formData.append('language', form.language);
+      formData.append('availability', form.availability);
+      formData.append('chatstatus', form.chatstatus);
+      formData.append('callstatus', form.callstatus);
+      formData.append('accountholder', form.accountholder);
       formData.append('availability', form.availability);
       formData.append('accountholder', form.accountholder);
       formData.append('accountno', form.accountno);
@@ -562,10 +568,12 @@ const EditVendor = () => {
         whatsapp: updatedVendor.whatsapp || '',
         email: updatedVendor.email || '',
         pincode: updatedVendor.pincode || '',
-        age: updatedVendor.age || '',
-        experience: updatedVendor.experience || '',
         skills: updatedVendor.skills || '',
         language: updatedVendor.language || '',
+        availability: updatedVendor.availability || '',
+        chatstatus: updatedVendor.chatstatus || 'offline',
+        callstatus: updatedVendor.callstatus || 'offline',
+        accountholder: updatedVendor.accountholder || '',
         availability: updatedVendor.availability || '',
         accountholder: updatedVendor.accountholder || '',
         accountno: updatedVendor.accountno || '',
@@ -714,11 +722,25 @@ const EditVendor = () => {
                 <input type="text" name="skills" className="form-control" value={form.skills} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
-                <label>Language</label>
-                <input type="text" name="language" className="form-control" value={form.language} onChange={handleChange} />
+                <label>Availability</label>
+                <input type="text" name="availability" className="form-control" value={form.availability} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
-                <label>Availability</label>
+                <label>Chat Status</label>
+                <select name="chatstatus" className="form-control" value={form.chatstatus} onChange={handleChange}>
+                  <option value="online">Online</option>
+                  <option value="offline">Offline</option>
+                </select>
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Call Status</label>
+                <select name="callstatus" className="form-control" value={form.callstatus} onChange={handleChange}>
+                  <option value="online">Online</option>
+                  <option value="offline">Offline</option>
+                </select>
+              </div>
+              <div className="col-md-4 mb-3">
+                <label>Account Status</label>
                 <input type="text" name="availability" className="form-control" value={form.availability} onChange={handleChange} />
               </div>
               <div className="col-md-4 mb-3">
