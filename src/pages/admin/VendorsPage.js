@@ -465,8 +465,8 @@ const VendorsPage = () => {
                       <td style={{ verticalAlign: 'middle', padding: '8px' }}>{joinedDisplay}</td>
                       <td style={{ verticalAlign: 'middle', padding: '8px', minWidth: 280 }}>
                         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
-                          {v.id && (
-                            <Link to={`/admin/edit-vendor/${v.id}`}>
+                          {(v._id || v.id) && (
+                            <Link to={`/admin/edit-vendor/${v._id || v.id}`}>
                               <button className={styles['action-btn']} title="Edit" style={{ margin: 0 }}>Edit</button>
                             </Link>
                           )}
