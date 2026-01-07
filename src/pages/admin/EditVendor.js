@@ -485,8 +485,6 @@ const EditVendor = () => {
       formData.append('chatstatus', form.chatstatus);
       formData.append('callstatus', form.callstatus);
       formData.append('accountholder', form.accountholder);
-      formData.append('availability', form.availability);
-      formData.append('accountholder', form.accountholder);
       formData.append('accountno', form.accountno);
       formData.append('ifsc', form.ifsc);
       formData.append('priceperminute', form.priceperminute);
