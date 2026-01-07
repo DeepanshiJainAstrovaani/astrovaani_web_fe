@@ -568,13 +568,13 @@ const EditVendor = () => {
         whatsapp: updatedVendor.whatsapp || '',
         email: updatedVendor.email || '',
         pincode: updatedVendor.pincode || '',
+        age: updatedVendor.age || '',
+        experience: updatedVendor.experience || '',
         skills: updatedVendor.skills || '',
         language: updatedVendor.language || '',
         availability: updatedVendor.availability || '',
         chatstatus: updatedVendor.chatstatus || 'offline',
         callstatus: updatedVendor.callstatus || 'offline',
-        accountholder: updatedVendor.accountholder || '',
-        availability: updatedVendor.availability || '',
         accountholder: updatedVendor.accountholder || '',
         accountno: updatedVendor.accountno || '',
         ifsc: updatedVendor.ifsc || '',
@@ -739,10 +739,8 @@ const EditVendor = () => {
                   <option value="offline">Offline</option>
                 </select>
               </div>
-              <div className="col-md-4 mb-3">
-                <label>Account Status</label>
-                <input type="text" name="availability" className="form-control" value={form.availability} onChange={handleChange} />
-              </div>
+            </div>
+            <div className="row" style={{}}>
               <div className="col-md-4 mb-3">
                 <label>Account Status</label>
                 <select name="status" className="form-control" value={form.status} onChange={handleChange}>
