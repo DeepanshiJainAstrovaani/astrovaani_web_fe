@@ -23,8 +23,6 @@ const applicabilityOptions = [
   'One vendor free for all customers',
 ];
 
-const phoneRegex = /^[6-9]\d{9}$/;
-
 const OffersPage = () => {
   const [offers, setOffers] = useState([]);
   const [form, setForm] = useState(initialForm);

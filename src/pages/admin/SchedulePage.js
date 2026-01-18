@@ -296,7 +296,7 @@ const SchedulePage = () => {
   return (
     <div style={styles.page}>
       <div style={{ marginBottom: 12 }}>
-        <a href="/admindashboard" style={styles.backLink} onClick={(e) => { e.preventDefault(); navigate('/admindashboard'); }}>Back to dashboard</a>
+        <button type="button" style={{...styles.backLink, border: 'none', background: 'none', cursor: 'pointer', textDecoration: 'underline'}} onClick={() => navigate('/admindashboard')}>Back to dashboard</button>
       </div>
 
       {loading ? (

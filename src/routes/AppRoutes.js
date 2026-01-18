@@ -1,14 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Home from '../pages/Home';
-import FreeKundali from '../pages/FreeKundali';
-import Blog from '../pages/Blog';
-import BlogDetail from '../pages/BlogDetail';
-import FAQ from '../pages/FAQ';
 import Login from '../components/Auth/Login';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import AdminRoutes from './admin/AdminRoutes';
-import VendorInterview from '../pages/VendorInterview';
 import JoinUs from '../pages/JoinUs';
 
 const AppRoutes = () => (

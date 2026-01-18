@@ -54,7 +54,6 @@ const EditVendor = () => {
     category: '',
     pricingtype: 'PAID' // NEW FIELD
   });
-  const [errors, setErrors] = useState({});
   const [stateOptions, setStateOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
 
