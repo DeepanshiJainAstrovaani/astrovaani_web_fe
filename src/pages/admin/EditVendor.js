@@ -479,6 +479,8 @@ const EditVendor = () => {
       formData.append('whatsapp', form.whatsapp);
       formData.append('email', form.email);
       formData.append('pincode', form.pincode);
+      formData.append('age', form.age);
+      formData.append('experience', form.experience);
       formData.append('skills', form.skills);
       formData.append('language', form.language);
       formData.append('availability', form.availability);
