@@ -34,7 +34,9 @@ const InterviewsPage = () => {
       
       console.log('📦 Raw vendor data from API:', data);
       console.log('📦 First vendor:', data[0]);
-      console.log('📦 First vendor ID field:', data[0]?._id);
+      console.log('📦 First vendor _id:', data[0]?._id);
+      console.log('📦 First vendor id:', data[0]?.id);
+      console.log('📦 All keys of first vendor:', data[0] ? Object.keys(data[0]) : 'No vendors');
       
       // Filter vendors who have interview schedules AND exclude active/inprocess vendors
       const vendorsWithSchedules = data.filter(vendor => 
@@ -46,6 +48,8 @@ const InterviewsPage = () => {
 
       console.log('📋 Vendors with schedules:', vendorsWithSchedules.length);
       console.log('📋 First vendor with schedule:', vendorsWithSchedules[0]);
+      console.log('📋 First vendor with schedule _id:', vendorsWithSchedules[0]?._id);
+      console.log('📋 First vendor with schedule id:', vendorsWithSchedules[0]?.id);
 
       setVendors(vendorsWithSchedules);
 
@@ -224,7 +228,20 @@ const InterviewsPage = () => {
 
   // 5. Schedule - Opens scheduling modal
   const handleSchedule = (vendor) => {
-    navigate(`/admin/schedule/${vendor._id}`);
+    console.log('📅 Schedule clicked for vendor:', vendor);
+    console.log('   Vendor _id:', vendor._id);
+    console.log('   Vendor id:', vendor.id);
+    
+    const vendorId = getVendorId(vendor);
+    
+    if (!vendorId) {
+      console.error('❌ No vendor ID found for schedule!');
+      alert('Error: Could not find vendor ID');
+      return;
+    }
+    
+    console.log('✅ Navigating to schedule with ID:', vendorId);
+    navigate(`/admin/schedule/${vendorId}`);
   };
 
   // 6. Send Reminder (for pending vendors)
