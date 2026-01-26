@@ -4,6 +4,7 @@ import Login from '../components/Auth/Login';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import AdminRoutes from './admin/AdminRoutes';
 import JoinUs from '../pages/JoinUs';
+import VendorInterview from '../pages/VendorInterview';
 
 const AppRoutes = () => (
   <Router>
@@ -14,10 +15,12 @@ const AppRoutes = () => (
       {/* <Route path="/blogs" element={<Blog />} /> */}
       {/* <Route path="/blog/:id" element={<BlogDetail />} /> */}
       {/* <Route path="/faq" element={<FAQ />} /> */}
-      {/* <Route path="/interview" element={<VendorInterview />} /> */}
       
       {/* ACTIVE ROUTES */}
       <Route path="/" element={<JoinUs />} />
+      
+      {/* Public interview slot selection page (accessed via WhatsApp link) */}
+      <Route path="/interview" element={<VendorInterview />} />
       
       {/* Auth Route */}
       <Route path="/login" element={<Login />} />
