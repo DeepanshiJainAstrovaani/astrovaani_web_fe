@@ -15,6 +15,7 @@ const Sidebar = () => (
         <li><NavLink to="/admin/notifications" className={({ isActive }) => isActive ? "active" : ""}>Notifications</NavLink></li>
         <li><NavLink to="/admin/blog" className={({ isActive }) => isActive ? "active" : ""}>Blog</NavLink></li>
         <li><NavLink to="/admin/enquiries" className={({ isActive }) => isActive ? "active" : ""}>Enquiries</NavLink></li>
+        <li><NavLink to="/admin/vendor-agreement" className={({ isActive }) => isActive ? "active" : ""}>Vendor Agreement</NavLink></li>
       </ul>
     </nav>
   </aside>
