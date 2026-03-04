@@ -153,15 +153,19 @@ export default function JoinUs() {
         });
 
         if (res.ok) {
-          setSuccess(true);
+          setOtpModalOpen(false);
           setShowSuccessModal(true);
           setTimeout(() => {
             setShowSuccessModal(false);
-            setOtpModalOpen(false);
-            // Reset form
+            setSuccess(true);
+            // Reset form after success modal closes
             setForm(initialForm);
             setOtp(['', '', '', '', '', '']);
-          }, 2000);
+          }, 2500);
+          // Clear success message after form is reset
+          setTimeout(() => {
+            setSuccess(false);
+          }, 2600);
         } else {
           const errorData = await res.json();
           setOtpError(errorData.message || 'Failed to submit application. Please try again.');
@@ -568,22 +572,24 @@ export default function JoinUs() {
           </button>
         </Modal >
         {/* Success Modal with animation */}
-        < Modal
+        <Modal
           isOpen={showSuccessModal}
-          style={{ content: { maxWidth: 300, margin: 'auto', padding: 32, borderRadius: 16, boxShadow: '0 2px 16px #0002', textAlign: 'center' } }}
+          style={{ content: { maxWidth: 350, margin: 'auto', padding: 40, borderRadius: 16, boxShadow: '0 4px 20px rgba(0,0,0,0.15)', textAlign: 'center', border: 'none', background: '#fff' } }}
           ariaHideApp={false}
         >
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-            <svg width="64" height="64" viewBox="0 0 64 64">
-              <circle cx="32" cy="32" r="30" fill="#22c55e" opacity="0.2" />
-              <circle cx="32" cy="32" r="28" fill="#22c55e" opacity="0.4" />
-              <path d="M20 34 L30 44 L44 24" stroke="#22c55e" strokeWidth="4" fill="none" strokeDasharray="40" strokeDashoffset="0">
-                <animate attributeName="stroke-dashoffset" from="40" to="0" dur="0.7s" fill="freeze" />
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              {/* Background circle */}
+              <circle cx="40" cy="40" r="35" fill="none" stroke="#22c55e" strokeWidth="2" opacity="0.2" />
+              {/* Animated checkmark */}
+              <path d="M25 42 L37 54 L60 28" stroke="#22c55e" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="50" strokeDashoffset="0">
+                <animate attributeName="stroke-dashoffset" from="50" to="0" dur="0.8s" fill="freeze" />
               </path>
             </svg>
-            <h3 style={{ color: '#22c55e', marginTop: 16 }}>Verified Successfully!</h3>
+            <h2 style={{ color: '#22c55e', marginTop: 20, fontSize: 24, fontWeight: 600 }}>Form Submitted!</h2>
+            <p style={{ color: '#666', marginTop: 8, fontSize: 16 }}>We will contact you soon.</p>
           </div>
-        </Modal >
+        </Modal>
       </>
     );
 }
