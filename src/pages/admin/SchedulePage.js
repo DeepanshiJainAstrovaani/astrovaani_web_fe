@@ -39,6 +39,7 @@ const SchedulePage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [hasChanges, setHasChanges] = useState(false); // Track if slots have been modified since last notification
 
   useEffect(() => {
     if (!vendorId) return;
@@ -128,6 +129,7 @@ const SchedulePage = () => {
       return;
     }
     setSlots(s => [...s, newSlot]);
+    setHasChanges(true); // Mark that slots have been modified
     setDateTime(null);
   };
 
@@ -153,6 +155,7 @@ const SchedulePage = () => {
     
     // Remove from frontend state
     setSlots(s => s.filter((_, i) => i !== idx));
+    setHasChanges(true); // Mark that slots have been modified
     if (errorMessage) setErrorMessage('');
   };
 
@@ -284,6 +287,7 @@ const SchedulePage = () => {
       const data = await res.json().catch(() => ({}));
       // show success inline
       setErrorMessage('');
+      setHasChanges(false); // Reset changes flag after successful notification
       alert(data.message || 'Vendor notified');
     } catch (e) {
       console.error('Notify error', e);
@@ -327,7 +331,17 @@ const SchedulePage = () => {
 
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
             <button onClick={addSlot} style={styles.btnAccent}>Add</button>
-            <button onClick={notifyVendor} style={{ ...styles.notifyBtn, opacity: (saving || !slots.length) ? 0.65 : 1 }} disabled={saving || slots.length === 0}>{saving ? 'Sending...' : '🔔 Notify Vendor'}</button>
+            <button 
+              onClick={notifyVendor} 
+              style={{ 
+                ...styles.notifyBtn, 
+                opacity: (saving || !slots.length || (confirmed.length > 0 && !hasChanges)) ? 0.65 : 1 
+              }} 
+              disabled={saving || slots.length === 0 || (confirmed.length > 0 && !hasChanges)}
+              title={confirmed.length > 0 && !hasChanges ? 'Vendor has already selected a slot. Modify slots to send again.' : ''}
+            >
+              {saving ? 'Sending...' : '🔔 Notify Vendor'}
+            </button>
           </div>
 
           {errorMessage && <div style={{ marginTop: 12, color: '#b91c1c', fontSize: 13 }}>{errorMessage}</div>}
