@@ -195,7 +195,7 @@ const VendorsPage = () => {
     if (cleanUrl && !cleanUrl.startsWith('http')) {
       // It's just a filename, construct Cloudinary URL
       const filename = cleanUrl.replace(/\s+/g, '').trim();
-      cleanUrl = `https://res.cloudinary.com/df8sx5hv4/raw/upload/vendor_agreements/${filename}`;
+      cleanUrl = `https://res.cloudinary.com/df8sx5hv4/upload/vendor_agreements/${filename}`;
       console.log('🔧 Constructed Cloudinary URL:', cleanUrl);
     }
 
