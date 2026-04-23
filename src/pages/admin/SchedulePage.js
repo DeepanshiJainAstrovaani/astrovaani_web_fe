@@ -335,10 +335,11 @@ const SchedulePage = () => {
               onClick={notifyVendor} 
               style={{ 
                 ...styles.notifyBtn, 
-                opacity: (saving || !slots.length || (confirmed.length > 0 && !hasChanges)) ? 0.65 : 1 
+                opacity: (saving || !slots.length) ? 0.5 : 1,
+                cursor: (saving || !slots.length) ? 'not-allowed' : 'pointer'
               }} 
-              disabled={saving || slots.length === 0 || (confirmed.length > 0 && !hasChanges)}
-              title={confirmed.length > 0 && !hasChanges ? 'Vendor has already selected a slot. Modify slots to send again.' : ''}
+              disabled={saving || slots.length === 0}
+              title={slots.length === 0 ? 'Add and save slots before notifying vendor' : ''}
             >
               {saving ? 'Sending...' : '🔔 Notify Vendor'}
             </button>
