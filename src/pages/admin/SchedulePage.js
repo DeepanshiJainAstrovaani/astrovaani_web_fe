@@ -39,6 +39,7 @@ const SchedulePage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [savedSlots, setSavedSlots] = useState([]); // Track slots that are saved in database
 
   useEffect(() => {
     if (!vendorId) return;
@@ -92,6 +93,7 @@ const SchedulePage = () => {
             console.log('✅ Proposed slots from object:', proposedSlots.length, proposedSlots);
             setConfirmed(confirmedSlots);
             setSlots(proposedSlots);
+            setSavedSlots(proposedSlots); // Store saved slots for comparison
           }
         } else {
           console.error('❌ Failed to fetch schedules:', r2.status);
@@ -220,6 +222,7 @@ const SchedulePage = () => {
       // refresh confirmed/proposed
       if (data.proposed || data.confirmed) {
         setSlots(data.proposed || []);
+        setSavedSlots(data.proposed || []); // Update saved slots after successful save
         setConfirmed(data.confirmed || []);
       }
       setErrorMessage('');
@@ -235,39 +238,22 @@ const SchedulePage = () => {
   const notifyVendor = async () => {
     if (!vendorId) return setErrorMessage('Missing vendor');
     if (!slots || slots.length === 0) return setErrorMessage('Add at least one slot before notifying');
+    
+    // Check if slots are saved in database
+    const slotsAreSaved = slots.length === savedSlots.length && 
+      slots.every((slot, idx) => 
+        slot.scheduledAt === savedSlots[idx].scheduledAt && 
+        slot.duration === savedSlots[idx].duration
+      );
+    
+    if (!slotsAreSaved) {
+      return setErrorMessage('Please save slots first before notifying vendor');
+    }
+    
     setSaving(true);
     setErrorMessage('');
     try {
-      // First, save the slots to the database
-      console.log('📝 Saving slots before notifying...');
-      const saveRes = await fetch(`${API_URL}/vendors/${vendorId}/schedules`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slots })
-      });
-      
-      if (!saveRes.ok) {
-        const text = await saveRes.text().catch(() => '');
-        let errMsg = 'Failed to save slots';
-        try {
-          const parsed = JSON.parse(text || '{}');
-          errMsg = parsed.message || parsed.error || text || errMsg;
-        } catch (e) {
-          errMsg = text || errMsg;
-        }
-        throw new Error(errMsg);
-      }
-      
-      const saveData = await saveRes.json();
-      console.log('✅ Slots saved successfully');
-      
-      // Update local state with saved slots
-      if (saveData.proposed || saveData.confirmed) {
-        setSlots(saveData.proposed || []);
-        setConfirmed(saveData.confirmed || []);
-      }
-      
-      // Now send the WhatsApp notification
+      // Now send the WhatsApp notification (slots are already saved)
       console.log('📱 Sending WhatsApp notification...');
       const payload = { slots, vendor: { id: vendorId, name: vendor?.name, email: vendor?.email, whatsapp: vendor?.whatsapp, phone: vendor?.phone } };
       const res = await fetch(`${API_URL}/vendors/${vendorId}/notify-slots`, {
@@ -331,11 +317,11 @@ const SchedulePage = () => {
               onClick={notifyVendor} 
               style={{ 
                 ...styles.notifyBtn, 
-                opacity: (saving || !slots.length) ? 0.5 : 1,
-                cursor: (saving || !slots.length) ? 'not-allowed' : 'pointer'
+                opacity: (saving || slots.length === 0 || slots.length !== savedSlots.length) ? 0.5 : 1,
+                cursor: (saving || slots.length === 0 || slots.length !== savedSlots.length) ? 'not-allowed' : 'pointer'
               }} 
-              disabled={saving || slots.length === 0}
-              title={slots.length === 0 ? 'Add and save slots before notifying vendor' : ''}
+              disabled={saving || slots.length === 0 || slots.length !== savedSlots.length}
+              title={slots.length === 0 ? 'Add slots first' : slots.length !== savedSlots.length ? 'Save slots before notifying' : ''}
             >
               {saving ? 'Sending...' : '🔔 Notify Vendor'}
             </button>
