@@ -39,7 +39,6 @@ const SchedulePage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [hasChanges, setHasChanges] = useState(false); // Track if slots have been modified since last notification
 
   useEffect(() => {
     if (!vendorId) return;
@@ -129,7 +128,6 @@ const SchedulePage = () => {
       return;
     }
     setSlots(s => [...s, newSlot]);
-    setHasChanges(true); // Mark that slots have been modified
     setDateTime(null);
   };
 
@@ -155,7 +153,6 @@ const SchedulePage = () => {
     
     // Remove from frontend state
     setSlots(s => s.filter((_, i) => i !== idx));
-    setHasChanges(true); // Mark that slots have been modified
     if (errorMessage) setErrorMessage('');
   };
 
@@ -287,7 +284,6 @@ const SchedulePage = () => {
       const data = await res.json().catch(() => ({}));
       // show success inline
       setErrorMessage('');
-      setHasChanges(false); // Reset changes flag after successful notification
       alert(data.message || 'Vendor notified');
     } catch (e) {
       console.error('Notify error', e);
