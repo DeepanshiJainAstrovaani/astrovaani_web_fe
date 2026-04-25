@@ -474,8 +474,8 @@ const VendorsPage = () => {
                           {activeStatus === 'New' && (
                             <button className={styles['action-btn']} title="Schedule" style={{ margin: 0 }} onClick={() => { navigate(`/admin/schedule/${v._id || v.id}`); }}>Schedule</button>
                           )}
-                          {/* Show View Agreement button if agreement uploaded */}
-                          {v.agreement && v.agreement !== '' && (
+                          {/* Show View Agreement button if agreement uploaded and NOT in Active/Inactive tabs */}
+                          {v.agreement && v.agreement !== '' && activeStatus !== 'Active' && activeStatus !== 'Inactive' && (
                             <button className={styles['action-btn']} title="View Agreement" style={{ margin: 0 }} onClick={() => handleViewAgreement(v)}>View Agreement</button>
                           )}
                           {/* Only show Reject button if NOT Active/Inactive */}
