@@ -435,17 +435,6 @@ const VendorsPage = () => {
                 {statusFilteredVendors.map((v, i) => {
                   const photoUrl = v.photo || DEFAULT_PHOTO;
                   let joinedDisplay = 'Not available';
-                  
-                  // Debug: Log vendor agreement field
-                  if (i === 0) {
-                    console.log('🔍 DEBUG - First vendor data:', {
-                      name: v.name,
-                      agreement: v.agreement,
-                      agreementExists: !!v.agreement,
-                      agreementNotEmpty: v.agreement !== '',
-                      shouldShowButton: v.agreement && v.agreement !== ''
-                    });
-                  }
 
                   // The API returns 'joineddate' field (e.g., "07 January 2024")
                   if (v.joineddate) {
