@@ -259,7 +259,7 @@ export default function VendorInterview() {
                   </svg>
                 </div>
                 <div>
-                  <p style={getStyles(isMobile).value}>{interview.vendor.name} - Interviewer</p>
+                  <p style={getStyles(isMobile).value}>{interview.vendor.interviewerName || 'Our Team'} - Interviewer</p>
                 </div>
               </div>
 
