@@ -43,8 +43,13 @@ export default function VendorInterview() {
         availableSlots: data.availableSlots?.length,
         confirmedSlot: data.confirmedSlot ? 'Yes' : 'No',
         onboardingstatus: data.vendor?.onboardingstatus,
+        interviewerid: data.vendor?.interviewerid,
+        interviewerName: data.vendor?.interviewerName,
+        vendorName: data.vendor?.name,
         fullData: data
       });
+      console.log('🔍 DEBUG: Vendor object:', data.vendor);
+      console.log('🔍 DEBUG: interviewerName from response:', data.vendor?.interviewerName);
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || 'Failed to load interview details');
@@ -259,7 +264,13 @@ export default function VendorInterview() {
                   </svg>
                 </div>
                 <div>
-                  <p style={getStyles(isMobile).value}>{interview.vendor.interviewerName || 'Our Team'} - Interviewer</p>
+                  {(() => {
+                    console.log('🔍 DEBUG: Rendering interviewer - interview.vendor:', interview.vendor);
+                    console.log('🔍 DEBUG: interviewerName value:', interview.vendor?.interviewerName);
+                    const displayName = interview.vendor?.interviewerName || 'Our Team';
+                    console.log('🔍 DEBUG: Displaying name:', displayName);
+                    return <p style={getStyles(isMobile).value}>{displayName} - Interviewer</p>;
+                  })()}
                 </div>
               </div>
 
