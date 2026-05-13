@@ -207,9 +207,24 @@ const InterviewsPage = () => {
   const confirmNotify = async () => {
     try {
       const vendorId = getVendorId(selectedVendor);
+      
+      // Get admin data from localStorage to include adminId
+      const adminData = localStorage.getItem('adminData');
+      let adminId = null;
+      if (adminData) {
+        try {
+          const parsedAdmin = JSON.parse(adminData);
+          adminId = parsedAdmin._id || parsedAdmin.id;
+          console.log('✅ Admin ID found:', adminId);
+        } catch (e) {
+          console.warn('⚠️ Could not parse adminData from localStorage');
+        }
+      }
+      
       const response = await fetch(`${API_URL}/vendors/${vendorId}/notify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminId }),
       });
 
       const data = await response.json();

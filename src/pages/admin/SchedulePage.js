@@ -255,7 +255,25 @@ const SchedulePage = () => {
     try {
       // Now send the WhatsApp notification (slots are already saved)
       console.log('📱 Sending WhatsApp notification...');
-      const payload = { slots, vendor: { id: vendorId, name: vendor?.name, email: vendor?.email, whatsapp: vendor?.whatsapp, phone: vendor?.phone } };
+      
+      // Get admin data from localStorage to include adminId
+      const adminData = localStorage.getItem('adminData');
+      let adminId = null;
+      if (adminData) {
+        try {
+          const parsedAdmin = JSON.parse(adminData);
+          adminId = parsedAdmin._id || parsedAdmin.id;
+          console.log('✅ Admin ID found:', adminId);
+        } catch (e) {
+          console.warn('⚠️ Could not parse adminData from localStorage');
+        }
+      }
+      
+      const payload = { 
+        slots, 
+        adminId,
+        vendor: { id: vendorId, name: vendor?.name, email: vendor?.email, whatsapp: vendor?.whatsapp, phone: vendor?.phone } 
+      };
       const res = await fetch(`${API_URL}/vendors/${vendorId}/notify-slots`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
