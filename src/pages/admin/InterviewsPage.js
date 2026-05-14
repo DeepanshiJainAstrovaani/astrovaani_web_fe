@@ -210,16 +210,26 @@ const InterviewsPage = () => {
       
       // Get admin data from localStorage to include adminId
       const adminData = localStorage.getItem('adminData');
+      console.log('🔍 DEBUG: adminData from localStorage:', adminData);
+      
       let adminId = null;
       if (adminData) {
         try {
           const parsedAdmin = JSON.parse(adminData);
+          console.log('🔍 DEBUG: Parsed admin object:', parsedAdmin);
+          console.log('🔍 DEBUG: parsedAdmin._id:', parsedAdmin._id);
+          console.log('🔍 DEBUG: parsedAdmin.id:', parsedAdmin.id);
+          
           adminId = parsedAdmin._id || parsedAdmin.id;
           console.log('✅ Admin ID found:', adminId);
         } catch (e) {
-          console.warn('⚠️ Could not parse adminData from localStorage');
+          console.warn('⚠️ Could not parse adminData from localStorage:', e.message);
         }
+      } else {
+        console.warn('⚠️ No adminData found in localStorage');
       }
+      
+      console.log('📤 Sending notify request with adminId:', adminId);
       
       const response = await fetch(`${API_URL}/vendors/${vendorId}/notify`, {
         method: 'POST',
