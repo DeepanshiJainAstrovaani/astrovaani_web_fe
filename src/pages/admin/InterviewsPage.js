@@ -26,6 +26,35 @@ const InterviewsPage = () => {
     fetchVendors();
   }, []);
 
+  // Fetch and log admin ID and name
+  useEffect(() => {
+    const adminData = localStorage.getItem('adminData');
+    console.log('👤 === ADMIN DATA FROM LOCALSTORAGE ===');
+    console.log('👤 Raw adminData:', adminData);
+    
+    if (adminData) {
+      try {
+        const parsedAdmin = JSON.parse(adminData);
+        console.log('👤 Parsed Admin Object:', parsedAdmin);
+        console.log('👤 Admin ID (_id):', parsedAdmin._id);
+        console.log('👤 Admin ID (id):', parsedAdmin.id);
+        console.log('👤 Admin Name:', parsedAdmin.name);
+        console.log('👤 Admin Email:', parsedAdmin.email);
+        console.log('👤 All Admin Keys:', Object.keys(parsedAdmin));
+        
+        const adminId = parsedAdmin._id || parsedAdmin.id;
+        const adminName = parsedAdmin.name || 'Unknown';
+        console.log('✅ FINAL - Admin ID:', adminId);
+        console.log('✅ FINAL - Admin Name:', adminName);
+      } catch (error) {
+        console.error('❌ Failed to parse adminData:', error);
+      }
+    } else {
+      console.warn('⚠️  No adminData found in localStorage');
+    }
+    console.log('👤 === END ADMIN DATA ===\n');
+  }, []);
+
   const fetchVendors = async () => {
     try {
       setLoading(true);
