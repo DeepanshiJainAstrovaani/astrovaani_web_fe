@@ -428,7 +428,7 @@ const InterviewsPage = () => {
                             <button type="button" className={styles['action-btn']} onClick={() => handleStartInterview(vendor)}>Start Interview</button>
                             <button type="button" className={styles['action-btn']} onClick={() => handleEdit(vendor)}>Edit</button>
                             <button type="button" className={styles['action-btn']} onClick={() => handleSendLink(vendor)}>Send Link</button>
-                            <button type="button" className={styles['action-btn']} onClick={() => handleNotify(vendor)}>Notify</button>
+                            <button type="button" className={styles['action-btn']} onClick={() => handleNotify(vendor)}>Reminder</button>
                             <button type="button" className={styles['action-btn']} style={{ color: '#d32f2f' }} onClick={() => handleCancel(vendor)}>Cancel</button>
                           </>
                         ) : (
