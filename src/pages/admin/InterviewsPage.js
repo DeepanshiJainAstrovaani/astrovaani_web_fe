@@ -258,9 +258,9 @@ const InterviewsPage = () => {
         console.warn('⚠️ No adminData found in localStorage');
       }
       
-      console.log('📤 Sending notify request with adminId:', adminId);
+      console.log('📤 Sending reminder request with adminId:', adminId);
       
-      const response = await fetch(`${API_URL}/vendors/${vendorId}/notify`, {
+      const response = await fetch(`${API_URL}/vendors/${vendorId}/reminder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ adminId }),
