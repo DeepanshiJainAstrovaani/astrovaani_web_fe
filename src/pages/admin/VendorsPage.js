@@ -83,7 +83,7 @@ const VendorsPage = () => {
   const statusFilteredVendors = filteredVendors.filter(v => {
     if (!activeStatus) return true;
     const label = mapStatusToLabel(v.status);
-    console.log(`Vendor "${v.name}" status: ${v.status} → label: ${label}, activeStatus: ${activeStatus}, match: ${label === activeStatus}`);
+    // console.log(`Vendor "${v.name}" status: ${v.status} → label: ${label}, activeStatus: ${activeStatus}, match: ${label === activeStatus}`);
     return label === activeStatus;
   });
 
