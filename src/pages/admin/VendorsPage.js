@@ -411,7 +411,8 @@ const VendorsPage = () => {
           ));
 
           showToast('Interview approved successfully! WhatsApp notification sent.', 'success');
-          fetchVendors(); // Refresh to update tabs
+          // Add small delay to ensure database is updated before fetching
+          setTimeout(() => fetchVendors(), 1000);
         } catch (err) {
           console.error('Error approving interview:', err);
           showToast('Failed to approve interview: ' + err.message, 'error');
@@ -530,7 +531,21 @@ const VendorsPage = () => {
                             </button>
                           )}
                           {/* Show Approve Interview button if in Process and feedback submitted */}
-                          {activeStatus === 'In Process' && v.onboardingstatus === 'inprocess' && v.interviewStatus !== 'completed' && (
+                          {(() => {
+                            const shouldShow = activeStatus === 'In Process' && v.onboardingstatus === 'inprocess' && v.interviewStatus !== 'completed';
+                            if (v.name === 'testDeepanshi') {
+                              console.log(`🔍 DEBUG [${v.name}]:`, {
+                                activeStatus,
+                                'v.onboardingstatus': v.onboardingstatus,
+                                'v.interviewStatus': v.interviewStatus,
+                                'shouldShow': shouldShow,
+                                'condition1': activeStatus === 'In Process',
+                                'condition2': v.onboardingstatus === 'inprocess',
+                                'condition3': v.interviewStatus !== 'completed'
+                              });
+                            }
+                            return shouldShow;
+                          })() && (
                             <button
                               className={styles['action-btn-approve']}
                               title="Approve Interview"
