@@ -10,7 +10,6 @@ const InterviewFeedback = () => {
   const [vendor, setVendor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [approving, setApproving] = useState(false);
   const [feedback, setFeedback] = useState({
     skillsRating: '',
     communicationRating: '',
@@ -118,42 +117,6 @@ const InterviewFeedback = () => {
   const handleCancel = () => {
     if (window.confirm('Are you sure? Unsaved changes will be lost.')) {
       navigate('/admindashboard/interviews');
-    }
-  };
-
-  const handleApproveInterview = async () => {
-    if (!vendor.interviewCompletedAt) {
-      alert('Please save feedback first before approving');
-      return;
-    }
-
-    if (!window.confirm(`Approve interview for ${vendor.name}? They will receive a WhatsApp message with instructions to download their agreement.`)) {
-      return;
-    }
-
-    try {
-      setApproving(true);
-      const response = await fetch(`${API_URL}/vendors/approve-interview-feedback/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        alert('Interview approved successfully! WhatsApp notification sent.');
-        // Refresh vendor data
-        const updatedResponse = await fetch(`${API_URL}/vendors/${id}`);
-        const updatedData = await updatedResponse.json();
-        setVendor(updatedData);
-      } else {
-        alert(data.message || 'Failed to approve interview');
-      }
-    } catch (error) {
-      console.error('Error approving interview:', error);
-      alert('Failed to approve interview feedback');
-    } finally {
-      setApproving(false);
     }
   };
 
@@ -548,45 +511,6 @@ const InterviewFeedback = () => {
                   : 'Save Feedback'
               }
             </button>
-
-            {/* Approve Interview Button - Only visible after feedback is saved */}
-            {vendor.interviewCompletedAt && (
-              <button
-                type="button"
-                onClick={handleApproveInterview}
-                disabled={approving}
-                style={{
-                  padding: 'clamp(0.6rem, 2vw, 0.75rem) clamp(1.2rem, 4vw, 2rem)',
-                  backgroundColor: approving ? '#e0e0e0' : '#4caf50',
-                  color: approving ? '#999' : '#fff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: 'clamp(14px, 3.5vw, 16px)',
-                  fontWeight: '600',
-                  cursor: approving ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
-                  minWidth: 'clamp(140px, 35vw, 160px)',
-                  flex: '1 1 auto',
-                  maxWidth: '250px'
-                }}
-                onMouseEnter={(e) => {
-                  if (!approving) {
-                    e.target.style.backgroundColor = '#45a049';
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.3)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!approving) {
-                    e.target.style.backgroundColor = '#4caf50';
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = 'none';
-                  }
-                }}
-              >
-                {approving ? 'Approving...' : '✓ Approve Interview'}
-              </button>
-            )}
           </div>
         </div>
       </form>

@@ -378,6 +378,46 @@ const VendorsPage = () => {
         setOnboardModal({ show: false, vendor: null });
       };
 
+      const handleApproveInterviewFeedback = async (vendor) => {
+        const vendorId = vendor?._id || vendor?.id;
+        
+        if (!vendorId) return;
+
+        if (!window.confirm(`Approve interview for ${vendor.name}? They will receive a WhatsApp message with instructions to download their agreement.`)) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/vendors/approve-interview-feedback/${vendorId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.message || 'Failed to approve interview');
+          }
+
+          // Update vendor in local state
+          setVendors(vendors.map(v =>
+            (v._id || v.id) === vendorId ? { 
+              ...v, 
+              interviewApproved: true,
+              interviewApprovedAt: new Date().toISOString()
+            } : v
+          ));
+
+          showToast('Interview approved successfully! WhatsApp notification sent.', 'success');
+          fetchVendors(); // Refresh to update tabs
+        } catch (err) {
+          console.error('Error approving interview:', err);
+          showToast('Failed to approve interview: ' + err.message, 'error');
+        }
+      };
+
       return (
         <div className={styles['admin-container']}>
           {/* Search Bar */}
@@ -487,6 +527,17 @@ const VendorsPage = () => {
                               onClick={() => handleRejectClick(v)}
                             >
                               Reject
+                            </button>
+                          )}
+                          {/* Show Approve Interview button if in Process and feedback submitted */}
+                          {activeStatus === 'In Process' && v.onboardingstatus === 'inprocess' && !v.interviewApproved && (
+                            <button
+                              className={styles['action-btn']}
+                              title="Approve Interview"
+                              style={{ margin: 0, background: '#4caf50', color: 'white' }}
+                              onClick={() => handleApproveInterviewFeedback(v)}
+                            >
+                              ✓ Approve
                             </button>
                           )}
                           {/* Show Onboard button if status is 'In Process' and all conditions met */}
