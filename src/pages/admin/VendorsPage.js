@@ -405,8 +405,8 @@ const VendorsPage = () => {
           setVendors(vendors.map(v =>
             (v._id || v.id) === vendorId ? { 
               ...v, 
-              interviewApproved: true,
-              interviewApprovedAt: new Date().toISOString()
+              interviewStatus: 'completed',
+              interviewCompletedAt: new Date().toISOString()
             } : v
           ));
 
@@ -530,7 +530,7 @@ const VendorsPage = () => {
                             </button>
                           )}
                           {/* Show Approve Interview button if in Process and feedback submitted */}
-                          {activeStatus === 'In Process' && v.onboardingstatus === 'inprocess' && !v.interviewApproved && (
+                          {activeStatus === 'In Process' && v.onboardingstatus === 'inprocess' && v.interviewStatus !== 'completed' && (
                             <button
                               className={styles['action-btn-approve']}
                               title="Approve Interview"
