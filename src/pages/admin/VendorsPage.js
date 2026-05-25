@@ -532,12 +532,12 @@ const VendorsPage = () => {
                           {/* Show Approve Interview button if in Process and feedback submitted */}
                           {activeStatus === 'In Process' && v.onboardingstatus === 'inprocess' && !v.interviewApproved && (
                             <button
-                              className={styles['action-btn']}
+                              className={styles['action-btn-approve']}
                               title="Approve Interview"
-                              style={{ margin: 0, background: '#4caf50', color: 'white' }}
+                              style={{ margin: 0 }}
                               onClick={() => handleApproveInterviewFeedback(v)}
                             >
-                              ✓ Approve
+                              Approve
                             </button>
                           )}
                           {/* Show Onboard button if status is 'In Process' and all conditions met */}
@@ -548,9 +548,9 @@ const VendorsPage = () => {
                             v.ifsc &&
                             v.agree && (
                               <button
-                                className={styles['action-btn']}
+                                className={styles['action-btn-approve']}
                                 title="Onboard"
-                                style={{ margin: 0, background: '#28a745', color: 'white' }}
+                                style={{ margin: 0 }}
                                 onClick={() => handleOnboardClick(v)}
                               >
                                 Onboard

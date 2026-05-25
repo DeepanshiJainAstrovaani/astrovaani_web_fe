@@ -135,6 +135,23 @@
   color: #bf360c;
 }
 
+.action-btn-approve {
+  background: none;
+  border: none;
+  color: #28a745;
+  font-weight: 500;
+  margin-right: 0;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s, text-decoration 0.2s, transform 0.2s;
+}
+
+.action-btn-approve:hover {
+  text-decoration: underline;
+  transform: scale(1.08);
+  color: #1e7e34;
+}
+
 /* Modal Styles */
 .modal-overlay {
   position: fixed !important;
