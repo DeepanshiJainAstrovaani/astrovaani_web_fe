@@ -18,6 +18,7 @@ const InterviewsPage = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSendLinkModal, setShowSendLinkModal] = useState(false);
   const [showNotifyModal, setShowNotifyModal] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [meetingLink, setMeetingLink] = useState('');
 
@@ -353,6 +354,57 @@ const InterviewsPage = () => {
     }
   };
 
+  // 8. Approve Interview
+  const handleApproveInterview = (vendor) => {
+    setSelectedVendor(vendor);
+    setShowApproveModal(true);
+  };
+
+  const confirmApproveInterview = async () => {
+    try {
+      const vendorId = getVendorId(selectedVendor);
+      
+      // Get admin data from localStorage
+      const adminData = localStorage.getItem('adminData');
+      let adminId = null;
+      
+      if (adminData) {
+        try {
+          const parsedAdmin = JSON.parse(adminData);
+          adminId = parsedAdmin._id || parsedAdmin.id;
+          console.log('✅ Admin ID for approve:', adminId);
+        } catch (e) {
+          console.warn('⚠️ Could not parse adminData:', e.message);
+        }
+      }
+      
+      console.log('📤 Sending approve interview request for vendor:', vendorId);
+      
+      const response = await fetch(`${API_URL}/vendors/${vendorId}/approve-interview`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          adminId,
+          onboardingstatus: 'inprocess',
+          status: 'inprocess'
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('Interview approved successfully! WhatsApp notification sent to vendor.');
+        setShowApproveModal(false);
+        fetchVendors();
+      } else {
+        alert(data.message || 'Failed to approve interview');
+      }
+    } catch (error) {
+      console.error('Error approving interview:', error);
+      alert('Failed to approve interview');
+    }
+  };
+
   return (
     <div className={styles['admin-container']}>
       {/* Search Bar */}
@@ -429,6 +481,9 @@ const InterviewsPage = () => {
                             <button type="button" className={styles['action-btn']} onClick={() => handleEdit(vendor)}>Edit</button>
                             <button type="button" className={styles['action-btn']} onClick={() => handleSendLink(vendor)}>Send Link</button>
                             <button type="button" className={styles['action-btn']} onClick={() => handleNotify(vendor)}>Reminder</button>
+                            {vendor.interviewStatus === 'completed' && (
+                              <button type="button" className={styles['action-btn']} style={{ color: '#2196F3', fontWeight: 'bold' }} onClick={() => handleApproveInterview(vendor)}>Approve Interview</button>
+                            )}
                             <button type="button" className={styles['action-btn']} style={{ color: '#d32f2f' }} onClick={() => handleCancel(vendor)}>Cancel</button>
                           </>
                         ) : (
@@ -539,6 +594,47 @@ const InterviewsPage = () => {
             <div className={styles['modal-actions']}>
               <button onClick={() => setShowNotifyModal(false)} className={styles['cancel-btn']}>Cancel</button>
               <button onClick={confirmNotify} className={styles['confirm-btn']}>Send Reminder</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Approve Interview Modal */}
+      {showApproveModal && (
+        <div className={styles['modal-overlay']} onClick={() => setShowApproveModal(false)}>
+          <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
+            <div className={styles['modal-header']}>
+              <h2>Approve Interview</h2>
+              <p>For {selectedVendor?.name}</p>
+            </div>
+            
+            <div className={styles['modal-body']}>
+              <p style={{ color: '#333', marginBottom: '12px' }}>
+                Are you sure you want to approve the interview for <strong>{selectedVendor?.name}</strong>?
+              </p>
+              <div style={{ 
+                background: '#e8f5e9', 
+                border: '1px solid #c8e6c9', 
+                borderRadius: '6px', 
+                padding: '12px',
+                fontSize: '13px',
+                color: '#2e7d32',
+                lineHeight: '1.6'
+              }}>
+                <strong>Actions:</strong><br/>
+                ✓ Update vendor status to "inprocess"<br/>
+                ✓ Send WhatsApp notification to vendor
+                <br/><br/>
+                <strong style={{ color: '#1565c0' }}>Message to be sent:</strong><br/>
+                <em>
+                  "Congratulations! Your interview has been cleared. Now open your vendor app and download your onboarding agreement. Then, sign the agreement and upload it back on the app to complete your onboarding."
+                </em>
+              </div>
+            </div>
+
+            <div className={styles['modal-actions']}>
+              <button onClick={() => setShowApproveModal(false)} className={styles['cancel-btn']}>Cancel</button>
+              <button onClick={confirmApproveInterview} className={styles['confirm-btn']} style={{ backgroundColor: '#4CAF50', color: 'white' }}>Approve Interview</button>
             </div>
           </div>
         </div>
