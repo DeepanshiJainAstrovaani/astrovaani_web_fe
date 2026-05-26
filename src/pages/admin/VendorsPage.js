@@ -202,6 +202,7 @@ const VendorsPage = () => {
     setAgreementModal({ show: true, vendor, agreementUrl: cleanUrl });
   };
 
+
   const handleAgreementApprove = async () => {
     const vendorId = agreementModal.vendor?._id || agreementModal.vendor?.id;
     if (!vendorId) return;

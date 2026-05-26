@@ -66,6 +66,7 @@ const InterviewsPage = () => {
       console.log('📦 First vendor:', data[0]);
       console.log('📦 First vendor _id:', data[0]?._id);
       console.log('📦 First vendor id:', data[0]?.id);
+      console.log('📦 First vendor interviewStatus:', data[0]?.interviewStatus);
       console.log('📦 All keys of first vendor:', data[0] ? Object.keys(data[0]) : 'No vendors');
       
       // Filter vendors who have interview schedules AND exclude active/inprocess vendors
@@ -80,6 +81,8 @@ const InterviewsPage = () => {
       console.log('📋 First vendor with schedule:', vendorsWithSchedules[0]);
       console.log('📋 First vendor with schedule _id:', vendorsWithSchedules[0]?._id);
       console.log('📋 First vendor with schedule id:', vendorsWithSchedules[0]?.id);
+      console.log('📋 First vendor with schedule interviewStatus:', vendorsWithSchedules[0]?.interviewStatus);
+      console.log('📋 Interview status === "completed"?', vendorsWithSchedules[0]?.interviewStatus === 'completed');
 
       setVendors(vendorsWithSchedules);
 
@@ -463,6 +466,13 @@ const InterviewsPage = () => {
                 filteredVendors.map((vendor, idx) => {
                   const confirmedSlot = getConfirmedSlot(vendor);
                   const vendorId = getVendorId(vendor);
+                  
+                  // Debug logging for interviewStatus
+                  if (idx === 0) {
+                    console.log('🧪 DEBUG Row 0 - vendor.interviewStatus:', vendor.interviewStatus);
+                    console.log('🧪 DEBUG Row 0 - all vendor keys:', Object.keys(vendor));
+                  }
+                  
                   return (
                     <tr key={vendorId || idx}>
                       <td>{vendor.name}</td>
@@ -481,6 +491,7 @@ const InterviewsPage = () => {
                             <button type="button" className={styles['action-btn']} onClick={() => handleEdit(vendor)}>Edit</button>
                             <button type="button" className={styles['action-btn']} onClick={() => handleSendLink(vendor)}>Send Link</button>
                             <button type="button" className={styles['action-btn']} onClick={() => handleNotify(vendor)}>Reminder</button>
+                            <button type="button" className={styles['action-btn']} style={{ color: '#2196F3', fontWeight: 'bold' }} onClick={() => handleApproveInterview(vendor)}>Approve Interview</button>
                             {vendor.interviewStatus === 'completed' && (
                               <button type="button" className={styles['action-btn']} style={{ color: '#2196F3', fontWeight: 'bold' }} onClick={() => handleApproveInterview(vendor)}>Approve Interview</button>
                             )}
