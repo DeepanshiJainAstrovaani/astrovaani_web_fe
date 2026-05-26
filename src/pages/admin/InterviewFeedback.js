@@ -89,9 +89,10 @@ const InterviewFeedback = () => {
           adaptability: feedback.adaptability,
           interviewNotes: feedback.notes,
           interviewStatus: 'completed',
-          onboardingstatus: 'inprocess',
-          status: 'inprocess',
           interviewCompletedAt: new Date().toISOString()
+          // Note: DO NOT set status or onboardingstatus here
+          // Status should remain 'pending' until admin approves vendor for agreement
+          // Only approve-agreement endpoint should change status to 'inprocess'
         }),
       });
 
