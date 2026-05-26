@@ -83,7 +83,7 @@ const VendorsPage = () => {
   const statusFilteredVendors = filteredVendors.filter(v => {
     if (!activeStatus) return true;
     const label = mapStatusToLabel(v.status);
-    // console.log(`Vendor "${v.name}" status: ${v.status} → label: ${label}, activeStatus: ${activeStatus}, match: ${label === activeStatus}`);
+    console.log(`Vendor "${v.name}" status: ${v.status} → label: ${label}, activeStatus: ${activeStatus}, match: ${label === activeStatus}`);
     return label === activeStatus;
   });
 
@@ -378,47 +378,6 @@ const VendorsPage = () => {
         setOnboardModal({ show: false, vendor: null });
       };
 
-      const handleApproveInterviewFeedback = async (vendor) => {
-        const vendorId = vendor?._id || vendor?.id;
-        
-        if (!vendorId) return;
-
-        if (!window.confirm(`Approve interview for ${vendor.name}? They will receive a WhatsApp message with instructions to download their agreement.`)) {
-          return;
-        }
-
-        try {
-          const response = await fetch(`${API_URL}/vendors/approve-interview-feedback/${vendorId}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.message || 'Failed to approve interview');
-          }
-
-          // Update vendor in local state
-          setVendors(vendors.map(v =>
-            (v._id || v.id) === vendorId ? { 
-              ...v, 
-              interviewStatus: 'completed',
-              interviewCompletedAt: new Date().toISOString()
-            } : v
-          ));
-
-          showToast('Interview approved successfully! WhatsApp notification sent.', 'success');
-          // Add small delay to ensure database is updated before fetching
-          setTimeout(() => fetchVendors(), 1000);
-        } catch (err) {
-          console.error('Error approving interview:', err);
-          showToast('Failed to approve interview: ' + err.message, 'error');
-        }
-      };
-
       return (
         <div className={styles['admin-container']}>
           {/* Search Bar */}
@@ -530,31 +489,6 @@ const VendorsPage = () => {
                               Reject
                             </button>
                           )}
-                          {/* Show Approve Interview button if in Process and feedback submitted */}
-                          {(() => {
-                            const shouldShow = activeStatus === 'In Process' && v.onboardingstatus === 'inprocess' && v.interviewStatus !== 'completed';
-                            if (v.name === 'testDeepanshi') {
-                              console.log(`🔍 DEBUG [${v.name}]:`, {
-                                activeStatus,
-                                'v.onboardingstatus': v.onboardingstatus,
-                                'v.interviewStatus': v.interviewStatus,
-                                'shouldShow': shouldShow,
-                                'condition1': activeStatus === 'In Process',
-                                'condition2': v.onboardingstatus === 'inprocess',
-                                'condition3': v.interviewStatus !== 'completed'
-                              });
-                            }
-                            return shouldShow;
-                          })() && (
-                            <button
-                              className={styles['action-btn-approve']}
-                              title="Approve Interview"
-                              style={{ margin: 0 }}
-                              onClick={() => handleApproveInterviewFeedback(v)}
-                            >
-                              Approve
-                            </button>
-                          )}
                           {/* Show Onboard button if status is 'In Process' and all conditions met */}
                           {activeStatus === 'In Process' &&
                             v.agreementStatus === 'approved' &&
@@ -563,9 +497,9 @@ const VendorsPage = () => {
                             v.ifsc &&
                             v.agree && (
                               <button
-                                className={styles['action-btn-approve']}
+                                className={styles['action-btn']}
                                 title="Onboard"
-                                style={{ margin: 0 }}
+                                style={{ margin: 0, background: '#28a745', color: 'white' }}
                                 onClick={() => handleOnboardClick(v)}
                               >
                                 Onboard
