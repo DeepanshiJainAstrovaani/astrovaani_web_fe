@@ -89,6 +89,7 @@ const InterviewFeedback = () => {
           adaptability: feedback.adaptability,
           interviewNotes: feedback.notes,
           interviewStatus: 'completed',
+          onboardingstatus: 'inprocess',
           status: 'inprocess',
           interviewCompletedAt: new Date().toISOString()
         }),
