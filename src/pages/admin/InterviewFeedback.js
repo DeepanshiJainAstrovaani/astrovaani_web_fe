@@ -103,6 +103,30 @@ const InterviewFeedback = () => {
           ? 'Interview feedback updated successfully!' 
           : 'Interview feedback saved successfully!';
         alert(message);
+
+        // Send WhatsApp notification to vendor about interview completion
+        try {
+          console.log('📱 Sending interview completed WhatsApp notification...');
+          const whatsappResponse = await fetch(`${API_URL}/vendors/${id}/interview-completed`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+
+          const whatsappData = await whatsappResponse.json();
+          if (whatsappData.success) {
+            console.log('✅ WhatsApp notification sent successfully');
+            if (whatsappData.whatsappSent) {
+              alert('WhatsApp notification sent to vendor!');
+            }
+          } else {
+            console.warn('⚠️ WhatsApp notification failed:', whatsappData.message);
+          }
+        } catch (whatsappErr) {
+          console.error('⚠️ Error sending WhatsApp notification:', whatsappErr);
+          // Don't fail the entire operation if WhatsApp fails
+        }
+
         navigate('/admindashboard/interviews');
       } else {
         alert(data.message || 'Failed to save feedback');
