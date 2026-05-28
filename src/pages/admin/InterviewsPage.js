@@ -491,9 +491,8 @@ const InterviewsPage = () => {
                             <button type="button" className={styles['action-btn']} onClick={() => handleEdit(vendor)}>Edit</button>
                             <button type="button" className={styles['action-btn']} onClick={() => handleSendLink(vendor)}>Send Link</button>
                             <button type="button" className={styles['action-btn']} onClick={() => handleNotify(vendor)}>Reminder</button>
-                            <button type="button" className={styles['action-btn']} style={{ color: '#2196F3', fontWeight: 'bold' }} onClick={() => handleApproveInterview(vendor)}>Approve Interview</button>
                             {vendor.interviewStatus === 'completed' && (
-                              <button type="button" className={styles['action-btn']} style={{ color: '#2196F3', fontWeight: 'bold' }} onClick={() => handleApproveInterview(vendor)}>Approve Interview</button>
+                              <button type="button" className={styles['action-btn']} style={{ color: '#025c08' }} onClick={() => handleApproveInterview(vendor)}>Approve Interview</button>
                             )}
                             <button type="button" className={styles['action-btn']} style={{ color: '#d32f2f' }} onClick={() => handleCancel(vendor)}>Cancel</button>
                           </>
